@@ -372,6 +372,50 @@ namespace Archipelago.Gifting.Net.Tests
             }
         }
 
+        [Test]
+        public void TestRefundGiftSendsItToSender()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            _serviceSender.OpenGiftBox();
+            var gift = NewGiftItem();
+            var traits = NewGiftTraits();
+            Wait();
+            var result = _serviceSender.SendGift(gift, traits, slotReceiver);
+            Wait();
+
+            // Assume
+            result.Should().BeTrue();
+            var giftsReceiver = _serviceReceiver.CheckGiftBox();
+            giftsReceiver.Should().NotBeNull();
+            giftsReceiver.Should().HaveCount(1);
+            giftsReceiver.First().IsRefund.Should().BeFalse();
+            giftsReceiver.First().Item.Name.Should().Be(gift.Name);
+            giftsReceiver.First().Sender.Should().Be(slotSender);
+            giftsReceiver.First().Receiver.Should().Be(slotReceiver);
+            var giftsSender = _serviceSender.CheckGiftBox();
+            giftsSender.Should().NotBeNull();
+            giftsSender.Should().HaveCount(0);
+
+            // Act
+            giftsReceiver = _serviceReceiver.GetAllGiftsAndEmptyGiftbox();
+            result = _serviceReceiver.RefundGift(giftsReceiver.Single());
+            Wait();
+
+            // Assert
+            result.Should().BeTrue();
+            giftsReceiver = _serviceReceiver.CheckGiftBox();
+            giftsReceiver.Should().NotBeNull();
+            giftsReceiver.Should().HaveCount(0);
+            giftsSender = _serviceSender.CheckGiftBox();
+            giftsSender.Should().NotBeNull();
+            giftsSender.Should().HaveCount(1);
+            giftsSender.First().IsRefund.Should().BeTrue();
+            giftsSender.First().Item.Name.Should().Be(gift.Name);
+            giftsSender.First().Sender.Should().Be(slotSender);
+            giftsSender.First().Receiver.Should().Be(slotReceiver);
+        }
+
         private GiftItem NewGiftItem()
         {
             return new GiftItem("Test Gift", _random.Next(1, 10), _random.Next(1, 100));
