@@ -5,6 +5,7 @@ namespace Archipelago.Gifting.Net
 {
     public class Gift
     {
+        public Guid ID { get; set; }
         public GiftItem Item { get; set; }
         public GiftTrait[] Traits { get; set; }
         public string Sender { get; set; }
@@ -18,20 +19,12 @@ namespace Archipelago.Gifting.Net
 
         public Gift(GiftItem item, GiftTrait[] traits, string sender, string receiver)
         {
+            ID = Guid.NewGuid();
             Item = item;
             Traits = traits;
             Sender = sender;
             Receiver = receiver;
             IsRefund = false;
-        }
-
-        public Gift(GiftItem item, GiftTrait[] traits, string sender, string receiver, bool isRefund)
-        {
-            Item = item;
-            Traits = traits;
-            Sender = sender;
-            Receiver = receiver;
-            IsRefund = isRefund;
         }
     }
 }

@@ -3,3 +3,12 @@ Gifting Library for use in .NET applications interfacing with the Archipelago Ra
 This library uses [Archipelago.MultiClient.Net](https://github.com/ArchipelagoMW/Archipelago.MultiClient.Net/tree/main) for network communication
 
 This library provides a simple and easy way to interact with the [Gifting API](Documentation/Gifting%20API.md)
+
+# Documentation
+
+## Creating a GiftingService Instance
+
+```cs
+// session must be a previously-established, connected session from Archipelago.MultiClient.Net
+var service = new GiftingService(session);
+```
