@@ -212,7 +212,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().HaveCount(0);
 
             // Act
-            var result = _serviceSender.SendGift(gift, slotReceiver);
+            var result = _serviceSender.SendGift(gift, slotReceiver, out var giftId);
             Wait();
 
             // Assert
@@ -220,9 +220,11 @@ namespace Archipelago.Gifting.Net.Tests
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull();
             gifts.Should().HaveCount(1);
-            gifts.Last().Item.Name.Should().Be(gift.Name);
-            gifts.Last().Item.Amount.Should().Be(gift.Amount);
-            gifts.Last().Item.Value.Should().Be(gift.Value);
+            var receivedGift = gifts.First();
+            receivedGift.ID.Should().Be(giftId);
+            receivedGift.Item.Name.Should().Be(gift.Name);
+            receivedGift.Item.Amount.Should().Be(gift.Amount);
+            receivedGift.Item.Value.Should().Be(gift.Value);
         }
 
         [Test]
@@ -428,12 +430,8 @@ namespace Archipelago.Gifting.Net.Tests
             var traits = new List<GiftTrait>();
             for (var i = 0; i < count; i++)
             {
-                var trait = new GiftTrait()
-                {
-                    Trait = allFlags[_random.Next(0, allFlags.Length)],
-                    Duration = _random.NextDouble() * 2,
-                    Strength = _random.NextDouble() * 2,
-                };
+                var trait = new GiftTrait(trait: allFlags[_random.Next(0, allFlags.Length)],
+                    duration: _random.NextDouble() * 2, strength: _random.NextDouble() * 2);
                 traits.Add(trait);
             }
 

@@ -43,24 +43,45 @@ namespace Archipelago.Gifting.Net
 
         public bool SendGift(GiftItem item, string playerName)
         {
-            return SendGift(item, Array.Empty<GiftTrait>(), playerName);
+            return SendGift(item, playerName, out _);
+        }
+
+        public bool SendGift(GiftItem item, string playerName, out Guid giftId)
+        {
+            return SendGift(item, Array.Empty<GiftTrait>(), playerName, out giftId);
         }
 
         public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName)
         {
-            return SendGift(item, traits, playerName, _session.ConnectionInfo.Team);
+            return SendGift(item, traits, playerName, out _);
+        }
+
+        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out Guid giftId)
+        {
+            return SendGift(item, traits, playerName, _session.ConnectionInfo.Team, out giftId);
         }
 
         public bool SendGift(GiftItem item, string playerName, int playerTeam)
         {
-            return SendGift(item, Array.Empty<GiftTrait>(), playerName, playerTeam);
+            return SendGift(item, playerName, playerTeam, out _);
+        }
+
+        public bool SendGift(GiftItem item, string playerName, int playerTeam, out Guid giftId)
+        {
+            return SendGift(item, Array.Empty<GiftTrait>(), playerName, playerTeam, out giftId);
         }
 
         public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
         {
+            return SendGift(item, traits, playerName, playerTeam, out _);
+        }
+
+        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out Guid giftId)
+        {
             var sendingPlayer = CurrentPlayer;
             var receivingPlayer = GetPlayer(playerName, playerTeam);
             var gift = new Gift(item, traits, sendingPlayer.Name, receivingPlayer.Name);
+            giftId = gift.ID;
             return SendGift(gift);
         }
 
