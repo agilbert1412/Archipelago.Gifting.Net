@@ -63,8 +63,8 @@ A Gift is an entry in a Giftbox. It follows the following structure:
 | Field             | Type               | Description                                                                        |
 |-------------------|--------------------|------------------------------------------------------------------------------------|
 | ID                | GUID               | Unique ID for the Gift                                                             |
-| Item              | GiftItem           | Item being gifted (see [Gift Item Specification](#GiftItem Specification)).        |
-| Traits            | List of GiftTraits | Traits of the gift see [Gift Trait Specification](#GiftTrait Specification))       |
+| Item              | GiftItem           | Item being gifted (see [Gift Item Specification](#giftitem-specification)).        |
+| Traits            | List of GiftTraits | Traits of the gift see [Gift Trait Specification](#gifttrait-specification))       |
 | Sender            | String             | Slot Name of the player sending the gift                                           |
 | Receiver          | String             | Slot Name of the player receiving the gift                                         |
 | IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift |
