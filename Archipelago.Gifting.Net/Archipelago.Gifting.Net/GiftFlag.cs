@@ -11,16 +11,21 @@ namespace Archipelago.Gifting.Net
         public const string None = "None";
         public const string Food = "Food";
         public const string Drink = "Drink";
-        public const string Edible = "Edible";
+        public const string Consumable = "Consumable";
         public const string Speed = "Speed";
         public const string Fish = "Fish";
         public const string Heal = "Heal";
         public const string Mana = "Mana";
         public const string Trap = "Trap";
+        public const string Buff = "Buff";
+        public const string Life = "Life";
+        public const string Weapon = "Weapon";
+        public const string Armor = "Armor";
+        public const string Tool = "Tool";
 
         public static readonly string[] AllFlags = new[]
         {
-            None, Food, Drink, Edible, Speed, Fish, Heal, Mana, Trap
+            None, Food, Drink, Consumable, Speed, Fish, Heal, Mana, Trap, Buff, Life, Weapon, Armor, Tool,
         };
     }
 }

@@ -113,3 +113,29 @@ Or, it can exist, and then it should be a list of gifts. An empty list, or a pop
 	"GiftValue": 40
 }
 ```
+
+## Gift Traits
+
+A gift trait can be any string, and as long as it is recognized by the target game, it can be processed however they would like.
+
+For the sake of consistency and ease of use however, it is recommend to use single words that describe a concept in a very generic, vague manner.
+The preferred method of describing a gift in details is to add many vague traits, instead of few specific traits. This will allow other games to also limit the number of different traits they need to understand in order to parse gifts.
+
+Here is a list of "common" Gift traits. Everything on this list is a suggestion, and there are no strict rules as to how to attribute or process gift traits. Common sense and good faith are expected.
+
+| Trait             | Description                                                                          |
+|-------------------|--------------------------------------------------------------------------------------|
+| Speed             | Increases Speed                                                                      |
+| Consumable        | Can be consumed                                                                      |
+| Food              | Can eat                                                                              |
+| Drink             | Can drink                                                                            |
+| Heal              | Heals                                                                                |
+| Mana              | Restores mana                                                                        |
+| Trap              | The gift is intended as negative. Other traits should be interpreted as such.        |
+| Buff              | Buffs the player or some aspect of them                                              |
+| Life              | Grants an extra life or increases max HP                                             |
+| Weapon            | Is a weapon, can be used for combat                                                  |
+| Armor             | Is an armor or other wearable item, increases defense                                |
+| Tool              | Is a tool, can be used to complete tasks                                             |
+| Animal            | Is an animal, pet, companion                                                         |
+| Fish              | Is a fish, or related to fishing                                                     |
