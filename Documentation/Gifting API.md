@@ -85,3 +85,31 @@ Or, it can exist, and then it should be a list of gifts. An empty list, or a pop
 	"GiftValue": 36000
 }
 ```
+```json
+{
+	"ID": "45703834-0906-45df-a1f2-88a728a79f17",
+	"Item": {
+		"Name": "Burn",
+		"Amount": 1,
+		"Value": 40
+	},
+	"Traits": [{
+			"Trait": "Trap",
+			"Strength": 1,
+			"Duration": 1
+		}, {
+			"Trait": "Damage",
+			"Strength": 5,
+			"Duration": 2
+		}, {
+			"Trait": "Fire",
+			"Strength": 5,
+			"Duration": 1
+		}
+	],
+	"Sender": "SenderName",
+	"Receiver": "ReceiverName",
+	"IsRefund": false,
+	"GiftValue": 40
+}
+```
