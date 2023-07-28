@@ -11,5 +11,12 @@ namespace Archipelago.Gifting.Net
         public string Trait { get; set; }
         public double Strength { get; set; }
         public double Duration { get; set; }
+
+        public GiftTrait(string trait, double duration, double strength)
+        {
+            Trait = trait;
+            Duration = duration;
+            Strength = strength;
+        }
     }
 }
