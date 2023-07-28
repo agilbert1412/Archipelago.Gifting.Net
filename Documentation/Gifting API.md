@@ -41,7 +41,7 @@ Or, it can exist, and then it should be a list of gifts. An empty list, or a pop
 | Sender            | String             | Slot Name of the player sending the gift                                           |
 | Receiver          | String             | Slot Name of the player receiving the gift                                         |
 | IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift |
-| GiftValue         | Integer            | Total value of the gift (Item Vale \* Item Amount)                                 |
+| GiftValue         | Integer            | Total value of the gift (Item Value \* Item Amount)                                |
 
 ### GiftItem Specification
 
