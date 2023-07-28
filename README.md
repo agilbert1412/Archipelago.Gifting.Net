@@ -15,7 +15,7 @@ var service = new GiftingService(session);
 
 A freshly created GiftingService instance, on its own, does not do anything. It allows usage of various utility methods to interact with Giftboxes and Gifts.
 
-## Opening and Closeing a Giftbox
+## Opening and Closing a Giftbox
 
 To inform the multiworld that your slot is willing and able to receive gifts, you must open a Giftbox.
 
