@@ -31,3 +31,57 @@ Or, it can exist, and then it should be a list of gifts. An empty list, or a pop
 
 ## Gifts
 
+A Gift is an entry in a Giftbox. It follows the following structure:
+
+```json
+{
+	"ID": "65ffdda5-b955-4711-9e62-a9627d2f24e1",
+	"Item": {
+		"Name": "Coffee",
+		"Amount": 4,
+		"Value": 9000
+	},
+	"Traits": [{
+			"Trait": "Drink",
+			"Strength": 1,
+			"Duration": 1
+		}, {
+			"Trait": "Speed",
+			"Strength": 1,
+			"Duration": 2
+		}
+	],
+	"Sender": "SenderName",
+	"Receiver": "ReceiverName",
+	"IsRefund": false,
+	"GiftValue": 36000
+}
+```
+
+### Gift Specification
+
+| Field             | Type               | Description                                                                        |
+|-------------------|--------------------|------------------------------------------------------------------------------------|
+| ID                | GUID               | Unique ID for the Gift                                                             |
+| Item              | GiftItem           | Item being gifted (see [Gift Item Specification](#GiftItem Specification)).        |
+| Traits            | List of GiftTraits | Traits of the gift see [Gift Trait Specification](#GiftTrait Specification))       |
+| Sender            | String             | Slot Name of the player sending the gift                                           |
+| Receiver          | String             | Slot Name of the player receiving the gift                                         |
+| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift |
+| GiftValue         | Integer            | Total value of the gift (Item Vale \* Item Amount)                                 |
+
+### GiftItem Specification
+
+| Field             | Type           | Description                                                                        |
+|-------------------|----------------|------------------------------------------------------------------------------------|
+| Name              | String         | Name of the Item                                                                   |
+| Amount            | Integer        | Amount of the Item being gifted                                                    |
+| Value             | Integer        | Value per unit of the item                                                         |
+
+### GiftTrait Specification
+
+| Field             | Type           | Description                                                                        |
+|-------------------|----------------|------------------------------------------------------------------------------------|
+| Trait             | String         | Identifier for the Trait                                                           |
+| Strength          | Float          | Power of the Trait (1.0 means "normal power")                                      |
+| Duration          | Float          | Duration of the Trait (1.0 means "normal duration")                                |
