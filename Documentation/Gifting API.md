@@ -15,4 +15,19 @@ For this case, gifts also include a list of **traits**. A trait is a simple text
 
 For example, a coffee item could have the trait "Speed". The concept of a speed boost is much more generic, and frequently encountered, than the concept of a coffee, so a larger set of games will be able to understand a coffee gift. A game that has espresso might convert it to that, while a game that has no coffee-adjacent items could simply give the player a temporary speed boost.
 
-## 
+## Giftbox
+
+A GiftBox is a DataStorage entry registered to a specific player. It signals the desire and ability to receive gifts for that slot.
+
+The key for a GiftBox is formatted as `GiftBox;[slotName]`. So for a player named "Alice", her GiftBox key would be "GiftBox;Alice".
+The value for a GiftBox Entry can be non-existent, if the GiftBox is closed or has never been opened. This signals that the player either does not exist or cannot receive gifts.
+In programming, this will usually be a value along the lines of `Null`, `None`, `Nothing`, etc. depending on the language.
+Or, it can exist, and then it should be a list of gifts. An empty list, or a populated list, both mean that the GiftBox is open and can receive gifts.
+
+```json
+"GiftBox;PlayerReadyToReceiveGiftsName": []
+"GiftBox;PlayerWithGiftingTurnedOffName": null
+```
+
+## Gifts
+
