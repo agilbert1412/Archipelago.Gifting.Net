@@ -29,34 +29,7 @@ Or, it can exist, and then it should be a list of gifts. An empty list, or a pop
 "GiftBox;PlayerWithGiftingTurnedOffName": null
 ```
 
-## Gifts
-
-A Gift is an entry in a Giftbox. It follows the following structure:
-
-```json
-{
-	"ID": "65ffdda5-b955-4711-9e62-a9627d2f24e1",
-	"Item": {
-		"Name": "Coffee",
-		"Amount": 4,
-		"Value": 9000
-	},
-	"Traits": [{
-			"Trait": "Drink",
-			"Strength": 1,
-			"Duration": 1
-		}, {
-			"Trait": "Speed",
-			"Strength": 1,
-			"Duration": 2
-		}
-	],
-	"Sender": "SenderName",
-	"Receiver": "ReceiverName",
-	"IsRefund": false,
-	"GiftValue": 36000
-}
-```
+## Object Specifications
 
 ### Gift Specification
 
@@ -85,3 +58,30 @@ A Gift is an entry in a Giftbox. It follows the following structure:
 | Trait             | String         | Identifier for the Trait                                                           |
 | Strength          | Float          | Power of the Trait (1.0 means "normal power")                                      |
 | Duration          | Float          | Duration of the Trait (1.0 means "normal duration")                                |
+
+## Gifts Examples
+
+```json
+{
+	"ID": "65ffdda5-b955-4711-9e62-a9627d2f24e1",
+	"Item": {
+		"Name": "Coffee",
+		"Amount": 4,
+		"Value": 9000
+	},
+	"Traits": [{
+			"Trait": "Drink",
+			"Strength": 1,
+			"Duration": 1
+		}, {
+			"Trait": "Speed",
+			"Strength": 1,
+			"Duration": 2
+		}
+	],
+	"Sender": "SenderName",
+	"Receiver": "ReceiverName",
+	"IsRefund": false,
+	"GiftValue": 36000
+}
+```
