@@ -85,7 +85,7 @@ public class GiftItem
 A gift item has a name, an amount and a value. It is important to note that the value is for one instance of the item. The total value of the gift will be the value multiplied by the amount.
 A gift can have as many traits as you wish, and it is up to the receiver to decide how to interpret these traits. It is recommended to add more traits rather than fewer, so it is more likely to be understandable by various games.
 
-```
+```cs
 public class GiftTrait
 {
 	public string Trait { get; set; }
