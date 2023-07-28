@@ -75,6 +75,8 @@ namespace Archipelago.Gifting.Net.Tests
         {
             _serviceSender = new GiftingService(_sessionSender);
             _serviceReceiver = new GiftingService(_sessionReceiver);
+            _serviceSender.CloseGiftBox();
+            _serviceReceiver.CloseGiftBox();
         }
 
         private void CloseGiftBoxes()
@@ -371,6 +373,59 @@ namespace Archipelago.Gifting.Net.Tests
                 receivedTraits[i].Trait.Should().BeEquivalentTo(traits[i].Trait);
                 receivedTraits[i].Strength.Should().BeApproximately(traits[i].Strength, 0.001);
                 receivedTraits[i].Duration.Should().BeApproximately(traits[i].Duration, 0.001);
+            }
+        }
+
+        [Test]
+        public void TestSendTwoGiftsWithTraitsStacksGifts()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            var gift1 = NewGiftItem();
+            var gift2 = NewGiftItem();
+            var traits1 = NewGiftTraits();
+            var traits2 = NewGiftTraits();
+            Wait();
+
+            // Assume
+            var gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull();
+            gifts.Should().HaveCount(0);
+
+            // Act
+            var result1 = _serviceSender.SendGift(gift1, traits1, slotReceiver);
+            var result2 = _serviceSender.SendGift(gift2, traits2, slotReceiver);
+            Wait();
+
+            // Assert
+            result1.Should().BeTrue();
+            result2.Should().BeTrue();
+            gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull();
+            gifts.Should().HaveCount(2);
+            var receivedGift1 = gifts.First();
+            receivedGift1.Item.Name.Should().Be(gift1.Name);
+            receivedGift1.Item.Amount.Should().Be(gift1.Amount);
+            receivedGift1.Item.Value.Should().Be(gift1.Value);
+            var receivedTraits1 = receivedGift1.Traits;
+            receivedTraits1.Should().HaveCount(traits1.Length);
+            for (var i = 0; i < traits1.Length; i++)
+            {
+                receivedTraits1[i].Trait.Should().BeEquivalentTo(traits1[i].Trait);
+                receivedTraits1[i].Strength.Should().BeApproximately(traits1[i].Strength, 0.001);
+                receivedTraits1[i].Duration.Should().BeApproximately(traits1[i].Duration, 0.001);
+            }
+            var receivedGift2 = gifts.Last();
+            receivedGift2.Item.Name.Should().Be(gift2.Name);
+            receivedGift2.Item.Amount.Should().Be(gift2.Amount);
+            receivedGift2.Item.Value.Should().Be(gift2.Value);
+            var receivedTraits2 = receivedGift2.Traits;
+            receivedTraits2.Should().HaveCount(traits2.Length);
+            for (var i = 0; i < traits2.Length; i++)
+            {
+                receivedTraits2[i].Trait.Should().BeEquivalentTo(traits2[i].Trait);
+                receivedTraits2[i].Strength.Should().BeApproximately(traits2[i].Strength, 0.001);
+                receivedTraits2[i].Duration.Should().BeApproximately(traits2[i].Duration, 0.001);
             }
         }
 
