@@ -184,6 +184,11 @@ namespace Archipelago.Gifting.Net
             return CanGiftToPlayer(playerName, playerTeam, Enumerable.Empty<string>());
         }
 
+        public bool CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits)
+        {
+            return CanGiftToPlayer(playerName, _playerProvider.CurrentPlayerTeam, giftTraits);
+        }
+
         public bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits)
         {
             return CanGiftToPlayer(_playerProvider.GetPlayer(playerName).Slot, playerTeam, giftTraits);
@@ -197,6 +202,11 @@ namespace Archipelago.Gifting.Net
         public bool CanGiftToPlayer(int playerSlot, int playerTeam)
         {
             return CanGiftToPlayer(playerSlot, playerTeam, Enumerable.Empty<string>());
+        }
+
+        public bool CanGiftToPlayer(int playerSlot, IEnumerable<string> giftTraits)
+        {
+            return CanGiftToPlayer(playerSlot, _playerProvider.CurrentPlayerTeam, giftTraits);
         }
 
         public bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)

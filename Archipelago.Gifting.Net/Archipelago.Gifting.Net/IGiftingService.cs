@@ -12,6 +12,13 @@ namespace Archipelago.Gifting.Net
         void OpenGiftBox();
         void CloseGiftBox();
         bool CanGiftToPlayer(string playerName);
+        bool CanGiftToPlayer(string playerName, int playerTeam);
+        bool CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits);
+        bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits);
+        bool CanGiftToPlayer(int playerSlot);
+        bool CanGiftToPlayer(int playerSlot, int playerTeam);
+        bool CanGiftToPlayer(int playerSlot, IEnumerable<string> giftTraits);
+        bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits);
         bool SendGift(GiftItem item, string playerName);
         bool SendGift(GiftItem item, string playerName, int playerTeam);
         bool SendGift(GiftItem item, GiftTrait[] traits, string playerName);

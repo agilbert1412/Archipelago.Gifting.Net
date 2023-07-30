@@ -4,9 +4,9 @@ namespace Archipelago.Gifting.Net
 {
     public class GiftBox
     {
-        public bool IsOpen { get; set; }
         public string Owner { get; set; }
         public string Game { get; set; }
+        public bool IsOpen { get; set; }
         public bool AcceptsAnyGift { get; set; }
         public string[] DesiredTraits { get; set; }
 
