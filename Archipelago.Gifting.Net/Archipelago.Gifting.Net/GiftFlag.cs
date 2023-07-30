@@ -22,10 +22,11 @@ namespace Archipelago.Gifting.Net
         public const string Weapon = "Weapon";
         public const string Armor = "Armor";
         public const string Tool = "Tool";
+        public const string Cure = "Cure";
 
         public static readonly string[] AllFlags = new[]
         {
-            None, Food, Drink, Consumable, Speed, Fish, Heal, Mana, Trap, Buff, Life, Weapon, Armor, Tool,
+            None, Food, Drink, Consumable, Speed, Fish, Heal, Mana, Trap, Buff, Life, Weapon, Armor, Tool, Cure,
         };
     }
 }

@@ -4,18 +4,31 @@ namespace Archipelago.Gifting.Net
 {
     public class GiftBox
     {
-        public const string GIFTBOX_PREFIX = "GiftBox;";
-
+        public bool IsOpen { get; set; }
         public string Owner { get; set; }
+        public string Game { get; set; }
+        public bool AcceptsAnyGift { get; set; }
+        public string[] DesiredTraits { get; set; }
 
-        public GiftBox(string owner)
+        public GiftBox()
         {
-            Owner = owner;
         }
 
-        public string GetDataStorageKey()
+        public GiftBox(bool isOpen) : this()
         {
-            return $"{GIFTBOX_PREFIX}{Owner}";
+            IsOpen = isOpen;
+        }
+
+        public GiftBox(string owner, string game, bool acceptsAnyGift, string[] desiredTraits) : this(true)
+        {
+            Owner = owner;
+            Game = game;
+            AcceptsAnyGift = acceptsAnyGift;
+            DesiredTraits = desiredTraits;
+        }
+
+        public GiftBox(string owner, string game, bool acceptsAnyGift) : this(owner, game, acceptsAnyGift, Array.Empty<string>())
+        {
         }
     }
 }

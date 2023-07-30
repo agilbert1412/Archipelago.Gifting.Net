@@ -1,6 +1,7 @@
 ﻿using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using Newtonsoft.Json.Linq;
 
@@ -9,36 +10,52 @@ namespace Archipelago.Gifting.Net
     public class GiftingService : IGiftingService
     {
         private ArchipelagoSession _session;
-        private PlayerInfo CurrentPlayer => GetPlayer(_session.ConnectionInfo.Slot);
-        private string CurrentPlayerName => CurrentPlayer.Name;
+        private PlayerProvider _playerProvider;
+        private GiftBoxKeyProvider _keyProvider;
+
+        private JToken EmptyMotherboxDictionary => JToken.FromObject(new Dictionary<int, GiftBox>());
+        private JToken EmptyGiftDictionary => JToken.FromObject(new Dictionary<Guid, Gift>());
 
         public GiftingService(ArchipelagoSession session)
         {
             _session = session;
+            _playerProvider = new PlayerProvider(_session);
+            _keyProvider = new GiftBoxKeyProvider(_session, _playerProvider);
         }
 
+        /// <summary>
+        /// Open a giftbox that can accept any gift with no trait preference
+        /// </summary>
         public void OpenGiftBox()
         {
-            var giftboxKey = GetGiftboxDataStorageKey();
+            UpdateGiftBox(new GiftBox(_playerProvider.CurrentPlayerName, _playerProvider.CurrentPlayerGame, true));
+        }
 
-            if (GiftboxExists(giftboxKey))
-            {
-                return;
-            }
-
-            var gifts = GetGiftboxContent(giftboxKey);
-            if (gifts != null)
-            {
-                return;
-            }
-
-            _session.DataStorage[Scope.Global, giftboxKey] = Array.Empty<Gift>();
+        /// <summary>
+        /// Open a giftbox with custom acceptance preference
+        /// </summary>
+        /// <param name="acceptAnyGift">Whether this giftbox can accept any gift, or only gifts with the specified traits</param>
+        /// <param name="desiredTraits">If can accept any gift, these are traits that make for a "good" gift. If not, these are the only accepted traits</param>
+        public void OpenGiftBox(bool acceptAnyGift, string[] desiredTraits)
+        {
+            UpdateGiftBox(new GiftBox(_playerProvider.CurrentPlayerName, _playerProvider.CurrentPlayerGame, acceptAnyGift, desiredTraits));
         }
 
         public void CloseGiftBox()
         {
-            var giftboxKey = GetGiftboxDataStorageKey();
-            _session.DataStorage[Scope.Global, giftboxKey] = null;
+            UpdateGiftBox(new GiftBox(false));
+            EmptyGiftBox();
+        }
+
+        private void UpdateGiftBox(GiftBox entry)
+        {
+            var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey();
+            CreateMotherboxIfNeeded(motherboxKey);
+            var myGiftBoxEntry = new Dictionary<int, GiftBox>
+            {
+                {_playerProvider.CurrentPlayerSlot, entry}
+            };
+            _session.DataStorage[Scope.Global, motherboxKey] += Operation.Update(myGiftBoxEntry);
         }
 
         public bool SendGift(GiftItem item, string playerName)
@@ -78,9 +95,17 @@ namespace Archipelago.Gifting.Net
 
         public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out Guid giftId)
         {
-            var sendingPlayer = CurrentPlayer;
-            var receivingPlayer = GetPlayer(playerName, playerTeam);
-            var gift = new Gift(item, traits, sendingPlayer.Name, receivingPlayer.Name);
+            var canGift = CanGiftToPlayer(playerName, playerTeam, traits.Select(x => x.Trait));
+            if (!canGift)
+            {
+                giftId = Guid.Empty;
+                return false;
+            }
+
+            var sendingPlayerName = _playerProvider.CurrentPlayerName;
+            var sendingPlayerTeam = _playerProvider.CurrentPlayerTeam;
+            var receivingPlayerName = _playerProvider.GetPlayer(playerName, playerTeam).Name;
+            var gift = new Gift(item, traits, sendingPlayerName, receivingPlayerName, sendingPlayerTeam, playerTeam);
             giftId = gift.ID;
             return SendGift(gift);
         }
@@ -93,121 +118,125 @@ namespace Archipelago.Gifting.Net
 
         private bool SendGift(Gift gift)
         {
-            var giftboxKey = GetGiftboxDataStorageKey(gift.IsRefund ? gift.Sender : gift.Receiver);
+            try
+            {
+                var targetPlayer = gift.IsRefund
+                    ? _playerProvider.GetPlayer(gift.SenderName, gift.SenderTeam)
+                    : _playerProvider.GetPlayer(gift.ReceiverName, gift.ReceiverTeam);
+                var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(targetPlayer.Team, targetPlayer.Slot);
 
-            if (!GiftboxExists(giftboxKey))
+                CreateGiftboxIfNeeded(giftboxKey);
+                var newGiftEntry = new Dictionary<Guid, Gift>
+                {
+                    { gift.ID, gift }
+                };
+
+                _session.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
+                return true;
+            }
+            catch (Exception)
             {
                 return false;
             }
-
-            var giftBoxContent = GetGiftboxContent(giftboxKey);
-            var newGiftBoxContent = new List<Gift>();
-            if (giftBoxContent != null)
-            {
-                newGiftBoxContent.AddRange(giftBoxContent);
-            }
-            newGiftBoxContent.Add(gift);
-            SetGiftboxContent(giftboxKey, newGiftBoxContent);
-            SendGiftNotification(gift);
-            return true;
         }
 
-        public Gift[]? GetAllGiftsAndEmptyGiftbox()
+        public Dictionary<Guid, Gift> GetAllGiftsAndEmptyGiftbox()
         {
             var gifts = CheckGiftBox();
-            if (gifts == null)
-            {
-                return null;
-            }
             EmptyGiftBox();
             return gifts;
         }
 
-        public Gift[]? CheckGiftBox()
+        public Dictionary<Guid, Gift> CheckGiftBox()
         {
-            var giftboxKey = GetGiftboxDataStorageKey();
+            var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
             var gifts = GetGiftboxContent(giftboxKey);
             return gifts;
         }
 
+        public void RemoveGiftFromGiftBox(Guid giftId)
+        {
+            var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
+            _session.DataStorage[Scope.Global, giftboxKey] += Operation.Pop(giftId);
+        }
+
         public void EmptyGiftBox()
         {
-            var giftboxKey = GetGiftboxDataStorageKey();
-            _session.DataStorage[Scope.Global, giftboxKey] = Array.Empty<Gift>();
+            var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
+            _session.DataStorage[Scope.Global, giftboxKey] = EmptyGiftDictionary;
         }
 
-        private string GetGiftboxDataStorageKey()
+        private Dictionary<Guid, Gift> GetGiftboxContent(string giftboxKey)
         {
-            return GetGiftboxDataStorageKey(CurrentPlayerName);
-        }
-
-        private string GetGiftboxDataStorageKey(string playerName)
-        {
-            var giftbox = new GiftBox(playerName);
-            var giftboxKey = giftbox.GetDataStorageKey();
-            return giftboxKey;
-        }
-
-        private Gift[]? GetGiftboxContent(string giftboxKey)
-        {
+            CreateGiftboxIfNeeded(giftboxKey);
             var existingGiftBox = _session.DataStorage[Scope.Global, giftboxKey];
-
-            var gifts = existingGiftBox?.To<Gift[]>();
+            var gifts = existingGiftBox.To<Dictionary<Guid, Gift>>();
             return gifts;
         }
 
         public bool CanGiftToPlayer(string playerName)
         {
-            var giftbox = new GiftBox(playerName);
-            var giftboxKey = giftbox.GetDataStorageKey();
-            return GiftboxExists(giftboxKey);
+            return CanGiftToPlayer(playerName, _playerProvider.CurrentPlayerTeam);
         }
 
-        private bool GiftboxExists(string giftboxKey)
+        public bool CanGiftToPlayer(string playerName, int playerTeam)
         {
-            var content = GetGiftboxContent(giftboxKey);
-            return content != null;
+            return CanGiftToPlayer(playerName, playerTeam, Enumerable.Empty<string>());
+        }
+
+        public bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits)
+        {
+            return CanGiftToPlayer(_playerProvider.GetPlayer(playerName).Slot, playerTeam, giftTraits);
+        }
+
+        public bool CanGiftToPlayer(int playerSlot)
+        {
+            return CanGiftToPlayer(playerSlot, _playerProvider.CurrentPlayerTeam);
+        }
+
+        public bool CanGiftToPlayer(int playerSlot, int playerTeam)
+        {
+            return CanGiftToPlayer(playerSlot, playerTeam, Enumerable.Empty<string>());
+        }
+
+        public bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)
+        {
+            var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(playerTeam);
+            CreateMotherboxIfNeeded(motherboxKey);
+            var motherBox = _session.DataStorage[Scope.Global, motherboxKey].To<Dictionary<int, GiftBox>>();
+
+            if (!motherBox.ContainsKey(playerSlot))
+            {
+                return false;
+            }
+
+            var giftBox = motherBox[playerSlot];
+            if (!giftBox.IsOpen)
+            {
+                return false;
+            }
+
+            if (giftBox.AcceptsAnyGift || giftBox.Game == _playerProvider.CurrentPlayerGame)
+            {
+                return true;
+            }
+
+            return giftBox.DesiredTraits.Any(trait => giftTraits.Contains(trait, StringComparer.OrdinalIgnoreCase));
+        }
+
+        private void CreateMotherboxIfNeeded(string motherboxKey)
+        {
+            _session.DataStorage[Scope.Global, motherboxKey].Initialize(EmptyMotherboxDictionary);
+        }
+
+        private void CreateGiftboxIfNeeded(string giftBoxKey)
+        {
+            _session.DataStorage[Scope.Global, giftBoxKey].Initialize(EmptyGiftDictionary);
         }
 
         private void SetGiftboxContent(string giftboxKey, IEnumerable<Gift> content)
         {
             _session.DataStorage[Scope.Global, giftboxKey] = content.ToArray();
-        }
-
-        private void SendGiftNotification(Gift gift)
-        {
-            var packet = new BouncePacket()
-            {
-                Tags = new List<string> { "Gift" },
-                Data = new Dictionary<string, JToken>
-                {
-                    { "ReceiverName", gift.Receiver },
-                    { "SenderName", gift.Sender },
-                    { "IsRefund", gift.IsRefund },
-                },
-            };
-
-            _session.Socket.SendPacketAsync(packet);
-        }
-
-        private PlayerInfo GetPlayer(string playerName)
-        {
-            return GetPlayer(playerName, _session.ConnectionInfo.Team);
-        }
-
-        private PlayerInfo GetPlayer(string playerName, int playerTeam)
-        {
-            return _session.Players.Players[playerTeam].First(player => player.Name == playerName || player.Alias == playerName);
-        }
-
-        private PlayerInfo GetPlayer(int playerSlot)
-        {
-            return GetPlayer(playerSlot, _session.ConnectionInfo.Team);
-        }
-
-        private PlayerInfo GetPlayer(int playerSlot, int playerTeam)
-        {
-            return _session.Players.Players[playerTeam].First(player => player.Slot == playerSlot);
         }
     }
 }

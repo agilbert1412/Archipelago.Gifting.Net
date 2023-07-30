@@ -9,20 +9,21 @@ namespace Archipelago.Gifting.Net
 {
     public interface IGiftingService
     {
-        public void OpenGiftBox();
-        public void CloseGiftBox();
-        public bool CanGiftToPlayer(string playerName);
-        public bool SendGift(GiftItem item, string playerName);
-        public bool SendGift(GiftItem item, string playerName, int playerTeam);
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName);
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam);
-        public bool SendGift(GiftItem item, string playerName, out Guid giftId);
-        public bool SendGift(GiftItem item, string playerName, int playerTeam, out Guid giftId);
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out Guid giftId);
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out Guid giftId);
-        public bool RefundGift(Gift gift);
-        public Gift[]? GetAllGiftsAndEmptyGiftbox();
-        public Gift[]? CheckGiftBox();
-        public void EmptyGiftBox();
+        void OpenGiftBox();
+        void CloseGiftBox();
+        bool CanGiftToPlayer(string playerName);
+        bool SendGift(GiftItem item, string playerName);
+        bool SendGift(GiftItem item, string playerName, int playerTeam);
+        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName);
+        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam);
+        bool SendGift(GiftItem item, string playerName, out Guid giftId);
+        bool SendGift(GiftItem item, string playerName, int playerTeam, out Guid giftId);
+        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out Guid giftId);
+        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out Guid giftId);
+        bool RefundGift(Gift gift);
+        Dictionary<Guid, Gift> GetAllGiftsAndEmptyGiftbox();
+        Dictionary<Guid, Gift> CheckGiftBox();
+        void EmptyGiftBox();
+        void RemoveGiftFromGiftBox(Guid giftId);
     }
 }

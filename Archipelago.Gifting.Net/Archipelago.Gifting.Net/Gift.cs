@@ -8,8 +8,10 @@ namespace Archipelago.Gifting.Net
         public Guid ID { get; set; }
         public GiftItem Item { get; set; }
         public GiftTrait[] Traits { get; set; }
-        public string Sender { get; set; }
-        public string Receiver { get; set; }
+        public string SenderName { get; set; }
+        public string ReceiverName { get; set; }
+        public int SenderTeam { get; set; }
+        public int ReceiverTeam { get; set; }
         public bool IsRefund { get; set; }
         public BigInteger GiftValue => Item.Amount * Item.Value;
 
@@ -17,13 +19,15 @@ namespace Archipelago.Gifting.Net
         {
         }
 
-        public Gift(GiftItem item, GiftTrait[] traits, string sender, string receiver)
+        public Gift(GiftItem item, GiftTrait[] traits, string senderName, string receiverName, int senderTeam, int receiverTeam)
         {
             ID = Guid.NewGuid();
             Item = item;
             Traits = traits;
-            Sender = sender;
-            Receiver = receiver;
+            SenderName = senderName;
+            ReceiverName = receiverName;
+            SenderTeam = senderTeam;
+            ReceiverTeam = ReceiverTeam;
             IsRefund = false;
         }
     }
