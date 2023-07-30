@@ -136,6 +136,7 @@ namespace Archipelago.Gifting.Net.Tests
 
             // Act
             _serviceReceiver.OpenGiftBox();
+            Wait();
 
             // Assert
             canGift = _serviceSender.CanGiftToPlayer(receiverName);
@@ -396,7 +397,7 @@ namespace Archipelago.Gifting.Net.Tests
             for (var i = 0; i < traits.Length; i++)
             {
                 receivedTraits[i].Trait.Should().BeEquivalentTo(traits[i].Trait);
-                receivedTraits[i].Strength.Should().BeApproximately(traits[i].Strength, 0.001);
+                receivedTraits[i].Quality.Should().BeApproximately(traits[i].Quality, 0.001);
                 receivedTraits[i].Duration.Should().BeApproximately(traits[i].Duration, 0.001);
             }
         }
@@ -437,7 +438,7 @@ namespace Archipelago.Gifting.Net.Tests
             for (var i = 0; i < traits1.Length; i++)
             {
                 receivedTraits1[i].Trait.Should().BeEquivalentTo(traits1[i].Trait);
-                receivedTraits1[i].Strength.Should().BeApproximately(traits1[i].Strength, 0.001);
+                receivedTraits1[i].Quality.Should().BeApproximately(traits1[i].Quality, 0.001);
                 receivedTraits1[i].Duration.Should().BeApproximately(traits1[i].Duration, 0.001);
             }
             var receivedGift2 = gifts[giftId2];
@@ -449,7 +450,7 @@ namespace Archipelago.Gifting.Net.Tests
             for (var i = 0; i < traits2.Length; i++)
             {
                 receivedTraits2[i].Trait.Should().BeEquivalentTo(traits2[i].Trait);
-                receivedTraits2[i].Strength.Should().BeApproximately(traits2[i].Strength, 0.001);
+                receivedTraits2[i].Quality.Should().BeApproximately(traits2[i].Quality, 0.001);
                 receivedTraits2[i].Duration.Should().BeApproximately(traits2[i].Duration, 0.001);
             }
         }
@@ -512,7 +513,7 @@ namespace Archipelago.Gifting.Net.Tests
             for (var i = 0; i < count; i++)
             {
                 var trait = new GiftTrait(trait: allFlags[_random.Next(0, allFlags.Length)],
-                    duration: _random.NextDouble() * 2, strength: _random.NextDouble() * 2);
+                    duration: _random.NextDouble() * 2, quality: _random.NextDouble() * 2);
                 traits.Add(trait);
             }
 
