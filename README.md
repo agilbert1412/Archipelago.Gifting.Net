@@ -68,7 +68,7 @@ public class Gift
 	public string Sender { get; }
 	public string Receiver { get; }
 	public int SenderTeam { get; }
-    public int ReceiverTeam { get; }
+	public int ReceiverTeam { get; }
 	public bool IsRefund { get; }
 	public BigInteger GiftValue { get; }
 }
