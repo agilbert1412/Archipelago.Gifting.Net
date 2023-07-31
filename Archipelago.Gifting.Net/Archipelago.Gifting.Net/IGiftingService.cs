@@ -30,7 +30,7 @@ namespace Archipelago.Gifting.Net
         bool RefundGift(Gift gift);
         Dictionary<Guid, Gift> GetAllGiftsAndEmptyGiftbox();
         Dictionary<Guid, Gift> CheckGiftBox();
-        void EmptyGiftBox();
+        void RemoveGiftsFromGiftBox(IEnumerable<Guid> giftIds);
         void RemoveGiftFromGiftBox(Guid giftId);
     }
 }

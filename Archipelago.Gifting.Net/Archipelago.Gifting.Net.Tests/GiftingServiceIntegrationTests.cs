@@ -344,27 +344,66 @@ namespace Archipelago.Gifting.Net.Tests
         }
 
         [Test]
-        public void TestEmptyEmptiesGiftBox()
+        public void TestRemoveGiftRemovesJustCorrectIdFromGiftBox()
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            var gift = NewGiftItem();
+            var gift1 = NewGiftItem();
+            var gift2 = NewGiftItem();
             Wait();
-            var result = _serviceSender.SendGift(gift, receiverName);
+            var result1 = _serviceSender.SendGift(gift1, receiverName, out var giftId1);
+            var result2 = _serviceSender.SendGift(gift2, receiverName, out var giftId2);
             Wait();
 
             // Assume
-            result.Should().BeTrue();
+            result1.Should().BeTrue();
+            result2.Should().BeTrue();
             var gifts = _serviceReceiver.CheckGiftBox();
-            gifts.Should().NotBeNull().And.HaveCount(1);
+            gifts.Should().NotBeNull().And.HaveCount(2);
 
             // Act
-            _serviceReceiver.EmptyGiftBox();
+            _serviceReceiver.RemoveGiftFromGiftBox(giftId2);
             Wait();
 
             // Assert
             gifts = _serviceReceiver.CheckGiftBox();
-            gifts.Should().NotBeNull().And.BeEmpty();
+            gifts.Should().NotBeNull().And.HaveCount(1);
+            gifts.Should().ContainKey(giftId1);
+        }
+
+        [Test]
+        public void TestRemoveGiftsRemovesJustCorrectIdsFromGiftBox()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            var gift1 = NewGiftItem();
+            var gift2 = NewGiftItem();
+            var gift3 = NewGiftItem();
+            var gift4 = NewGiftItem();
+            Wait();
+            var result1 = _serviceSender.SendGift(gift1, receiverName, out var giftId1);
+            var result2 = _serviceSender.SendGift(gift2, receiverName, out var giftId2);
+            var result3 = _serviceSender.SendGift(gift3, receiverName, out var giftId3);
+            var result4 = _serviceSender.SendGift(gift4, receiverName, out var giftId4);
+            Wait();
+
+            // Assume
+            result1.Should().BeTrue();
+            result2.Should().BeTrue();
+            result3.Should().BeTrue();
+            result4.Should().BeTrue();
+            var gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull().And.HaveCount(4);
+
+            // Act
+            _serviceReceiver.RemoveGiftsFromGiftBox(new[] {giftId1, giftId4});
+            Wait();
+
+            // Assert
+            gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull().And.HaveCount(2);
+            gifts.Should().ContainKey(giftId2);
+            gifts.Should().ContainKey(giftId3);
         }
 
         [Test]

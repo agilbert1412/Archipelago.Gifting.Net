@@ -143,7 +143,7 @@ namespace Archipelago.Gifting.Net
         public Dictionary<Guid, Gift> GetAllGiftsAndEmptyGiftbox()
         {
             var gifts = CheckGiftBox();
-            EmptyGiftBox();
+            RemoveGiftsFromGiftBox(gifts.Keys);
             return gifts;
         }
 
@@ -154,16 +154,23 @@ namespace Archipelago.Gifting.Net
             return gifts;
         }
 
+        private void EmptyGiftBox()
+        {
+            GetAllGiftsAndEmptyGiftbox();
+        }
+
+        public void RemoveGiftsFromGiftBox(IEnumerable<Guid> giftsIds)
+        {
+            foreach (var giftId in giftsIds)
+            {
+                RemoveGiftFromGiftBox(giftId);
+            }
+        }
+
         public void RemoveGiftFromGiftBox(Guid giftId)
         {
             var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
             _session.DataStorage[Scope.Global, giftboxKey] += Operation.Pop(giftId);
-        }
-
-        public void EmptyGiftBox()
-        {
-            var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
-            _session.DataStorage[Scope.Global, giftboxKey] = EmptyGiftDictionary;
         }
 
         private Dictionary<Guid, Gift> GetGiftboxContent(string giftboxKey)
