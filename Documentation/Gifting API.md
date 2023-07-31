@@ -29,9 +29,7 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 ### Giftbox Metadata Specification
 
 | Field             | Type               | Description                                                                                                                                                    |
-|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Owner             | String             | The name of the player owning this gift box. That player is the only one allowed to interact with the metadata                                                 |
-| Game              | String             | The game played by the owner of this gift box. Can be used to validate gifts                                                                                   |
+|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|                                                                                  |
 | IsOpen            | Boolean            | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                 |
 | AcceptsAnyGift    | Boolean            | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted |
 | DesiredTraits     | List of String     | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                |
@@ -76,24 +74,18 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 	"1":
 	{
 		"IsOpen": true,
-		"Owner": "Farmer",
-		"Game": "Stardew Valley",
 		"AcceptsAnyGift": true,
 		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
 	},
 	"2":
 	{
 		"IsOpen": false,
-		"Owner": Engineer,
-		"Game": Factorio,
 		"AcceptsAnyGift": false,
 		"DesiredTraits": ["Food", "Consumable", "Bomb", "Weapon", "Tool", "Metal", "Fish"]
 	},
 	"3":
 	{
 		"IsOpen": true,
-		"Owner": Carl,
-		"Game": The Witness,
 		"AcceptsAnyGift": false,
 		"DesiredTraits": ["Speed", "Slow", "Buff", "Consumable"]
 	}
@@ -103,8 +95,6 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 	"1":
 	{
 		"IsOpen": true,
-		"Owner": "EnemyFarmer",
-		"Game": "Stardew Valley",
 		"AcceptsAnyGift": true,
 		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
 	}

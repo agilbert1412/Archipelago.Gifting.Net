@@ -43,7 +43,7 @@ var gifts = _service.CheckGiftBox();
 var gifts = _service.GetAllGiftsAndEmptyGiftbox();
 
 // Empty the giftbox, regardless of its content
-_service.EmptyGiftBox();
+_service.RemoveGiftsFromGiftBox(giftGuids);
 
 // Remove one specific gift from the giftbox
 _service.RemoveGiftFromGiftBox(giftGuid);
@@ -53,7 +53,7 @@ At any point, you can query your own giftbox for gifts. If the giftbox is curren
 The result will be a dictionary of GUIDs and gifts (`Dicionary<Guid, Gift>`), with the entire content of the giftbox.
 
 You have the responsibility to clean your giftbox yourself once your client has processed the gifts.
-You can either use `GetAllGiftsAndEmptyGiftbox` to get gifts and immediately empty the giftbox, or if you need to do validation before deleting the content, you can use `CheckGiftBox` and `EmptyGiftBox` separately so you can do what you need between the calls.
+You can either use `GetAllGiftsAndEmptyGiftbox` to get gifts and immediately empty the giftbox, or if you need to do validation before deleting the content, you can use `CheckGiftBox` and `RemoveGiftsFromGiftBox` separately so you can do what you need between the calls.
 You can also remove gifts one by one using `RemoveGiftFromGiftBox` if you prefer.
 
 It is also possible to never empty your giftbox, and keep a local list of processed gift IDs to distinguish between new gifts and old ones. This method is not recommended.

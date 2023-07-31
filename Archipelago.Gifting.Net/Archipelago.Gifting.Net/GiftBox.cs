@@ -4,8 +4,6 @@ namespace Archipelago.Gifting.Net
 {
     public class GiftBox
     {
-        public string Owner { get; set; }
-        public string Game { get; set; }
         public bool IsOpen { get; set; }
         public bool AcceptsAnyGift { get; set; }
         public string[] DesiredTraits { get; set; }
@@ -19,16 +17,10 @@ namespace Archipelago.Gifting.Net
             IsOpen = isOpen;
         }
 
-        public GiftBox(string owner, string game, bool acceptsAnyGift, string[] desiredTraits) : this(true)
+        public GiftBox(bool acceptsAnyGift, string[] desiredTraits) : this(true)
         {
-            Owner = owner;
-            Game = game;
             AcceptsAnyGift = acceptsAnyGift;
             DesiredTraits = desiredTraits;
-        }
-
-        public GiftBox(string owner, string game, bool acceptsAnyGift) : this(owner, game, acceptsAnyGift, Array.Empty<string>())
-        {
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Archipelago.Gifting.Net
         /// </summary>
         public void OpenGiftBox()
         {
-            UpdateGiftBox(new GiftBox(_playerProvider.CurrentPlayerName, _playerProvider.CurrentPlayerGame, true));
+            UpdateGiftBox(new GiftBox(true));
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Archipelago.Gifting.Net
         /// <param name="desiredTraits">If can accept any gift, these are traits that make for a "good" gift. If not, these are the only accepted traits</param>
         public void OpenGiftBox(bool acceptAnyGift, string[] desiredTraits)
         {
-            UpdateGiftBox(new GiftBox(_playerProvider.CurrentPlayerName, _playerProvider.CurrentPlayerGame, acceptAnyGift, desiredTraits));
+            UpdateGiftBox(new GiftBox(acceptAnyGift, desiredTraits));
         }
 
         public void CloseGiftBox()
@@ -233,7 +233,8 @@ namespace Archipelago.Gifting.Net
                 return false;
             }
 
-            if (giftBox.AcceptsAnyGift || giftBox.Game == _playerProvider.CurrentPlayerGame)
+            var owner = _playerProvider.GetPlayer(playerSlot, playerTeam);
+            if (giftBox.AcceptsAnyGift || owner.Game == _playerProvider.CurrentPlayerGame)
             {
                 return true;
             }
