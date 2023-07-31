@@ -114,8 +114,11 @@ public class GiftTrait
 ```
 
 A Trait is defined by a string describing the trait itself. It is usually a single word. While you can put anything there, some common traits are available in the class `GiftFlag` as constants, for convenience.
+
 Furthermore, a trait has two extra values, which are the quality and the duration of the trait. What these values mean exactly will depend on the game, but it is intended that a value of `1.0` describes an average quality or duration for a given game.
+
 For example, if your game contains speed boosts that can last 30s, 60s or 90s, then a "Speed" trait of duration 1.0 would be a 60s Speed boost. A duration of 0.5 would be 30s, 1.5 would be 90s, and if your mod can generate these with custom values, you could interpret a duration of 10.0 as 600s.
+
 Once again, it is completely up to the various game developers to define what these values mean for their game. They are intended to convey a vague concept, not strict descriptions.
 
 ## Sending Gifts
