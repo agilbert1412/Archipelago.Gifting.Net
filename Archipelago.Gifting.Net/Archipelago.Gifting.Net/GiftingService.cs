@@ -203,7 +203,11 @@ namespace Archipelago.Gifting.Net
 
         public bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits)
         {
-            return CanGiftToPlayer(_playerProvider.GetPlayer(playerName).Slot, playerTeam, giftTraits);
+            if (!_playerProvider.TryGetPlayer(playerName, out var player))
+            {
+                return false;
+            }
+            return CanGiftToPlayer(player.Slot, playerTeam, giftTraits);
         }
 
         public bool CanGiftToPlayer(int playerSlot)
