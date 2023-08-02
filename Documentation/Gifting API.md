@@ -104,7 +104,9 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 ### Gifts
 
 The Factorio player sent copper plates to the Stardew Valley player to help them with a tool upgrade.
-The Factorio player sent iron plates to the Witness player, but the gift was refunded as The Witness had no good way to process Iron Plates
+
+The Factorio player sent iron plates to the Witness player, but the gift was refunded as The Witness had no good way to process Iron Plates.
+
 The Stardew Valley player sent coffee to the witness to give them a speed boost
 ```json
 "GiftBox;0;1":
