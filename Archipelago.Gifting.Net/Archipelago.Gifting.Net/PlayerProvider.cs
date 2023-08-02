@@ -22,6 +22,36 @@ namespace Archipelago.Gifting.Net
             _session = session;
         }
 
+        public bool TryGetPlayer(string playerName, out PlayerInfo player)
+        {
+            return TryGetPlayer(playerName, CurrentPlayerTeam, out player);
+        }
+
+        public bool TryGetPlayer(string playerName, int playerTeam, out PlayerInfo player)
+        {
+            foreach (var teamPlayer in _session.Players.Players[playerTeam])
+            {
+                if (teamPlayer.Name == playerName)
+                {
+                    player = teamPlayer;
+                    return true;
+                }
+            }
+
+            player = null;
+            var numberMatchingAliases = 0;
+            foreach (var teamPlayer in _session.Players.Players[playerTeam])
+            {
+                if (teamPlayer.Alias == playerName)
+                {
+                    numberMatchingAliases++;
+                    player = teamPlayer;
+                }
+            }
+            
+            return numberMatchingAliases == 1;
+        }
+
         public PlayerInfo GetPlayer(string playerName)
         {
             return GetPlayer(playerName, CurrentPlayerTeam);
@@ -29,7 +59,7 @@ namespace Archipelago.Gifting.Net
 
         public PlayerInfo GetPlayer(string playerName, int playerTeam)
         {
-            return _session.Players.Players[playerTeam].First(player => player.Name == playerName || player.Alias == playerName);
+            return _session.Players.Players[playerTeam].First(player => player.Name == playerName);
         }
 
         public PlayerInfo GetPlayer(int playerSlot)

@@ -104,7 +104,12 @@ namespace Archipelago.Gifting.Net
 
             var sendingPlayerName = _playerProvider.CurrentPlayerName;
             var sendingPlayerTeam = _playerProvider.CurrentPlayerTeam;
-            var receivingPlayerName = _playerProvider.GetPlayer(playerName, playerTeam).Name;
+            if (!_playerProvider.TryGetPlayer(playerName, playerTeam, out var receivingPlayer))
+            {
+                giftId = Guid.Empty;
+                return false;
+            }
+            var receivingPlayerName = receivingPlayer.Name;
             var gift = new Gift(item, traits, sendingPlayerName, receivingPlayerName, sendingPlayerTeam, playerTeam);
             giftId = gift.ID;
             return SendGift(gift);
