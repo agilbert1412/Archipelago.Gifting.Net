@@ -15,6 +15,7 @@ namespace Archipelago.Gifting.Net
         public const string Drink = "Drink";
         public const string Heal = "Heal";
         public const string Mana = "Mana";
+        public const string Key = "Key";
         public const string Trap = "Trap";
         public const string Buff = "Buff";
         public const string Life = "Life";
@@ -30,7 +31,7 @@ namespace Archipelago.Gifting.Net
 
         public static readonly string[] AllFlags = new[]
         {
-            Speed, Consumable, Food, Drink, Heal, Mana, Trap, Buff, Life, Weapon, Armor, Tool, Fish, Animal, Cure, Seed, Metal, Bomb,
+            Speed, Consumable, Food, Drink, Heal, Mana, Key, Trap, Buff, Life, Weapon, Armor, Tool, Fish, Animal, Cure, Seed, Metal, Bomb,
         };
     }
 }

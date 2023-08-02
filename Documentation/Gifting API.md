@@ -264,6 +264,7 @@ Here is a list of "common" Gift traits. Everything on this list is a suggestion,
 | Drink             | Can drink                                                                            |
 | Heal              | Heals                                                                                |
 | Mana              | Restores mana                                                                        |
+| Key               | Can open a door, a chest, can unlock something                                       |
 | Trap              | The gift is intended as negative. Other traits should be interpreted as such.        |
 | Buff              | Buffs the player or some aspect of them                                              |
 | Life              | Grants an extra life or increases max HP                                             |
