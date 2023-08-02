@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Packets;
 using FluentAssertions;
 using Moq;
 
@@ -35,11 +36,11 @@ namespace Archipelago.Gifting.Net.Tests
         [TearDown]
         public void TearDown()
         {
-            /*Wait();
+            Wait();
             CloseGiftBoxesAndShutdownGiftingServices();
             Wait();
             DisconnectSessions();
-            Wait();*/
+            Wait();
         }
 
         private void InitializeSessions()
@@ -96,14 +97,16 @@ namespace Archipelago.Gifting.Net.Tests
 
         private void DisconnectSessions()
         {
-            if (_serviceSender != null)
+            if (_sessionSender != null)
             {
+                RemoveAlias(_sessionSender);
                 _sessionSender.Socket.DisconnectAsync();
                 _sessionSender = null;
             }
 
             if (_sessionReceiver != null)
             {
+                RemoveAlias(_sessionReceiver);
                 _sessionReceiver.Socket.DisconnectAsync();
                 _sessionReceiver = null;
             }
@@ -140,6 +143,75 @@ namespace Archipelago.Gifting.Net.Tests
 
             // Assert
             canGift = _serviceSender.CanGiftToPlayer(receiverName);
+            canGift.Should().BeTrue();
+        }
+
+        [Test]
+        public void TestCannotSendGiftToNonExistingPlayer()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+
+            // Assume
+
+            // Act
+            var canGift = _serviceSender.CanGiftToPlayer("Fake Player");
+
+            // Assert
+            canGift.Should().BeFalse();
+        }
+
+        [Test]
+        public void TestCanSendGiftToAlias()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+            SetAlias(_sessionReceiver, "receiver2");
+
+            // Assume
+
+            // Act
+            var canGift = _serviceSender.CanGiftToPlayer("receiver2");
+
+            // Assert
+            canGift.Should().BeTrue();
+        }
+
+        [Test]
+        public void TestCannotSendGiftToDuplicateAlias()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+            SetAlias(_sessionSender, "receiver2");
+            SetAlias(_sessionReceiver, "receiver2");
+
+            // Assume
+
+            // Act
+            var canGift = _serviceSender.CanGiftToPlayer("receiver2");
+
+            // Assert
+            canGift.Should().BeFalse();
+        }
+
+        [Test]
+        public void TestCanSendGiftToNameEvenIfAliasExists()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+            SetAlias(_sessionSender, receiverName);
+            SetAlias(_sessionReceiver, senderName);
+
+            // Assume
+
+            // Act
+            var canGift = _serviceSender.CanGiftToPlayer(receiverName);
+
+            // Assert
             canGift.Should().BeTrue();
         }
 
@@ -539,6 +611,73 @@ namespace Archipelago.Gifting.Net.Tests
             giftSender.ReceiverName.Should().Be(receiverName);
         }
 
+        [Test]
+        public void TestSendGiftToAlias()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+            SetAlias(_sessionReceiver, "receiver2");
+            var gift = NewGiftItem();
+
+            // Assume
+            var gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().BeEmpty();
+
+            // Act
+            var result = _serviceSender.SendGift(gift, "receiver2", out var giftId);
+            Wait();
+
+            // Assert
+            result.Should().BeTrue();
+            gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull().And.HaveCount(1);
+            var (receivedGiftId, receivedGift) = gifts.First();
+            receivedGiftId.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId);
+            receivedGift.Item.Name.Should().Be(gift.Name);
+            receivedGift.Item.Amount.Should().Be(gift.Amount);
+            receivedGift.Item.Value.Should().Be(gift.Value);
+            receivedGift.SenderName.Should().Be(senderName);
+            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+        }
+
+        [Test]
+        public void TestSendGiftToNameEvenIfAliasExists()
+        {
+            // Arrange
+            _serviceSender.OpenGiftBox();
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+            SetAlias(_sessionSender, receiverName);
+            var gift = NewGiftItem();
+
+            // Assume
+            var gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().BeEmpty();
+
+            // Act
+            var result = _serviceSender.SendGift(gift, receiverName, out var giftId);
+            Wait();
+
+            // Assert
+            result.Should().BeTrue();
+            var giftsSender = _serviceSender.CheckGiftBox();
+            giftsSender.Should().BeEmpty();
+            gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull().And.HaveCount(1);
+            var (receivedGiftId, receivedGift) = gifts.First();
+            receivedGiftId.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId);
+            receivedGift.Item.Name.Should().Be(gift.Name);
+            receivedGift.Item.Amount.Should().Be(gift.Amount);
+            receivedGift.Item.Value.Should().Be(gift.Value);
+            receivedGift.SenderName.Should().Be(senderName);
+            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+        }
+
         private GiftItem NewGiftItem()
         {
             return new GiftItem("Test Gift", _random.Next(1, 10), _random.Next(1, 100));
@@ -562,6 +701,30 @@ namespace Archipelago.Gifting.Net.Tests
         private void Wait()
         {
             Thread.Sleep(50);
+        }
+
+        private void SetAlias(ArchipelagoSession session, string alias)
+        {
+
+            var packet = new SayPacket()
+            {
+                Text = $"!alias {alias}"
+            };
+
+            session.Socket.SendPacket(packet);
+            Wait();
+        }
+
+        private void RemoveAlias(ArchipelagoSession session)
+        {
+
+            var packet = new SayPacket()
+            {
+                Text = $"!alias"
+            };
+
+            session.Socket.SendPacket(packet);
+            Wait();
         }
     }
 }

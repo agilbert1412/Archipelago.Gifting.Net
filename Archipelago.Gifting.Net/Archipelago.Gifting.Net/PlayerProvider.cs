@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Helpers;
@@ -40,9 +41,16 @@ namespace Archipelago.Gifting.Net
 
             player = null;
             var numberMatchingAliases = 0;
+            const string aliasRegex = @"(.+) \((.+)\)";
             foreach (var teamPlayer in _session.Players.Players[playerTeam])
             {
-                if (teamPlayer.Alias == playerName)
+                var match = Regex.Match(teamPlayer.Alias, aliasRegex);
+                if (!match.Success || match.Groups.Count < 3)
+                {
+                    continue;
+                }
+                var alias = match.Groups[1].Value;
+                if (alias == playerName)
                 {
                     numberMatchingAliases++;
                     player = teamPlayer;
