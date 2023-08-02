@@ -107,7 +107,7 @@ The Factorio player sent copper plates to the Stardew Valley player to help them
 
 The Factorio player sent iron plates to the Witness player, but the gift was refunded as The Witness had no good way to process Iron Plates.
 
-The Stardew Valley player sent coffee to the witness to give them a speed boost
+The Stardew Valley player sent coffee to the Witness player to give them a speed boost.
 ```json
 "GiftBox;0;1":
 {
@@ -240,7 +240,7 @@ And, Gifts can also be intended as traps for a player on another team
 		"Sender": "Farmer",
 		"Receiver": "EnemyFarmer",
 		"SenderTeam": 0,
-		"ReceiverTeam": 0,
+		"ReceiverTeam": 1,
 		"IsRefund": false,
 		"GiftValue": 500000000
 	}
