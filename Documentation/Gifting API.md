@@ -28,11 +28,11 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 
 ### Giftbox Metadata Specification
 
-| Field             | Type               | Description                                                                                                                                                    |
-|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|                                                                                  |
-| IsOpen            | Boolean            | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                 |
-| AcceptsAnyGift    | Boolean            | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted |
-| DesiredTraits     | List of String     | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                |
+| Field          | Type           | Description                                                                                                                                                    |
+|----------------|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|                                                                                  |
+| IsOpen         | Boolean        | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                 |
+| AcceptsAnyGift | Boolean        | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted |
+| DesiredTraits  | List of String | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                |
 
 ### Gift Specification
 
