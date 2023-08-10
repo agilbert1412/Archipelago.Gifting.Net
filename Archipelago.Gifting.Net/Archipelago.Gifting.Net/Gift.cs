@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using Archipelago.MultiClient.Net.Helpers;
+﻿using System;
+using System.Numerics;
 
 namespace Archipelago.Gifting.Net
 {

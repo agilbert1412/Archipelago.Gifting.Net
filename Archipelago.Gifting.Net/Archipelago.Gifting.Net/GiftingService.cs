@@ -1,8 +1,9 @@
-﻿using Archipelago.MultiClient.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
 using Newtonsoft.Json.Linq;
 
 namespace Archipelago.Gifting.Net
@@ -65,7 +66,7 @@ namespace Archipelago.Gifting.Net
 
         public bool SendGift(GiftItem item, string playerName, out Guid giftId)
         {
-            return SendGift(item, Array.Empty<GiftTrait>(), playerName, out giftId);
+            return SendGift(item, new GiftTrait[0], playerName, out giftId);
         }
 
         public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName)
@@ -85,7 +86,7 @@ namespace Archipelago.Gifting.Net
 
         public bool SendGift(GiftItem item, string playerName, int playerTeam, out Guid giftId)
         {
-            return SendGift(item, Array.Empty<GiftTrait>(), playerName, playerTeam, out giftId);
+            return SendGift(item, new GiftTrait[0], playerName, playerTeam, out giftId);
         }
 
         public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)

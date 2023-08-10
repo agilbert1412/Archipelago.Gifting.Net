@@ -1,6 +1,4 @@
-﻿using Archipelago.MultiClient.Net.Helpers;
-
-namespace Archipelago.Gifting.Net
+﻿namespace Archipelago.Gifting.Net
 {
     public class GiftBox
     {
