@@ -22,10 +22,11 @@
         public const string Seed = "Seed";
         public const string Metal = "Metal";
         public const string Bomb = "Bomb";
+        public const string Monster = "Monster";
 
         public static readonly string[] AllFlags = new[]
         {
-            Speed, Consumable, Food, Drink, Heal, Mana, Key, Trap, Buff, Life, Weapon, Armor, Tool, Fish, Animal, Cure, Seed, Metal, Bomb,
+            Speed, Consumable, Food, Drink, Heal, Mana, Key, Trap, Buff, Life, Weapon, Armor, Tool, Fish, Animal, Cure, Seed, Metal, Bomb, Monster
         };
     }
 }

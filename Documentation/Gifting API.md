@@ -277,3 +277,4 @@ Here is a list of "common" Gift traits. Everything on this list is a suggestion,
 | Seed              | Can be planted, farming-related                                                      |
 | Metal             | Material for crafting, iron, copper, steel, etc                                      |
 | Bomb              | Can explode, be used as a weapon, to destroy things, etc                             |
+| Monster           | Enemy NPC, mob, something to be killed                                               |

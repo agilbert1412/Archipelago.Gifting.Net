@@ -714,7 +714,6 @@ namespace Archipelago.Gifting.Net.Tests
 
         private void RemoveAlias(ArchipelagoSession session)
         {
-
             var packet = new SayPacket()
             {
                 Text = $"!alias"
