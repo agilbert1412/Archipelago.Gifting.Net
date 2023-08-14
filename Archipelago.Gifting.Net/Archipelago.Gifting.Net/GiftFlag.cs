@@ -23,10 +23,16 @@
         public const string Metal = "Metal";
         public const string Bomb = "Bomb";
         public const string Monster = "Monster";
+        public const string Resource = "Resource";
+        public const string Material = "Material";
+        public const string Wood = "Wood";
+        public const string Stone = "Stone";
+        public const string Ore = "Ore";
+        public const string Grass = "Grass";
 
         public static readonly string[] AllFlags = new[]
         {
-            Speed, Consumable, Food, Drink, Heal, Mana, Key, Trap, Buff, Life, Weapon, Armor, Tool, Fish, Animal, Cure, Seed, Metal, Bomb, Monster
-        };
+            Speed, Consumable, Food, Drink, Heal, Mana, Key, Trap, Buff, Life, Weapon, Armor, Tool,
+            Fish, Animal, Cure, Seed, Metal, Bomb, Monster, Resource, Material, Wood, Stone, Ore, Grass };
     }
 }

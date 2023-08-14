@@ -278,3 +278,9 @@ Here is a list of "common" Gift traits. Everything on this list is a suggestion,
 | Metal             | Material for crafting, iron, copper, steel, etc                                      |
 | Bomb              | Can explode, be used as a weapon, to destroy things, etc                             |
 | Monster           | Enemy NPC, mob, something to be killed                                               |
+| Resource          | An item that can be used to build or purchase something, or complete a task          |
+| Material          | An item to be used for crafting, construction                                        |
+| Wood              | Wood, Lumber, tree-based products                                                    |
+| Stone             | Stone, Rock, Boulder, rock-based products                                            |
+| Ore               | Precious, raw material for a metal or other processed material                       |
+| Grass             | Grass, Leaves, related to nature                                                     |
