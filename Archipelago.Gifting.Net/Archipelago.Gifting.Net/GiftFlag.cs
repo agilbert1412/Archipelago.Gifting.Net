@@ -29,21 +29,22 @@
         public const string Stone = "Stone";
         public const string Ore = "Ore";
         public const string Grass = "Grass";
+        public const string Meat = "Vegetable";
         public const string Vegetable = "Vegetable";
         public const string Fruit = "Fruit";
+        public const string Egg = "Egg";
         public const string Slowness = "Slowness";
         public const string Currency = "Currency";
         public const string Damage = "Damage";
         public const string Heat = "Heat";
         public const string Cold = "Cold";
-        public const string Egg = "Egg";
         public const string Energy = "Energy";
 
         public static readonly string[] AllFlags = new[]
         {
             Speed, Consumable, Food, Drink, Heal, Mana, Key, Trap, Buff, Life, Weapon, Armor, Tool,
             Fish, Animal, Cure, Seed, Metal, Bomb, Monster, Resource, Material, Wood, Stone, Ore, Grass,
-            Vegetable, Fruit, Slowness, Currency, Damage, Heat, Cold, Egg, Energy,
+            Meat, Vegetable, Fruit, Slowness, Currency, Damage, Heat, Cold, Egg, Energy,
         };
     }
 }
