@@ -138,6 +138,11 @@ namespace Archipelago.Gifting.Net
 
         public bool RefundGift(Gift gift)
         {
+            if (gift.IsRefund)
+            {
+                return false;
+            }
+
             gift.IsRefund = true;
             return SendGift(gift);
         }
