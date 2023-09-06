@@ -284,3 +284,13 @@ Here is a list of "common" Gift traits. Everything on this list is a suggestion,
 | Stone             | Stone, Rock, Boulder, rock-based products                                            |
 | Ore               | Precious, raw material for a metal or other processed material                       |
 | Grass             | Grass, Leaves, related to nature                                                     |
+| Meat              | Subcategory for food related to meats, animal products                               |
+| Vegetable         | Subcategory for food that are vegetables, salads, etc                                |
+| Fruit             | Subcategory for food that are fruits, foraged, etc                                   |
+| Egg               | Animal Product, container that can spawn something                                   |
+| Slowness          | Status effect, opposite of speed                                                     |
+| Damage            | Deals damage, reduce HP                                                              |
+| Heat              | Status effect, warm, fire                                                            |
+| Cold              | Status effect, cool, ice                                                             |
+| Currency          | Item that can be used as currency. Consider using the Energylink instead of gifts    |
+| Energy            | Stores or is Energy, electricity. Consider using the EnergyLink instead of gifts     |
