@@ -20,6 +20,7 @@ A freshly created GiftingService instance, on its own, does not do anything. It 
 To inform the multiworld that your slot is willing and able to receive gifts, you must open a Giftbox.
 Using the default method will open a gift box that is marked as able to accept any gift with no preferences.
 You can also use the alternate method to specify whether you can handle any gift. If not, you must specify which traits you can accept. If so, you can still specify preferences for traits.
+This will open a giftbox on the Data Version used by your currently installed version of the library. It is recommended to stay up to date, but the C# library will make a reasonable attempt at parsing and generating gifts for older versions when it detects that they exist, for backward compatibility.
 
 Your giftbox will always be considered able to receive gifts from the same game. You can also process gifts by name if you wish.
 
@@ -58,19 +59,20 @@ You can also remove gifts one by one using `RemoveGiftFromGiftBox` if you prefer
 
 It is also possible to never empty your giftbox, and keep a local list of processed gift IDs to distinguish between new gifts and old ones. This method is not recommended.
 
-Definition of a gift:
+Definition of a gift in the current Data Version 2:
 ```cs
 public class Gift
 {
-	public Guid ID { get; }
-	public GiftItem Item { get; }
-	public GiftTrait[] Traits { get; }
-	public string Sender { get; }
-	public string Receiver { get; }
-	public int SenderTeam { get; }
-	public int ReceiverTeam { get; }
-	public bool IsRefund { get; }
-	public BigInteger GiftValue { get; }
+    public Guid ID { get; set; }
+    public string ItemName { get; set; }
+    public int Amount { get; set; }
+    public BigInteger ItemValue { get; set; }
+    public GiftTrait[] Traits { get; set; }
+    public int SenderSlot { get; set; }
+    public int ReceiverSlot { get; set; }
+    public int SenderTeam { get; set; }
+    public int ReceiverTeam { get; set; }
+    public bool IsRefund { get; set; }
 }
 ```
 
@@ -95,7 +97,12 @@ public class GiftItem
 ```
 
 A gift item has a name, an amount and a value. It is important to note that the value is for one instance of the item. The total value of the gift will be the value multiplied by the amount.
-A gift can have as many traits as you wish, and it is up to the receiver to decide how to interpret these traits. It is recommended to add more traits rather than fewer, so it is more likely to be understandable by various games.
+
+A gift can have as many traits as you wish, and it is up to the receiver to decide how to interpret these traits.
+
+It is recommended to add more traits rather than fewer, so it is more likely to be understandable by various games.
+
+It is not recommended to add many synonymous, or very similar, traits, as this makes it more complicated for the multiworld developers to keep track of commonly used traits that they should support. For example, a gift should probably not carry both the trait "Stone" and the trait "Rock". "Stone", being a "common" trait based on the specification, is preferable.
 
 ```cs
 public class GiftTrait
@@ -120,6 +127,8 @@ Furthermore, a trait has two extra values, which are the quality and the duratio
 For example, if your game contains speed boosts that can last 30s, 60s or 90s, then a "Speed" trait of duration 1.0 would be a 60s Speed boost. A duration of 0.5 would be 30s, 1.5 would be 90s, and if your mod can generate these with custom values, you could interpret a duration of 10.0 as 600s.
 
 Once again, it is completely up to the various game developers to define what these values mean for their game. They are intended to convey a vague concept, not strict descriptions.
+
+They should be used to distinguish characteristics of otherwise-similar items from the same game, and their values should always be considered relative, not absolute.
 
 ## Sending Gifts
 
@@ -162,9 +171,9 @@ var result = _service.RefundGift(unwantedGift); // Usage
 ```
 
 When refunding a gift, that gift will be sent back to the original sender, with the flag `IsRefund` now set to `true`, so they know it is not a new gift, but a refund of a gift they originally sent.
-It is then up to the original sender client to decide what to do with it. Typically, they would simply give back the gifted item to the player.
+It is then up to the original sender client to decide what to do with it. Typically, they would simply give back the item to the player.
 
 2: Selling the gift
-The gift carries a value in Archipelago currency, which can be added to the EnergyLink for everyone to use, if your game supports interacting with the EnergyLink.
+The gift carries a value in Archipelago currency, which can be added to the EnergyLink for everyone to use, if your game supports interacting with the EnergyLink. A value of zero should be interpreted as "coming from a game without multiworld currency", and selling is not a good choice for these gifts
 
 3: Ignoring that gift completely. This should be a last resort, as the item will then be lost forever.

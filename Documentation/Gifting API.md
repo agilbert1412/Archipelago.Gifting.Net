@@ -20,48 +20,45 @@ For example, a coffee item could have the trait "Speed". The concept of a speed 
 A GiftBox is a DataStorage entry registered to a specific player. It signals the desire and ability to receive gifts for that slot.
 
 The key for a GiftBox is formatted as `GiftBox;[teamNumber];[slotName]`. So for player 3 on team 1, their GiftBox key would be "GiftBox;1;3". A giftbox also has metadata that is registered in the "Motherbox" for the team, describing the state of the giftbox, what kind of gifts it can accept, who owns it, etc.
-The Motherbox can be access in Data storage at the key "GiftBoxes;[teamNumber]"
+The Motherbox can be accessed in Data storage at the key "GiftBoxes;[teamNumber]"
 
 Both the Motherbox and individual giftboxes are dictionaries. The motherbox contains player slot numbers as keys, and giftbox metadata as values. A giftbox has the gift's GUID as keys, and gifts as IDs.
 
 ## Object Specifications
 
+These specifications are **Data Version 2**. Previous versions are available in the git history of this file, but clients should try to stay up to date, as cross-version gifting takes a lot of extra work that most clients will not do.
+
 ### Giftbox Metadata Specification
 
-| Field          | Type           | Description                                                                                                                                                    |
-|----------------|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| IsOpen         | Boolean        | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                 |
-| AcceptsAnyGift | Boolean        | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted |
-| DesiredTraits  | List of String | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                |
+| Field           | Type           | Description                                                                                                                                                                           |
+|-----------------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| IsOpen          | Boolean        | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                                        |
+| AcceptsAnyGift  | Boolean        | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted                        |
+| DesiredTraits   | List of String | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                                       |
+| GiftDataVersion | Integer        | The data version that this giftbox was opened with. Different clients may interact differently with outdated giftboxes, and cross-version gifting may not be available in most games. |
 
 ### Gift Specification
 
 | Field             | Type               | Description                                                                        |
 |-------------------|--------------------|------------------------------------------------------------------------------------|
 | ID                | GUID               | Unique ID for the Gift                                                             |
-| Item              | GiftItem           | Item being gifted (see [Gift Item Specification](#giftitem-specification))         |
+| ItemName          | String             | Name of the Item                                                                   |
+| Amount            | Integer            | Amount of the Item being gifted                                                    |
+| ItemValue         | Integer            | Value per unit of the item                                                         |
 | Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification))      |
-| SenderName        | String             | Slot Name of the player sending the gift                                           |
-| ReceiverName      | String             | Slot Name of the player receiving the gift                                         |
+| SenderSlot        | Integer            | Slot Number of the player sending the gift                                         |
+| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                       |
 | SenderTeam        | Integer            | Team Number of the player sending the gift                                         |
 | ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                       |
 | IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift |
 | GiftValue         | Integer            | Total value of the gift (Item Value \* Item Amount)                                |
-
-### GiftItem Specification
-
-| Field             | Type           | Description                                                                        |
-|-------------------|----------------|------------------------------------------------------------------------------------|
-| Name              | String         | Name of the Item                                                                   |
-| Amount            | Integer        | Amount of the Item being gifted                                                    |
-| Value             | Integer        | Value per unit of the item                                                         |
 
 ### GiftTrait Specification
 
 | Field             | Type           | Description                                                                        |
 |-------------------|----------------|------------------------------------------------------------------------------------|
 | Trait             | String         | Identifier for the Trait                                                           |
-| Quality           | Float           | How powerful the Trait is (1.0 means "normal power")                                      |
+| Quality           | Float          | How powerful the Trait is (1.0 means "normal power")                                      |
 | Duration          | Float          | Duration of the Trait (1.0 means "normal duration")                                |
 
 ## Examples
@@ -76,18 +73,21 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 		"IsOpen": true,
 		"AcceptsAnyGift": true,
 		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
+		"GiftDataVersion": 2
 	},
 	"2":
 	{
 		"IsOpen": false,
 		"AcceptsAnyGift": false,
 		"DesiredTraits": ["Food", "Consumable", "Bomb", "Weapon", "Tool", "Metal", "Fish"]
+		"GiftDataVersion": 2
 	},
 	"3":
 	{
 		"IsOpen": true,
 		"AcceptsAnyGift": false,
 		"DesiredTraits": ["Speed", "Slow", "Buff", "Consumable"]
+		"GiftDataVersion": 1
 	}
 }
 "GiftBoxes;1":
@@ -97,6 +97,7 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 		"IsOpen": true,
 		"AcceptsAnyGift": true,
 		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
+		"GiftDataVersion": 2
 	}
 }
 ```
@@ -108,18 +109,16 @@ The Factorio player sent copper plates to the Stardew Valley player to help them
 The Factorio player sent iron plates to the Witness player, but the gift was refunded as The Witness had no good way to process Iron Plates.
 
 The Stardew Valley player sent coffee to the Witness player to give them a speed boost.
+
 ```json
 "GiftBox;0;1":
 {
 	"45703834-0906-45df-a1f2-88a728a79f17":
 	{
 		"ID": "45703834-0906-45df-a1f2-88a728a79f17",
-		"Item":
-		{
-			"Name": "Copper Plate",
-			"Amount": 5,
-			"Value": 288000
-		},
+		"ItemName": "Copper Plate",
+		"Amount": 5,
+		"ItemValue": 288000,
 		"Traits":
 		[
 			{
@@ -133,8 +132,8 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 				"Duration": 1
 			}
 		],
-		"Sender": "Engineer",
-		"Receiver": "Farmer",
+		"SenderSlot": "Engineer",
+		"ReceiverSlot": "Farmer",
 		"SenderTeam": 0,
 		"ReceiverTeam": 0,
 		"IsRefund": false,
@@ -146,12 +145,9 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 	"99364460-e1d4-4777-a28d-5e86e62cae82":
 	{
 		"ID": "99364460-e1d4-4777-a28d-5e86e62cae82",
-		"Item":
-		{
-			"Name": "Iron Plate",
-			"Amount": 5,
-			"Value": 288000
-		},
+		"ItemName": "Iron Plate",
+		"Amount": 5,
+		"ItemValue": 288000,
 		"Traits":
 		[
 			{
@@ -165,8 +161,8 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 				"Duration": 1
 			}
 		],
-		"Sender": "Engineer",
-		"Receiver": "Carl",
+		"SenderSlot": "Engineer",
+		"ReceiverSlot": "Carl",
 		"SenderTeam": 0,
 		"ReceiverTeam": 0,
 		"IsRefund": true,
@@ -213,12 +209,9 @@ And, Gifts can also be intended as traps for a player on another team
 	"06e8cc07-2989-4011-b4b6-794ceba25f28":
 	{
 		"ID": "06e8cc07-2989-4011-b4b6-794ceba25f28",
-		"Item":
-		{
-			"Name": "Mega Bomb",
-			"Amount": 1,
-			"Value": 500000000
-		},
+		"Name": "Mega Bomb",
+		"Amount": 1,
+		"Value": 500000000,
 		"Traits":
 		[
 			{
@@ -237,8 +230,8 @@ And, Gifts can also be intended as traps for a player on another team
 				"Duration": 1
 			}
 		],
-		"Sender": "Farmer",
-		"Receiver": "EnemyFarmer",
+		"SenderSlot": "Farmer",
+		"ReceiverSlot": "EnemyFarmer",
 		"SenderTeam": 0,
 		"ReceiverTeam": 1,
 		"IsRefund": false,
