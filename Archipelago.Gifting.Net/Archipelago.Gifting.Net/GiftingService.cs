@@ -1,4 +1,5 @@
-﻿using Archipelago.MultiClient.Net;
+﻿using Archipelago.Gifting.Net.DTO.Version2;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
@@ -15,6 +16,7 @@ namespace Archipelago.Gifting.Net
         private ArchipelagoSession _session;
         private PlayerProvider _playerProvider;
         private GiftBoxKeyProvider _keyProvider;
+        private Converter _currentConverter;
 
         private JToken EmptyMotherboxDictionary => JToken.FromObject(new Dictionary<int, GiftBox>());
         private JToken EmptyGiftDictionary => JToken.FromObject(new Dictionary<Guid, Gift>());
@@ -24,6 +26,7 @@ namespace Archipelago.Gifting.Net
             _session = session;
             _playerProvider = new PlayerProvider(_session);
             _keyProvider = new GiftBoxKeyProvider(_session, _playerProvider);
+            _currentConverter = new Converter();
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey();
             CreateMotherboxIfNeeded(motherboxKey);
         }
@@ -57,12 +60,12 @@ namespace Archipelago.Gifting.Net
             EmptyGiftBox();
         }
 
-        private void UpdateGiftBox(GiftBox entry)
+        internal void UpdateGiftBox(GiftBox entry)
         {
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey();
             var myGiftBoxEntry = new Dictionary<int, GiftBox>
             {
-                {_playerProvider.CurrentPlayerSlot, entry}
+                {_playerProvider.CurrentPlayerSlot, entry},
             };
             _session.DataStorage[Scope.Global, motherboxKey] += Operation.Update(myGiftBoxEntry);
         }
@@ -131,7 +134,7 @@ namespace Archipelago.Gifting.Net
             }
 
             var receivingPlayerName = receivingPlayer.Name;
-            var gift = new Gift(item, traits, sendingPlayerName, receivingPlayerName, sendingPlayerTeam, playerTeam);
+            var gift = new Gift(item.Name, item.Amount, item.Value, traits, sendingPlayerName, receivingPlayerName, sendingPlayerTeam, playerTeam);
             giftId = gift.ID;
             return SendGift(gift);
         }
@@ -154,14 +157,15 @@ namespace Archipelago.Gifting.Net
                 var targetPlayer = gift.IsRefund
                     ? _playerProvider.GetPlayer(gift.SenderName, gift.SenderTeam)
                     : _playerProvider.GetPlayer(gift.ReceiverName, gift.ReceiverTeam);
+                var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(targetPlayer.Team);
+                var motherBox = _session.DataStorage[Scope.Global, motherboxKey].To<Dictionary<int, GiftBox>>();
+                var giftboxMetadata = motherBox[targetPlayer.Slot];
+                var giftboxVersion = giftboxMetadata.GiftDataVersion;
+
                 var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(targetPlayer.Team, targetPlayer.Slot);
 
                 CreateGiftboxIfNeeded(giftboxKey);
-                var newGiftEntry = new Dictionary<Guid, Gift>
-                {
-                    { gift.ID, gift }
-                };
-
+                var newGiftEntry = _currentConverter.CreateDataStorageUpdateEntry(gift, giftboxVersion);
                 _session.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
                 return true;
             }
@@ -222,7 +226,7 @@ namespace Archipelago.Gifting.Net
         {
             CreateGiftboxIfNeeded(giftboxKey);
             var existingGiftBox = _session.DataStorage[Scope.Global, giftboxKey];
-            var gifts = existingGiftBox.To<Dictionary<Guid, Gift>>();
+            var gifts = _currentConverter.ReadFromDataStorage(existingGiftBox);
             return gifts;
         }
 
@@ -231,7 +235,7 @@ namespace Archipelago.Gifting.Net
             CreateGiftboxIfNeeded(giftboxKey);
             var existingGiftBox = _session.DataStorage[Scope.Global, giftboxKey];
             var gifts = await existingGiftBox.GetAsync();
-            return gifts.ToObject<Dictionary<Guid, Gift>>(); ;
+            return _currentConverter.ReadFromDataStorage(gifts);
         }
 
         public bool CanGiftToPlayer(string playerName)
@@ -306,7 +310,7 @@ namespace Archipelago.Gifting.Net
             }
 
             var giftBox = motherBox[playerSlot];
-            if (!giftBox.IsOpen)
+            if (!giftBox.IsOpen || giftBox.GiftDataVersion > DataVersion.Current)
             {
                 return false;
             }
@@ -336,7 +340,7 @@ namespace Archipelago.Gifting.Net
             // _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue) => OnNewGift(originalValue, newValue, newGiftsCallback);
             var notifyPacker = new SetNotifyPacket()
             {
-                Keys = new[] { dataStorageKey }
+                Keys = new[] { dataStorageKey },
             };
             _session.Socket.SendPacket(notifyPacker);
             _session.Socket.PacketReceived += (packet) => OnNewGift(packet, newGiftsCallback);
@@ -349,7 +353,7 @@ namespace Archipelago.Gifting.Net
                 return;
             }
 
-            var gifts = replyPacket.Value.ToObject<Dictionary<Guid, Gift>>();
+            var gifts = _currentConverter.ReadFromDataStorage(replyPacket.Value);
             if (gifts == null || !gifts.Any())
             {
                 return;

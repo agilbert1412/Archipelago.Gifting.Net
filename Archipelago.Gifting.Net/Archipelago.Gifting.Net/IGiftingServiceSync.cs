@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Archipelago.Gifting.Net.DTO.Version2;
 
 namespace Archipelago.Gifting.Net
 {

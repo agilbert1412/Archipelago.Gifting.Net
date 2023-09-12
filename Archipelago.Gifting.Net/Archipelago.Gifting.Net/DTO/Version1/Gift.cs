@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Archipelago.Gifting.Net
+namespace Archipelago.Gifting.Net.DTO.Version1
 {
     public class Gift
     {

@@ -1,10 +1,14 @@
-﻿namespace Archipelago.Gifting.Net
+﻿using System;
+using Newtonsoft.Json;
+
+namespace Archipelago.Gifting.Net
 {
     public class GiftBox
     {
         public bool IsOpen { get; set; }
         public bool AcceptsAnyGift { get; set; }
         public string[] DesiredTraits { get; set; }
+        public int GiftDataVersion { get; set; }
 
         public GiftBox()
         {
@@ -13,6 +17,7 @@
         public GiftBox(bool isOpen) : this()
         {
             IsOpen = isOpen;
+            GiftDataVersion = DataVersion.Current;
         }
 
         public GiftBox(bool acceptsAnyGift, string[] desiredTraits) : this(true)

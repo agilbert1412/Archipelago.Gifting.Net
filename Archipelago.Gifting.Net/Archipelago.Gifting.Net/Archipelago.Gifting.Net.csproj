@@ -24,10 +24,10 @@
     </None>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netcore'))" >
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netcore'))">
 
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))" >
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
 
   </ItemGroup>
 
