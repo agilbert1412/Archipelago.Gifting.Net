@@ -15,8 +15,8 @@ namespace Archipelago.Gifting.Net.DTO.Version2
         /// </summary>
         public BigInteger ItemValue { get; set; }
         public GiftTrait[] Traits { get; set; }
-        public string SenderName { get; set; }
-        public string ReceiverName { get; set; }
+        public int SenderSlot { get; set; }
+        public int ReceiverSlot { get; set; }
         public int SenderTeam { get; set; }
         public int ReceiverTeam { get; set; }
         public bool IsRefund { get; set; }
@@ -25,17 +25,17 @@ namespace Archipelago.Gifting.Net.DTO.Version2
         {
         }
 
-        public Gift(string itemName, int amount, BigInteger itemValue, GiftTrait[] traits, string senderName, string receiverName, int senderTeam, int receiverTeam)
+        public Gift(string itemName, int amount, BigInteger itemValue, GiftTrait[] traits, int senderSlot, int receiverSlot, int senderTeam, int receiverTeam)
         {
             ID = Guid.NewGuid();
             ItemName = itemName;
             Amount = amount;
             ItemValue = itemValue;
             Traits = traits;
-            SenderName = senderName;
-            ReceiverName = receiverName;
+            SenderSlot = senderSlot;
+            ReceiverSlot = receiverSlot;
             SenderTeam = senderTeam;
-            ReceiverTeam = ReceiverTeam;
+            ReceiverTeam = receiverTeam;
             IsRefund = false;
         }
     }

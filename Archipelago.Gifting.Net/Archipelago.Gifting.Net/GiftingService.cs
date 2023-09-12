@@ -26,7 +26,7 @@ namespace Archipelago.Gifting.Net
             _session = session;
             _playerProvider = new PlayerProvider(_session);
             _keyProvider = new GiftBoxKeyProvider(_session, _playerProvider);
-            _currentConverter = new Converter();
+            _currentConverter = new Converter(_playerProvider);
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey();
             CreateMotherboxIfNeeded(motherboxKey);
         }
@@ -125,16 +125,17 @@ namespace Archipelago.Gifting.Net
                 return false;
             }
 
-            var sendingPlayerName = _playerProvider.CurrentPlayerName;
-            var sendingPlayerTeam = _playerProvider.CurrentPlayerTeam;
             if (!_playerProvider.TryGetPlayer(playerName, playerTeam, out var receivingPlayer))
             {
                 giftId = Guid.Empty;
                 return false;
             }
 
-            var receivingPlayerName = receivingPlayer.Name;
-            var gift = new Gift(item.Name, item.Amount, item.Value, traits, sendingPlayerName, receivingPlayerName, sendingPlayerTeam, playerTeam);
+            var senderSlot = _playerProvider.CurrentPlayerSlot;
+            var senderTeam = _playerProvider.CurrentPlayerTeam;
+
+            var receiverSlot = receivingPlayer.Slot;
+            var gift = new Gift(item.Name, item.Amount, item.Value, traits, senderSlot, receiverSlot, senderTeam, playerTeam);
             giftId = gift.ID;
             return SendGift(gift);
         }
@@ -155,8 +156,8 @@ namespace Archipelago.Gifting.Net
             try
             {
                 var targetPlayer = gift.IsRefund
-                    ? _playerProvider.GetPlayer(gift.SenderName, gift.SenderTeam)
-                    : _playerProvider.GetPlayer(gift.ReceiverName, gift.ReceiverTeam);
+                    ? _playerProvider.GetPlayer(gift.SenderSlot, gift.SenderTeam)
+                    : _playerProvider.GetPlayer(gift.ReceiverSlot, gift.ReceiverTeam);
                 var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(targetPlayer.Team);
                 var motherBox = _session.DataStorage[Scope.Global, motherboxKey].To<Dictionary<int, GiftBox>>();
                 var giftboxMetadata = motherBox[targetPlayer.Slot];

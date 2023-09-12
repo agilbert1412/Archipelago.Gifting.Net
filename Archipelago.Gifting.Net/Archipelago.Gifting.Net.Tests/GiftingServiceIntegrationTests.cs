@@ -11,9 +11,14 @@ namespace Archipelago.Gifting.Net.Tests
     {
         private const string IP = "localhost";
         private const int PORT = 38281;
-        private const string senderName = "Sender";
-        private const string receiverName = "Receiver";
+        private const string SenderName = "Sender";
+        private const string ReceiverName = "Receiver";
         private const string GAME = "Stardew Valley";
+
+        private int SenderSlot => _sessionSender.ConnectionInfo.Slot;
+        private int ReceiverSlot => _sessionReceiver.ConnectionInfo.Slot;
+        private int SenderTeam => _sessionSender.ConnectionInfo.Team;
+        private int ReceiverTeam => _sessionReceiver.ConnectionInfo.Team;
 
         private ArchipelagoSession? _sessionSender;
         private ArchipelagoSession? _sessionReceiver;
@@ -54,20 +59,20 @@ namespace Archipelago.Gifting.Net.Tests
         private void InitializeSenderSession(ItemsHandlingFlags itemsHandling, Version minimumVersion, string[] tags)
         {
             _sessionSender = ArchipelagoSessionFactory.CreateSession(IP, PORT);
-            var result = _sessionSender.TryConnectAndLogin(GAME, senderName, itemsHandling, minimumVersion, tags);
+            var result = _sessionSender.TryConnectAndLogin(GAME, SenderName, itemsHandling, minimumVersion, tags);
             if (result is not LoginSuccessful)
             {
-                throw new Exception($"Failed to connect as {senderName}");
+                throw new Exception($"Failed to connect as {SenderName}");
             }
         }
 
         private void InitializeReceiverSession(ItemsHandlingFlags itemsHandling, Version minimumVersion, string[] tags)
         {
             _sessionReceiver = ArchipelagoSessionFactory.CreateSession(IP, PORT);
-            var result = _sessionReceiver.TryConnectAndLogin(GAME, receiverName, itemsHandling, minimumVersion, tags);
+            var result = _sessionReceiver.TryConnectAndLogin(GAME, ReceiverName, itemsHandling, minimumVersion, tags);
             if (result is not LoginSuccessful)
             {
-                throw new Exception($"Failed to connect as {senderName}");
+                throw new Exception($"Failed to connect as {SenderName}");
             }
         }
 
@@ -121,7 +126,7 @@ namespace Archipelago.Gifting.Net.Tests
             // Assume
 
             // Act
-            var canGift = _serviceSender.CanGiftToPlayer(receiverName);
+            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
 
             // Assert
             canGift.Should().BeFalse();
@@ -133,7 +138,7 @@ namespace Archipelago.Gifting.Net.Tests
             // Arrange
 
             // Assume
-            var canGift = _serviceSender.CanGiftToPlayer(receiverName);
+            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
             canGift.Should().BeFalse();
 
             // Act
@@ -141,7 +146,7 @@ namespace Archipelago.Gifting.Net.Tests
             Wait();
 
             // Assert
-            canGift = _serviceSender.CanGiftToPlayer(receiverName);
+            canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
             canGift.Should().BeTrue();
         }
 
@@ -202,13 +207,13 @@ namespace Archipelago.Gifting.Net.Tests
             // Arrange
             _serviceReceiver.OpenGiftBox();
             Wait();
-            SetAlias(_sessionSender, receiverName);
-            SetAlias(_sessionReceiver, senderName);
+            SetAlias(_sessionSender, ReceiverName);
+            SetAlias(_sessionReceiver, SenderName);
 
             // Assume
 
             // Act
-            var canGift = _serviceSender.CanGiftToPlayer(receiverName);
+            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
 
             // Assert
             canGift.Should().BeTrue();
@@ -239,7 +244,7 @@ namespace Archipelago.Gifting.Net.Tests
             Wait();
 
             // Assume
-            var canGift = _serviceSender.CanGiftToPlayer(receiverName);
+            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
             canGift.Should().BeTrue();
 
             // Act
@@ -247,7 +252,7 @@ namespace Archipelago.Gifting.Net.Tests
             Wait();
 
             // Assert
-            canGift = _serviceSender.CanGiftToPlayer(receiverName);
+            canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
             canGift.Should().BeFalse();
         }
 
@@ -283,7 +288,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().BeEmpty();
 
             // Act
-            var result = _serviceSender.SendGift(gift, receiverName);
+            var result = _serviceSender.SendGift(gift, ReceiverName);
 
             // Assert
             result.Should().BeFalse();
@@ -304,7 +309,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().BeEmpty();
 
             // Act
-            var result = _serviceSender.SendGift(gift, receiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, ReceiverName, out var giftId);
             Wait();
 
             // Assert
@@ -317,8 +322,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderName.Should().Be(senderName);
-            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderSlot.Should().Be(SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -336,8 +341,8 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().BeEmpty();
 
             // Act
-            var result1 = _serviceSender.SendGift(gift1, receiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, receiverName, out var giftId2);
+            var result1 = _serviceSender.SendGift(gift1, ReceiverName, out var giftId1);
+            var result2 = _serviceSender.SendGift(gift2, ReceiverName, out var giftId2);
             Wait();
 
             // Assert
@@ -350,14 +355,14 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift1.ItemName.Should().Be(gift1.Name);
             receivedGift1.Amount.Should().Be(gift1.Amount);
             receivedGift1.ItemValue.Should().Be(gift1.Value);
-            receivedGift1.SenderName.Should().Be(senderName);
-            receivedGift1.ReceiverName.Should().Be(receiverName);
+            receivedGift1.SenderSlot.Should().Be(SenderSlot);
+            receivedGift1.ReceiverSlot.Should().Be(ReceiverSlot);
             receivedGift1.SenderTeam.Should().Be(receivedGift1.ReceiverTeam);
             receivedGift2.ItemName.Should().Be(gift2.Name);
             receivedGift2.Amount.Should().Be(gift2.Amount);
             receivedGift2.ItemValue.Should().Be(gift2.Value);
-            receivedGift2.SenderName.Should().Be(senderName);
-            receivedGift2.ReceiverName.Should().Be(receiverName);
+            receivedGift2.SenderSlot.Should().Be(SenderSlot);
+            receivedGift2.ReceiverSlot.Should().Be(ReceiverSlot);
             receivedGift2.SenderTeam.Should().Be(receivedGift2.ReceiverTeam);
         }
 
@@ -368,7 +373,7 @@ namespace Archipelago.Gifting.Net.Tests
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
             Wait();
-            var result = _serviceSender.SendGift(gift, receiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, ReceiverName, out var giftId);
             Wait();
 
             // Assume
@@ -387,8 +392,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderName.Should().Be(senderName);
-            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderSlot.Should().Be(SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -399,7 +404,7 @@ namespace Archipelago.Gifting.Net.Tests
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
             Wait();
-            var result = _serviceSender.SendGift(gift, receiverName);
+            var result = _serviceSender.SendGift(gift, ReceiverName);
             Wait();
 
             // Assume
@@ -422,8 +427,8 @@ namespace Archipelago.Gifting.Net.Tests
             var gift1 = NewGiftItem();
             var gift2 = NewGiftItem();
             Wait();
-            var result1 = _serviceSender.SendGift(gift1, receiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, receiverName, out var giftId2);
+            var result1 = _serviceSender.SendGift(gift1, ReceiverName, out var giftId1);
+            var result2 = _serviceSender.SendGift(gift2, ReceiverName, out var giftId2);
             Wait();
 
             // Assume
@@ -452,10 +457,10 @@ namespace Archipelago.Gifting.Net.Tests
             var gift3 = NewGiftItem();
             var gift4 = NewGiftItem();
             Wait();
-            var result1 = _serviceSender.SendGift(gift1, receiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, receiverName, out var giftId2);
-            var result3 = _serviceSender.SendGift(gift3, receiverName, out var giftId3);
-            var result4 = _serviceSender.SendGift(gift4, receiverName, out var giftId4);
+            var result1 = _serviceSender.SendGift(gift1, ReceiverName, out var giftId1);
+            var result2 = _serviceSender.SendGift(gift2, ReceiverName, out var giftId2);
+            var result3 = _serviceSender.SendGift(gift3, ReceiverName, out var giftId3);
+            var result4 = _serviceSender.SendGift(gift4, ReceiverName, out var giftId4);
             Wait();
 
             // Assume
@@ -491,7 +496,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.HaveCount(0);
 
             // Act
-            var result = _serviceSender.SendGift(gift, traits, receiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, traits, ReceiverName, out var giftId);
             Wait();
 
             // Assert
@@ -529,8 +534,8 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().HaveCount(0);
 
             // Act
-            var result1 = _serviceSender.SendGift(gift1, traits1, receiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, traits2, receiverName, out var giftId2);
+            var result1 = _serviceSender.SendGift(gift1, traits1, ReceiverName, out var giftId1);
+            var result2 = _serviceSender.SendGift(gift2, traits2, ReceiverName, out var giftId2);
             Wait();
 
             // Assert
@@ -574,7 +579,7 @@ namespace Archipelago.Gifting.Net.Tests
             var gift = NewGiftItem();
             var traits = NewGiftTraits();
             Wait();
-            var result = _serviceSender.SendGift(gift, traits, receiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, traits, ReceiverName, out var giftId);
             Wait();
 
             // Assume
@@ -585,8 +590,8 @@ namespace Archipelago.Gifting.Net.Tests
             var giftReceiver = giftsReceiver[giftId];
             giftReceiver.IsRefund.Should().BeFalse();
             giftReceiver.ItemName.Should().Be(gift.Name);
-            giftReceiver.SenderName.Should().Be(senderName);
-            giftReceiver.ReceiverName.Should().Be(receiverName);
+            giftReceiver.SenderSlot.Should().Be(SenderSlot);
+            giftReceiver.ReceiverSlot.Should().Be(ReceiverSlot);
             giftReceiver.SenderTeam.Should().Be(giftReceiver.ReceiverTeam);
             var giftsSender = _serviceSender.CheckGiftBox();
             giftsSender.Should().BeEmpty();
@@ -606,8 +611,8 @@ namespace Archipelago.Gifting.Net.Tests
             giftSender.IsRefund.Should().BeTrue();
             giftSender.ItemName.Should().Be(gift.Name);
             giftSender.ItemName.Should().Be(gift.Name);
-            giftSender.SenderName.Should().Be(senderName);
-            giftSender.ReceiverName.Should().Be(receiverName);
+            giftSender.SenderSlot.Should().Be(SenderSlot);
+            giftSender.ReceiverSlot.Should().Be(ReceiverSlot);
         }
 
         [Test]
@@ -637,8 +642,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderName.Should().Be(senderName);
-            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderSlot.Should().Be(SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -649,7 +654,7 @@ namespace Archipelago.Gifting.Net.Tests
             _serviceSender.OpenGiftBox();
             _serviceReceiver.OpenGiftBox();
             Wait();
-            SetAlias(_sessionSender, receiverName);
+            SetAlias(_sessionSender, ReceiverName);
             var gift = NewGiftItem();
 
             // Assume
@@ -657,7 +662,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().BeEmpty();
 
             // Act
-            var result = _serviceSender.SendGift(gift, receiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, ReceiverName, out var giftId);
             Wait();
 
             // Assert
@@ -672,8 +677,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderName.Should().Be(senderName);
-            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderSlot.Should().Be(SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -698,8 +703,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(giftItem.Name);
             receivedGift.Amount.Should().Be(giftItem.Amount);
             receivedGift.ItemValue.Should().Be(giftItem.Value);
-            receivedGift.SenderName.Should().Be(senderName);
-            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderSlot.Should().Be(SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -716,12 +721,12 @@ namespace Archipelago.Gifting.Net.Tests
             Wait();
 
             // Act
-            var success = _serviceSender.SendGift(giftItem, receiverName, out var giftId);
+            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
             Wait();
 
             // Assert
             success.Should().BeTrue();
-            var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{_sessionReceiver.ConnectionInfo.Team};{_sessionReceiver.ConnectionInfo.Slot}"];
+            var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{ReceiverTeam};{ReceiverSlot}"];
             var gifts = new DTO.Version1.Converter().ReadFromDataStorage(existingGiftBox);
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
@@ -731,8 +736,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.Item.Name.Should().Be(giftItem.Name);
             receivedGift.Item.Amount.Should().Be(giftItem.Amount);
             receivedGift.Item.Value.Should().Be(giftItem.Value);
-            receivedGift.SenderName.Should().Be(senderName);
-            receivedGift.ReceiverName.Should().Be(receiverName);
+            receivedGift.SenderName.Should().Be(SenderName);
+            receivedGift.ReceiverName.Should().Be(ReceiverName);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -786,14 +791,9 @@ namespace Archipelago.Gifting.Net.Tests
 
         private void SendVersion1Gift(GiftItem item, GiftTrait[] traits, out Guid giftId)
         {
-            var sendingPlayerName = senderName;
-            var sendingPlayerTeam = _sessionSender.ConnectionInfo.Team;
-            var receiverTeam = _sessionReceiver.ConnectionInfo.Team;
-
-
-            var gift = new DTO.Version1.Gift(item, traits, sendingPlayerName, receiverName, sendingPlayerTeam, receiverTeam);
+            var gift = new DTO.Version1.Gift(item, traits, SenderName, ReceiverName, SenderTeam, ReceiverTeam);
             giftId = gift.ID;
-            var giftboxKey = $"GiftBox;{receiverTeam};{_sessionReceiver.ConnectionInfo.Slot}";
+            var giftboxKey = $"GiftBox;{ReceiverTeam};{ReceiverSlot}";
             
             var newGiftEntry = new Dictionary<Guid, DTO.Version1.Gift>
             {

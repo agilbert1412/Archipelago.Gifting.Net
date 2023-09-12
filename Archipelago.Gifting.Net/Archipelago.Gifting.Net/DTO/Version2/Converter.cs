@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
@@ -14,11 +15,13 @@ namespace Archipelago.Gifting.Net.DTO.Version2
         public int Version => DataVersion.GiftDataVersion2;
         public int PreviousVersion => DataVersion.GiftDataVersion1;
 
+        private PlayerProvider _playerProvider;
         private Validator _validator;
         private IVersionedConverter<Version1.Gift, object> _previousConverter;
 
-        public Converter()
+        public Converter(PlayerProvider playerProvider)
         {
+            _playerProvider = playerProvider;
             _validator = new Validator();
             _previousConverter = new Version1.Converter();
         }
@@ -104,8 +107,16 @@ namespace Archipelago.Gifting.Net.DTO.Version2
 
         public Gift ConvertToCurrentVersion(Version1.Gift olderGift)
         {
-            var currentGift = new Gift(olderGift.Item.Name, olderGift.Item.Amount, olderGift.Item.Value, olderGift.Traits,
-                olderGift.SenderName, olderGift.ReceiverName, olderGift.SenderTeam, olderGift.ReceiverTeam);
+            var sender = _playerProvider.GetPlayer(olderGift.SenderName, olderGift.SenderTeam);
+            var receiver = _playerProvider.GetPlayer(olderGift.ReceiverName, olderGift.ReceiverTeam);
+            var currentGift = new Gift(olderGift.Item.Name,
+                olderGift.Item.Amount,
+                olderGift.Item.Value,
+                olderGift.Traits,
+                sender.Slot,
+                receiver.Slot,
+                olderGift.SenderTeam,
+                olderGift.ReceiverTeam);
             currentGift.ID = olderGift.ID;
             return currentGift;
         }
@@ -113,7 +124,9 @@ namespace Archipelago.Gifting.Net.DTO.Version2
         public Version1.Gift ConvertToPreviousVersion(Gift currentGift)
         {
             var giftItem = new GiftItem(currentGift.ItemName, currentGift.Amount, currentGift.ItemValue);
-            var olderGift = new Version1.Gift(giftItem, currentGift.Traits, currentGift.SenderName, currentGift.ReceiverName, currentGift.SenderTeam, currentGift.ReceiverTeam);
+            var sender = _playerProvider.GetPlayer(currentGift.SenderSlot, currentGift.SenderTeam);
+            var receiver = _playerProvider.GetPlayer(currentGift.ReceiverSlot, currentGift.ReceiverTeam);
+            var olderGift = new Version1.Gift(giftItem, currentGift.Traits, sender.Name, receiver.Name, currentGift.SenderTeam, currentGift.ReceiverTeam);
             olderGift.ID = currentGift.ID;
             return olderGift;
         }
