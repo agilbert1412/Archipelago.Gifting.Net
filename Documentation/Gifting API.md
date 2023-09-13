@@ -30,28 +30,29 @@ These specifications are **Data Version 2**. Previous versions are available in 
 
 ### Giftbox Metadata Specification
 
-| Field           | Type           | Description                                                                                                                                                                           |
-|-----------------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| IsOpen          | Boolean        | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                                        |
-| AcceptsAnyGift  | Boolean        | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted                        |
-| DesiredTraits   | List of String | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                                       |
-| GiftDataVersion | Integer        | The data version that this giftbox was opened with. Different clients may interact differently with outdated giftboxes, and cross-version gifting may not be available in most games. |
+| Field                  | Type           | Description                                                                                                                                                                                                           |
+|------------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| IsOpen                 | Boolean        | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                                                                        |
+| AcceptsAnyGift         | Boolean        | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted                                                        |
+| DesiredTraits          | List of String | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                                                                       |
+| MinimumGiftDataVersion | Integer        | The minimum data version that this giftbox will accept. Gifts that have been created using an older data version than this value should not be sent to this giftbox.                                                  |
+| MaximumGiftDataVersion | Integer        | The maximum data version that this giftbox will accept. Gifts that have been created using a newer data version than this value should not be sent to this giftbox. Some games can generate older gifts to accomodate |
 
 ### Gift Specification
 
-| Field             | Type               | Description                                                                        |
-|-------------------|--------------------|------------------------------------------------------------------------------------|
-| ID                | GUID               | Unique ID for the Gift                                                             |
-| ItemName          | String             | Name of the Item                                                                   |
-| Amount            | Integer            | Amount of the Item being gifted                                                    |
-| ItemValue         | Integer            | Value per unit of the item                                                         |
-| Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification))      |
-| SenderSlot        | Integer            | Slot Number of the player sending the gift                                         |
-| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                       |
-| SenderTeam        | Integer            | Team Number of the player sending the gift                                         |
-| ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                       |
-| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift |
-| GiftValue         | Integer            | Total value of the gift (Item Value \* Item Amount)                                |
+| Field             | Type               | Description                                                                                            |
+|-------------------|--------------------|--------------------------------------------------------------------------------------------------------|
+| ID                | String             | Unique ID for the Gift. This should be a GUID, using the format "00000000-0000-0000-0000-000000000000" |
+| ItemName          | String             | Name of the Item                                                                                       |
+| Amount            | Integer            | Amount of the Item being gifted                                                                        |
+| ItemValue         | Integer            | Value per unit of the item                                                                             |
+| Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification))                          |
+| SenderSlot        | Integer            | Slot Number of the player sending the gift                                                             |
+| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                           |
+| SenderTeam        | Integer            | Team Number of the player sending the gift                                                             |
+| ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                                           |
+| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                     |
+| GiftValue         | Integer            | Total value of the gift (Item Value \* Item Amount)                                                    |
 
 ### GiftTrait Specification
 
@@ -73,21 +74,24 @@ These specifications are **Data Version 2**. Previous versions are available in 
 		"IsOpen": true,
 		"AcceptsAnyGift": true,
 		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
-		"GiftDataVersion": 2
+		"MinimumGiftDataVersion": 1
+		"MaximumGiftDataVersion": 2
 	},
 	"2":
 	{
 		"IsOpen": false,
 		"AcceptsAnyGift": false,
 		"DesiredTraits": ["Food", "Consumable", "Bomb", "Weapon", "Tool", "Metal", "Fish"]
-		"GiftDataVersion": 2
+		"MinimumGiftDataVersion": 2
+		"MaximumGiftDataVersion": 2
 	},
 	"3":
 	{
 		"IsOpen": true,
 		"AcceptsAnyGift": false,
 		"DesiredTraits": ["Speed", "Slow", "Buff", "Consumable"]
-		"GiftDataVersion": 1
+		"MinimumGiftDataVersion": 1
+		"MaximumGiftDataVersion": 1
 	}
 }
 "GiftBoxes;1":
@@ -97,7 +101,8 @@ These specifications are **Data Version 2**. Previous versions are available in 
 		"IsOpen": true,
 		"AcceptsAnyGift": true,
 		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
-		"GiftDataVersion": 2
+		"MinimumGiftDataVersion": 1
+		"MaximumGiftDataVersion": 2
 	}
 }
 ```
@@ -132,12 +137,11 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 				"Duration": 1
 			}
 		],
-		"SenderSlot": "Engineer",
-		"ReceiverSlot": "Farmer",
+		"SenderSlot": 2,
+		"ReceiverSlot": 1,
 		"SenderTeam": 0,
 		"ReceiverTeam": 0,
 		"IsRefund": false,
-		"GiftValue": 1440000
 	},
 },
 "GiftBox;0;2":
@@ -161,12 +165,11 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 				"Duration": 1
 			}
 		],
-		"SenderSlot": "Engineer",
-		"ReceiverSlot": "Carl",
+		"SenderSlot": 3,
+		"ReceiverSlot": 2,
 		"SenderTeam": 0,
 		"ReceiverTeam": 0,
 		"IsRefund": true,
-		"GiftValue": 1440000
 	},
 }
 "GiftBox;0;3":
@@ -194,7 +197,7 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 			}
 		],
 		"Sender": "Farmer",
-		"Receiver": "Carl",
+		"Receiver": "Receiver",
 		"SenderTeam": 0,
 		"ReceiverTeam": 0,
 		"IsRefund": false,
@@ -230,12 +233,11 @@ And, Gifts can also be intended as traps for a player on another team
 				"Duration": 1
 			}
 		],
-		"SenderSlot": "Farmer",
-		"ReceiverSlot": "EnemyFarmer",
+		"SenderSlot": 1,
+		"ReceiverSlot": 1,
 		"SenderTeam": 0,
 		"ReceiverTeam": 1,
 		"IsRefund": false,
-		"GiftValue": 500000000
 	}
 }
 ```

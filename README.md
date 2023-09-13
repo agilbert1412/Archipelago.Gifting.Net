@@ -63,7 +63,7 @@ Definition of a gift in the current Data Version 2:
 ```cs
 public class Gift
 {
-    public Guid ID { get; set; }
+    public string ID { get; set; }
     public string ItemName { get; set; }
     public int Amount { get; set; }
     public BigInteger ItemValue { get; set; }

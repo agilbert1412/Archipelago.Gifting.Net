@@ -30,7 +30,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
         {
             try
             {
-                var giftboxContent = element.To<Dictionary<Guid, Gift>>() ?? new Dictionary<Guid, Gift>();
+                var giftboxContent = (element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>()).ToDictionary(x => Guid.Parse(x.Key), x => x.Value);
                 if (_validator.Validate(giftboxContent, out var errorIds))
                 {
                     return giftboxContent;
@@ -62,7 +62,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
         {
             try
             {
-                var giftboxContent = element.ToObject<Dictionary<Guid, Gift>>() ?? new Dictionary<Guid, Gift>();
+                var giftboxContent = (element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>()).ToDictionary(x => Guid.Parse(x.Key), x => x.Value);
                 if (_validator.Validate(giftboxContent, out var errorIds))
                 {
                     return giftboxContent;
