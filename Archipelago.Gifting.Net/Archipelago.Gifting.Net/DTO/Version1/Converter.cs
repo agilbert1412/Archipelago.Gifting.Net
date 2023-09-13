@@ -21,12 +21,12 @@ namespace Archipelago.Gifting.Net.DTO.Version1
         {
             try
             {
-                var giftboxContent = element.To<Dictionary<Guid, Gift>>() ?? new Dictionary<Guid, Gift>();
+                var giftboxContent = element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
                 return giftboxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                return new Dictionary<string, Gift>();
             }
         }
 
@@ -34,12 +34,12 @@ namespace Archipelago.Gifting.Net.DTO.Version1
         {
             try
             {
-                var giftboxContent = element.ToObject<Dictionary<Guid, Gift>>() ?? new Dictionary<Guid, Gift>();
+                var giftboxContent = element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
                 return giftboxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                return new Dictionary<string, Gift>();
             }
         }
 
@@ -52,7 +52,7 @@ namespace Archipelago.Gifting.Net.DTO.Version1
 
             var newGiftEntry = new Dictionary<Guid, Gift>
             {
-                { gift.ID, gift },
+                { Guid.Parse(gift.ID), gift },
             };
 
             return newGiftEntry;

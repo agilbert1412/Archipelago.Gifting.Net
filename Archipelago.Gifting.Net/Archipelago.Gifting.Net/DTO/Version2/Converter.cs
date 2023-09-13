@@ -52,9 +52,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
             }
             catch (Exception)
             {
-                var previousVersionContent = _previousConverter.ReadFromDataStorage(element);
-                var currentVersionContent = previousVersionContent.ToDictionary(x => x.Key, x => ConvertToCurrentVersion(x.Value));
-                return currentVersionContent;
+                return new Dictionary<string, Gift>();
             }
         }
 
@@ -83,10 +81,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
             }
             catch (Exception)
             {
-                var previousVersionContent = _previousConverter.ReadFromDataStorage(element);
-                var currentVersionContent = previousVersionContent
-                    .ToDictionary(x => x.Key, x => ConvertToCurrentVersion(x.Value));
-                return currentVersionContent;
+                return new Dictionary<string, Gift>();
             }
         }
 
@@ -117,7 +112,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
                 receiver.Slot,
                 olderGift.SenderTeam,
                 olderGift.ReceiverTeam);
-            currentGift.ID = olderGift.ID.ToString();
+            currentGift.ID = olderGift.ID;
             return currentGift;
         }
 
@@ -127,7 +122,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
             var sender = _playerProvider.GetPlayer(currentGift.SenderSlot, currentGift.SenderTeam);
             var receiver = _playerProvider.GetPlayer(currentGift.ReceiverSlot, currentGift.ReceiverTeam);
             var olderGift = new Version1.Gift(giftItem, currentGift.Traits, sender.Name, receiver.Name, currentGift.SenderTeam, currentGift.ReceiverTeam);
-            olderGift.ID = Guid.Parse(currentGift.ID);
+            olderGift.ID = currentGift.ID;
             return olderGift;
         }
     }

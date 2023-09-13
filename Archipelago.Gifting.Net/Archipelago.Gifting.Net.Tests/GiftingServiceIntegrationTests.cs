@@ -805,9 +805,45 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.BeEmpty();
         }
 
-        private GiftItem NewGiftItem()
+        [Test]
+        public void TestCanUnderstandGiftboxWithAllGiftVersions()
         {
-            return new GiftItem("Test Gift", _random.Next(1, 10), _random.Next(1, 100));
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+            var giftItems = new[] { NewGiftItem("1"), NewGiftItem("2"), NewGiftItem("3") };
+            var giftIds = new string[3];
+            SendVersion1Gift(giftItems[0], new GiftTrait[0], out var giftId1);
+            giftIds[0] = giftId1.ToString();
+            giftIds[1] = Guid.NewGuid().ToString();
+            SendVersion2Gift(giftItems[1], new GiftTrait[0], giftIds[1]);
+            giftIds[2] = "Unique Id that is not a Valid Guid";
+            SendVersion2Gift(giftItems[2], new GiftTrait[0], giftIds[2]);
+            Wait();
+
+            // Act
+            var gifts = _serviceReceiver.CheckGiftBox();
+
+            // Assert
+            gifts.Should().NotBeNull().And.HaveCount(3);
+            for (var i = 0; i < 3; i++)
+            {
+                var giftId = giftIds[i];
+                gifts.Should().ContainKey(giftId);
+                var gift = gifts[giftId];
+                gift.ID.Should().Be(giftId);
+                gift.ItemName.Should().Be(giftItems[i].Name);
+                gift.Amount.Should().Be(giftItems[i].Amount);
+                gift.ItemValue.Should().Be(giftItems[i].Value);
+                gift.SenderSlot.Should().Be(SenderSlot);
+                gift.ReceiverSlot.Should().Be(ReceiverSlot);
+                gift.SenderTeam.Should().Be(gift.ReceiverTeam);
+            }
+        }
+
+        private GiftItem NewGiftItem(string suffix = "")
+        {
+            return new GiftItem("Test Gift" + (string.IsNullOrEmpty(suffix) ? "" : $" {suffix}"), _random.Next(1, 10), _random.Next(1, 100));
         }
 
         private GiftTrait[] NewGiftTraits()
@@ -856,10 +892,24 @@ namespace Archipelago.Gifting.Net.Tests
         private void SendVersion1Gift(GiftItem item, GiftTrait[] traits, out Guid giftId)
         {
             var gift = new DTO.Version1.Gift(item, traits, SenderName, ReceiverName, SenderTeam, ReceiverTeam);
-            giftId = gift.ID;
+            giftId = Guid.Parse(gift.ID);
             var giftboxKey = $"GiftBox;{ReceiverTeam};{ReceiverSlot}";
             
             var newGiftEntry = new Dictionary<Guid, DTO.Version1.Gift>
+            {
+                { giftId, gift },
+            };
+
+            _sessionSender.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
+        }
+
+        private void SendVersion2Gift(GiftItem item, GiftTrait[] traits, string giftId)
+        {
+            var gift = new DTO.Version2.Gift(item.Name, item.Amount, item.Value, traits, SenderSlot, ReceiverSlot, SenderTeam, ReceiverTeam);
+            gift.ID = giftId;
+            var giftboxKey = $"GiftBox;{ReceiverTeam};{ReceiverSlot}";
+
+            var newGiftEntry = new Dictionary<string, DTO.Version2.Gift>
             {
                 { gift.ID, gift },
             };
