@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
@@ -16,12 +17,12 @@ namespace Archipelago.Gifting.Net.DTO.Version1
         {
         }
 
-        public Dictionary<Guid, Gift> ReadFromDataStorage(DataStorageElement element)
+        public Dictionary<string, Gift> ReadFromDataStorage(DataStorageElement element)
         {
             try
             {
-                var giftboxContent = element.To<Dictionary<Guid, Gift>>();
-                return giftboxContent ?? new Dictionary<Guid, Gift>();
+                var giftboxContent = element.To<Dictionary<Guid, Gift>>() ?? new Dictionary<Guid, Gift>();
+                return giftboxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
             }
             catch (Exception)
             {
@@ -29,12 +30,12 @@ namespace Archipelago.Gifting.Net.DTO.Version1
             }
         }
 
-        public Dictionary<Guid, Gift> ReadFromDataStorage(JToken element)
+        public Dictionary<string, Gift> ReadFromDataStorage(JToken element)
         {
             try
             {
-                var giftboxContent = element.ToObject<Dictionary<Guid, Gift>>();
-                return giftboxContent ?? new Dictionary<Guid, Gift>();
+                var giftboxContent = element.ToObject<Dictionary<Guid, Gift>>() ?? new Dictionary<Guid, Gift>();
+                return giftboxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
             }
             catch (Exception)
             {

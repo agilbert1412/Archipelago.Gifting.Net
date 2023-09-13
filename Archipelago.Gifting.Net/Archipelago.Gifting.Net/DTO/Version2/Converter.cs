@@ -26,11 +26,11 @@ namespace Archipelago.Gifting.Net.DTO.Version2
             _previousConverter = new Version1.Converter();
         }
 
-        public Dictionary<Guid, Gift> ReadFromDataStorage(DataStorageElement element)
+        public Dictionary<string, Gift> ReadFromDataStorage(DataStorageElement element)
         {
             try
             {
-                var giftboxContent = (element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>()).ToDictionary(x => Guid.Parse(x.Key), x => x.Value);
+                var giftboxContent = element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
                 if (_validator.Validate(giftboxContent, out var errorIds))
                 {
                     return giftboxContent;
@@ -58,11 +58,11 @@ namespace Archipelago.Gifting.Net.DTO.Version2
             }
         }
 
-        public Dictionary<Guid, Gift> ReadFromDataStorage(JToken element)
+        public Dictionary<string, Gift> ReadFromDataStorage(JToken element)
         {
             try
             {
-                var giftboxContent = (element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>()).ToDictionary(x => Guid.Parse(x.Key), x => x.Value);
+                var giftboxContent = element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
                 if (_validator.Validate(giftboxContent, out var errorIds))
                 {
                     return giftboxContent;

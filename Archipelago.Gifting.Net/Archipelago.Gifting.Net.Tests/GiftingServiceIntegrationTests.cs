@@ -698,7 +698,7 @@ namespace Archipelago.Gifting.Net.Tests
             // Assert
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
+            receivedGiftId.Should().Be(giftId.ToString());
             receivedGift.ID.Should().Be(giftId.ToString());
             receivedGift.ItemName.Should().Be(giftItem.Name);
             receivedGift.Amount.Should().Be(giftItem.Amount);
@@ -740,6 +740,69 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.SenderName.Should().Be(SenderName);
             receivedGift.ReceiverName.Should().Be(ReceiverName);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+        }
+
+        [Test]
+        public void TestCanCreateCurrentGiftForFutureGiftBoxThatIsBackwardCompatible()
+        {
+            // Arrange
+            var outdatedGiftbox = new GiftBox(true)
+            {
+                MinimumGiftDataVersion = DataVersion.FirstVersion,
+                MaximumGiftDataVersion = DataVersion.Current + 1,
+            };
+            _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
+            var giftItem = NewGiftItem();
+            Wait();
+
+            // Assume
+            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
+            canGift.Should().BeTrue();
+
+            // Act
+            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
+            Wait();
+            var gifts = _serviceReceiver.CheckGiftBox();
+
+            // Assert
+            success.Should().BeTrue();
+            gifts.Should().NotBeNull().And.HaveCount(1);
+            var (receivedGiftId, receivedGift) = gifts.First();
+            receivedGiftId.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId);
+            receivedGift.ItemName.Should().Be(giftItem.Name);
+            receivedGift.Amount.Should().Be(giftItem.Amount);
+            receivedGift.ItemValue.Should().Be(giftItem.Value);
+            receivedGift.SenderSlot.Should().Be(SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
+            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+        }
+
+        [Test]
+        public void TestCannotCreateCurrentGiftForFutureGiftBoxThatIsNotBackwardCompatible()
+        {
+            // Arrange
+            var outdatedGiftbox = new GiftBox(true)
+            {
+                MinimumGiftDataVersion = DataVersion.Current + 1,
+                MaximumGiftDataVersion = DataVersion.Current + 1,
+            };
+            _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
+            var giftItem = NewGiftItem();
+            Wait();
+
+            // Assume
+            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
+            canGift.Should().BeFalse();
+
+            // Act
+            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
+            Wait();
+            var gifts = _serviceReceiver.CheckGiftBox();
+
+            // Assert
+            success.Should().BeFalse();
+            gifts.Should().NotBeNull().And.BeEmpty();
         }
 
         private GiftItem NewGiftItem()

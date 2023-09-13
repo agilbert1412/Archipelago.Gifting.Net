@@ -13,9 +13,9 @@ namespace Archipelago.Gifting.Net.DTO.Version2
 
         }
 
-        public bool Validate(Dictionary<Guid, Gift> gifts, out IList<Guid> errors)
+        public bool Validate(Dictionary<string, Gift> gifts, out IList<string> errors)
         {
-            errors = new List<Guid>();
+            errors = new List<string>();
             if (gifts == null)
             {
                 return false;

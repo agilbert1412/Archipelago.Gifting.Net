@@ -10,8 +10,8 @@ namespace Archipelago.Gifting.Net.DTO
     {
         int Version { get; }
         int PreviousVersion { get; }
-        Dictionary<Guid, TCurrentGift> ReadFromDataStorage(DataStorageElement element);
-        Dictionary<Guid, TCurrentGift> ReadFromDataStorage(JToken element);
+        Dictionary<string, TCurrentGift> ReadFromDataStorage(DataStorageElement element);
+        Dictionary<string, TCurrentGift> ReadFromDataStorage(JToken element);
         TCurrentGift ConvertToCurrentVersion(TPreviousGift olderGift);
         TPreviousGift ConvertToPreviousVersion(TCurrentGift currentGift);
         IDictionary CreateDataStorageUpdateEntry(TCurrentGift gift, int version);

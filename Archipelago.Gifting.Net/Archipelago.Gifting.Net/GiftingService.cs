@@ -19,7 +19,7 @@ namespace Archipelago.Gifting.Net
         private Converter _currentConverter;
 
         private JToken EmptyMotherboxDictionary => JToken.FromObject(new Dictionary<int, GiftBox>());
-        private JToken EmptyGiftDictionary => JToken.FromObject(new Dictionary<Guid, Gift>());
+        private JToken EmptyGiftDictionary => JToken.FromObject(new Dictionary<string, Gift>());
 
         public GiftingService(ArchipelagoSession session)
         {
@@ -75,7 +75,7 @@ namespace Archipelago.Gifting.Net
             return SendGift(item, playerName, out _);
         }
 
-        public bool SendGift(GiftItem item, string playerName, out Guid giftId)
+        public bool SendGift(GiftItem item, string playerName, out string giftId)
         {
             return SendGift(item, new GiftTrait[0], playerName, out giftId);
         }
@@ -85,7 +85,7 @@ namespace Archipelago.Gifting.Net
             return SendGift(item, traits, playerName, out _);
         }
 
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out Guid giftId)
+        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out string giftId)
         {
             return SendGift(item, traits, playerName, _session.ConnectionInfo.Team, out giftId);
         }
@@ -95,7 +95,7 @@ namespace Archipelago.Gifting.Net
             return SendGift(item, playerName, playerTeam, out _);
         }
 
-        public bool SendGift(GiftItem item, string playerName, int playerTeam, out Guid giftId)
+        public bool SendGift(GiftItem item, string playerName, int playerTeam, out string giftId)
         {
             return SendGift(item, new GiftTrait[0], playerName, playerTeam, out giftId);
         }
@@ -105,7 +105,7 @@ namespace Archipelago.Gifting.Net
             return SendGift(item, traits, playerName, playerTeam, out _);
         }
 
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out Guid giftId)
+        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId)
         {
             var canGift = CanGiftToPlayer(playerName, playerTeam, traits.Select(x => x.Trait));
             return SendGift(item, traits, playerName, playerTeam, canGift, out giftId);
@@ -117,17 +117,17 @@ namespace Archipelago.Gifting.Net
             return SendGift(item, traits, playerName, playerTeam, canGift, out _);
         }
 
-        private bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, bool canGift, out Guid giftId)
+        private bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, bool canGift, out string giftId)
         {
             if (!canGift)
             {
-                giftId = Guid.Empty;
+                giftId = string.Empty;
                 return false;
             }
 
             if (!_playerProvider.TryGetPlayer(playerName, playerTeam, out var receivingPlayer))
             {
-                giftId = Guid.Empty;
+                giftId = string.Empty;
                 return false;
             }
 
@@ -136,7 +136,7 @@ namespace Archipelago.Gifting.Net
 
             var receiverSlot = receivingPlayer.Slot;
             var gift = new Gift(item.Name, item.Amount, item.Value, traits, senderSlot, receiverSlot, senderTeam, playerTeam);
-            giftId = Guid.Parse(gift.ID);
+            giftId = gift.ID;
             return SendGift(gift);
         }
 
@@ -180,28 +180,28 @@ namespace Archipelago.Gifting.Net
             }
         }
 
-        public Dictionary<Guid, Gift> GetAllGiftsAndEmptyGiftbox()
+        public Dictionary<string, Gift> GetAllGiftsAndEmptyGiftbox()
         {
             var gifts = CheckGiftBox();
             RemoveGiftsFromGiftBox(gifts.Keys);
             return gifts;
         }
 
-        public async Task<Dictionary<Guid, Gift>> GetAllGiftsAndEmptyGiftboxAsync()
+        public async Task<Dictionary<string, Gift>> GetAllGiftsAndEmptyGiftboxAsync()
         {
             var gifts = await CheckGiftBoxAsync();
             RemoveGiftsFromGiftBox(gifts.Keys);
             return gifts;
         }
 
-        public Dictionary<Guid, Gift> CheckGiftBox()
+        public Dictionary<string, Gift> CheckGiftBox()
         {
             var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
             var gifts = GetGiftboxContent(giftboxKey);
             return gifts;
         }
 
-        public async Task<Dictionary<Guid, Gift>> CheckGiftBoxAsync()
+        public async Task<Dictionary<string, Gift>> CheckGiftBoxAsync()
         {
             var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
             var gifts = await GetGiftboxContentAsync(giftboxKey);
@@ -213,7 +213,7 @@ namespace Archipelago.Gifting.Net
             GetAllGiftsAndEmptyGiftbox();
         }
 
-        public void RemoveGiftsFromGiftBox(IEnumerable<Guid> giftsIds)
+        public void RemoveGiftsFromGiftBox(IEnumerable<string> giftsIds)
         {
             foreach (var giftId in giftsIds)
             {
@@ -221,13 +221,13 @@ namespace Archipelago.Gifting.Net
             }
         }
 
-        public void RemoveGiftFromGiftBox(Guid giftId)
+        public void RemoveGiftFromGiftBox(string giftId)
         {
             var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
             _session.DataStorage[Scope.Global, giftboxKey] += Operation.Pop(giftId);
         }
 
-        private Dictionary<Guid, Gift> GetGiftboxContent(string giftboxKey)
+        private Dictionary<string, Gift> GetGiftboxContent(string giftboxKey)
         {
             CreateGiftboxIfNeeded(giftboxKey);
             var existingGiftBox = _session.DataStorage[Scope.Global, giftboxKey];
@@ -235,7 +235,7 @@ namespace Archipelago.Gifting.Net
             return gifts;
         }
 
-        private async Task<Dictionary<Guid, Gift>> GetGiftboxContentAsync(string giftboxKey)
+        private async Task<Dictionary<string, Gift>> GetGiftboxContentAsync(string giftboxKey)
         {
             CreateGiftboxIfNeeded(giftboxKey);
             var existingGiftBox = _session.DataStorage[Scope.Global, giftboxKey];
@@ -339,7 +339,7 @@ namespace Archipelago.Gifting.Net
             _session.DataStorage[Scope.Global, giftBoxKey].Initialize(EmptyGiftDictionary);
         }
 
-        public void SubscribeToNewGifts(Action<Dictionary<Guid, Gift>> newGiftsCallback)
+        public void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             var dataStorageKey = _keyProvider.GetGiftBoxDataStorageKey();
             // _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue) => OnNewGift(originalValue, newValue, newGiftsCallback);
@@ -351,7 +351,7 @@ namespace Archipelago.Gifting.Net
             _session.Socket.PacketReceived += (packet) => OnNewGift(packet, newGiftsCallback);
         }
 
-        private void OnNewGift(ArchipelagoPacketBase packet, Action<Dictionary<Guid, Gift>> newGiftsCallback)
+        private void OnNewGift(ArchipelagoPacketBase packet, Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             if (!(packet is SetReplyPacket replyPacket))
             {
@@ -369,7 +369,7 @@ namespace Archipelago.Gifting.Net
 
         private void OnNewGift(JToken originalValue, JToken newValue, Action newGiftsCallback)
         {
-            var newGifts = newValue.ToObject<Dictionary<Guid, Gift>>();
+            var newGifts = newValue.ToObject<Dictionary<string, Gift>>();
             if (newGifts.Any())
             {
                 newGiftsCallback();
