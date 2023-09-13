@@ -5,7 +5,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
 {
     public class Gift
     {
-        public Guid ID { get; set; }
+        public string ID { get; set; }
         public string ItemName { get; set; }
         public int Amount { get; set; }
 
@@ -27,7 +27,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
 
         public Gift(string itemName, int amount, BigInteger itemValue, GiftTrait[] traits, int senderSlot, int receiverSlot, int senderTeam, int receiverTeam)
         {
-            ID = Guid.NewGuid();
+            ID = Guid.NewGuid().ToString();
             ItemName = itemName;
             Amount = amount;
             ItemValue = itemValue;

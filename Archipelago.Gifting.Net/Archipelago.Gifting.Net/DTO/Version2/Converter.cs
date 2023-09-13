@@ -12,8 +12,8 @@ namespace Archipelago.Gifting.Net.DTO.Version2
 {
     internal class Converter : IVersionedConverter<Gift, Version1.Gift>
     {
-        public int Version => DataVersion.GiftDataVersion2;
-        public int PreviousVersion => DataVersion.GiftDataVersion1;
+        public int Version => DataVersion.GIFT_DATA_VERSION_2;
+        public int PreviousVersion => DataVersion.GIFT_DATA_VERSION_1;
 
         private PlayerProvider _playerProvider;
         private Validator _validator;
@@ -97,7 +97,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
                 return _previousConverter.CreateDataStorageUpdateEntry(ConvertToPreviousVersion(gift), version);
             }
 
-            var newGiftEntry = new Dictionary<Guid, Gift>
+            var newGiftEntry = new Dictionary<string, Gift>
             {
                 { gift.ID, gift },
             };
@@ -117,7 +117,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
                 receiver.Slot,
                 olderGift.SenderTeam,
                 olderGift.ReceiverTeam);
-            currentGift.ID = olderGift.ID;
+            currentGift.ID = olderGift.ID.ToString();
             return currentGift;
         }
 
@@ -127,7 +127,7 @@ namespace Archipelago.Gifting.Net.DTO.Version2
             var sender = _playerProvider.GetPlayer(currentGift.SenderSlot, currentGift.SenderTeam);
             var receiver = _playerProvider.GetPlayer(currentGift.ReceiverSlot, currentGift.ReceiverTeam);
             var olderGift = new Version1.Gift(giftItem, currentGift.Traits, sender.Name, receiver.Name, currentGift.SenderTeam, currentGift.ReceiverTeam);
-            olderGift.ID = currentGift.ID;
+            olderGift.ID = Guid.Parse(currentGift.ID);
             return olderGift;
         }
     }

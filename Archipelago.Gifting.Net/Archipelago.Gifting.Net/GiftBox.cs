@@ -8,7 +8,8 @@ namespace Archipelago.Gifting.Net
         public bool IsOpen { get; set; }
         public bool AcceptsAnyGift { get; set; }
         public string[] DesiredTraits { get; set; }
-        public int GiftDataVersion { get; set; }
+        public int MinimumGiftDataVersion { get; set; }
+        public int MaximumGiftDataVersion { get; set; }
 
         public GiftBox()
         {
@@ -17,7 +18,8 @@ namespace Archipelago.Gifting.Net
         public GiftBox(bool isOpen) : this()
         {
             IsOpen = isOpen;
-            GiftDataVersion = DataVersion.Current;
+            MinimumGiftDataVersion = DataVersion.FirstVersion;
+            MaximumGiftDataVersion = DataVersion.Current;
         }
 
         public GiftBox(bool acceptsAnyGift, string[] desiredTraits) : this(true)

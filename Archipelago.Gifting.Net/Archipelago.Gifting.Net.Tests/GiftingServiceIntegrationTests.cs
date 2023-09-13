@@ -318,7 +318,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId.ToString());
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
@@ -388,7 +388,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId.ToString());
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
@@ -638,7 +638,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId.ToString());
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
@@ -673,7 +673,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId.ToString());
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
@@ -699,7 +699,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
+            receivedGift.ID.Should().Be(giftId.ToString());
             receivedGift.ItemName.Should().Be(giftItem.Name);
             receivedGift.Amount.Should().Be(giftItem.Amount);
             receivedGift.ItemValue.Should().Be(giftItem.Value);
@@ -714,7 +714,8 @@ namespace Archipelago.Gifting.Net.Tests
             // Arrange
             var outdatedGiftbox = new GiftBox(true)
             {
-                GiftDataVersion = DataVersion.GiftDataVersion1,
+                MinimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
+                MaximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();

@@ -9,7 +9,7 @@ namespace Archipelago.Gifting.Net.DTO.Version1
 {
     internal class Converter : IVersionedConverter<Gift, object>
     {
-        public int Version => DataVersion.GiftDataVersion1;
+        public int Version => DataVersion.GIFT_DATA_VERSION_1;
         public int PreviousVersion => Version - 1;
 
         public Converter()
@@ -44,7 +44,7 @@ namespace Archipelago.Gifting.Net.DTO.Version1
 
         public IDictionary CreateDataStorageUpdateEntry(Gift gift, int version)
         {
-            if (version != Version)
+            if (version < Version)
             {
                 throw new VersionNotFoundException($"Tried to create a gift for an unknown version: {version}");
             }

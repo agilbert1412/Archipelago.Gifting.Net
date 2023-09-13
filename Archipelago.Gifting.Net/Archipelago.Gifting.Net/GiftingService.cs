@@ -136,7 +136,7 @@ namespace Archipelago.Gifting.Net
 
             var receiverSlot = receivingPlayer.Slot;
             var gift = new Gift(item.Name, item.Amount, item.Value, traits, senderSlot, receiverSlot, senderTeam, playerTeam);
-            giftId = gift.ID;
+            giftId = Guid.Parse(gift.ID);
             return SendGift(gift);
         }
 
@@ -161,7 +161,11 @@ namespace Archipelago.Gifting.Net
                 var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(targetPlayer.Team);
                 var motherBox = _session.DataStorage[Scope.Global, motherboxKey].To<Dictionary<int, GiftBox>>();
                 var giftboxMetadata = motherBox[targetPlayer.Slot];
-                var giftboxVersion = giftboxMetadata.GiftDataVersion;
+                var giftboxVersion = giftboxMetadata.MaximumGiftDataVersion;
+                if (giftboxVersion < DataVersion.FirstVersion)
+                {
+                    giftboxVersion = DataVersion.FirstVersion;
+                }
 
                 var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(targetPlayer.Team, targetPlayer.Slot);
 
@@ -311,7 +315,7 @@ namespace Archipelago.Gifting.Net
             }
 
             var giftBox = motherBox[playerSlot];
-            if (!giftBox.IsOpen || giftBox.GiftDataVersion > DataVersion.Current)
+            if (!giftBox.IsOpen)
             {
                 return false;
             }
