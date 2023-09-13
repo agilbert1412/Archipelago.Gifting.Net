@@ -315,7 +315,7 @@ namespace Archipelago.Gifting.Net
             }
 
             var giftBox = motherBox[playerSlot];
-            if (!giftBox.IsOpen)
+            if (!giftBox.IsOpen || giftBox.MinimumGiftDataVersion > DataVersion.Current)
             {
                 return false;
             }
