@@ -22,7 +22,7 @@ A GiftBox is a DataStorage entry registered to a specific player. It signals the
 The key for a GiftBox is formatted as `GiftBox;[teamNumber];[slotName]`. So for player 3 on team 1, their GiftBox key would be "GiftBox;1;3". A giftbox also has metadata that is registered in the "Motherbox" for the team, describing the state of the giftbox, what kind of gifts it can accept, who owns it, etc.
 The Motherbox can be accessed in Data storage at the key "GiftBoxes;[teamNumber]"
 
-Both the Motherbox and individual giftboxes are dictionaries. The motherbox contains player slot numbers as keys, and giftbox metadata as values. A giftbox has the gift's GUID as keys, and gifts as IDs.
+Both the Motherbox and individual giftboxes are dictionaries. The motherbox contains player slot numbers as keys, and giftbox metadata as values. A giftbox has the gift's Ids as keys, and gifts as IDs.
 
 ## Object Specifications
 
@@ -40,19 +40,19 @@ These specifications are **Data Version 2**. Previous versions are available in 
 
 ### Gift Specification
 
-| Field             | Type               | Description                                                                                            |
-|-------------------|--------------------|--------------------------------------------------------------------------------------------------------|
-| ID                | String             | Unique ID for the Gift. This should be a GUID, using the format "00000000-0000-0000-0000-000000000000" |
-| ItemName          | String             | Name of the Item                                                                                       |
-| Amount            | Integer            | Amount of the Item being gifted                                                                        |
-| ItemValue         | Integer            | Value per unit of the item                                                                             |
-| Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification))                          |
-| SenderSlot        | Integer            | Slot Number of the player sending the gift                                                             |
-| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                           |
-| SenderTeam        | Integer            | Team Number of the player sending the gift                                                             |
-| ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                                           |
-| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                     |
-| GiftValue         | Integer            | Total value of the gift (Item Value \* Item Amount)                                                    |
+| Field             | Type               | Description                                                                                                                          |
+|-------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| ID                | String             | Unique ID for the Gift. This should be a Globally unique Id. The recommended format is a GUID "00000000-0000-0000-0000-000000000000" |
+| ItemName          | String             | Name of the Item                                                                                                                     |
+| Amount            | Integer            | Amount of the Item being gifted                                                                                                      |
+| ItemValue         | Integer            | Value per unit of the item                                                                                                           |
+| Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification))                                                        |
+| SenderSlot        | Integer            | Slot Number of the player sending the gift                                                                                           |
+| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                                                         |
+| SenderTeam        | Integer            | Team Number of the player sending the gift                                                                                           |
+| ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                                                                         |
+| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                                                   |
+| GiftValue         | Integer            | Total value of the gift (Item Value \* Item Amount)                                                                                  |
 
 ### GiftTrait Specification
 

@@ -44,20 +44,22 @@ var gifts = _service.CheckGiftBox();
 var gifts = _service.GetAllGiftsAndEmptyGiftbox();
 
 // Empty the giftbox, regardless of its content
-_service.RemoveGiftsFromGiftBox(giftGuids);
+_service.RemoveGiftsFromGiftBox(giftIds);
 
 // Remove one specific gift from the giftbox
-_service.RemoveGiftFromGiftBox(giftGuid);
+_service.RemoveGiftFromGiftBox(giftId);
 ```
 
 At any point, you can query your own giftbox for gifts. If the giftbox is currently closed, the result will always be empty.
-The result will be a dictionary of GUIDs and gifts (`Dicionary<Guid, Gift>`), with the entire content of the giftbox.
+The result will be a dictionary of IDs and gifts (`Dicionary<string, Gift>`), with the entire content of the giftbox.
 
 You have the responsibility to clean your giftbox yourself once your client has processed the gifts.
 You can either use `GetAllGiftsAndEmptyGiftbox` to get gifts and immediately empty the giftbox, or if you need to do validation before deleting the content, you can use `CheckGiftBox` and `RemoveGiftsFromGiftBox` separately so you can do what you need between the calls.
 You can also remove gifts one by one using `RemoveGiftFromGiftBox` if you prefer.
 
 It is also possible to never empty your giftbox, and keep a local list of processed gift IDs to distinguish between new gifts and old ones. This method is not recommended.
+
+It is, however, recommended to keep the list of processed gift IDs anyway, in case of a race condition with the clearing of the giftbox.
 
 Definition of a gift in the current Data Version 2:
 ```cs
@@ -146,7 +148,7 @@ Checking the state of the giftbox before proceeding is optional, but recommended
 There are multiple methods to send a gift, but they are all variations of the following, with omitted optional parameters:
 
 ```cs
-public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out Guid giftId); // Definition
+public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId); // Definition
 var result = _servicer.SendGift(gift, giftTraits, targetSlotName, out var giftId); // Usage
 ```
 
