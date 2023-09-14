@@ -165,8 +165,8 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 				"Duration": 1
 			}
 		],
-		"SenderSlot": 3,
-		"ReceiverSlot": 2,
+		"SenderSlot": 2,
+		"ReceiverSlot": 3,
 		"SenderTeam": 0,
 		"ReceiverTeam": 0,
 		"IsRefund": true,
@@ -197,7 +197,7 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 			}
 		],
 		"Sender": "Farmer",
-		"Receiver": "Receiver",
+		"Receiver": "Carl",
 		"SenderTeam": 0,
 		"ReceiverTeam": 0,
 		"IsRefund": false,
