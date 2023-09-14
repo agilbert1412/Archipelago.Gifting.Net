@@ -1,8 +1,9 @@
-﻿using Archipelago.MultiClient.Net;
+﻿using Archipelago.Gifting.Net.Utilities;
+using Archipelago.MultiClient.Net;
 
-namespace Archipelago.Gifting.Net
+namespace Archipelago.Gifting.Net.Giftboxes
 {
-    public class GiftBoxKeyProvider
+    internal class GiftBoxKeyProvider
     {
         public const string MOTHERBOX_KEY_FORMAT = "GiftBoxes;{0}";
         public const string GIFTBOX_KEY_FORMAT = "GiftBox;{0};{1}";

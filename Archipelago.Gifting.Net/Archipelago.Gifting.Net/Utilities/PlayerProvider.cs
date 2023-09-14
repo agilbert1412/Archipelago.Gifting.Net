@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Helpers;
 
-namespace Archipelago.Gifting.Net
+namespace Archipelago.Gifting.Net.Utilities
 {
-    public class PlayerProvider
+    internal class PlayerProvider
     {
         private ArchipelagoSession _session;
         public PlayerInfo CurrentPlayer => GetPlayer(_session.ConnectionInfo.Slot);
@@ -52,7 +52,7 @@ namespace Archipelago.Gifting.Net
                     player = teamPlayer;
                 }
             }
-            
+
             return numberMatchingAliases == 1;
         }
 

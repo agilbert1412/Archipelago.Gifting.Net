@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.Enums;
+using Archipelago.Gifting.Net.Utilities;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Archipelago.Gifting.Net.DTO.Version2
+namespace Archipelago.Gifting.Net.Gifts.Versions.Current
 {
     internal class Converter : IVersionedConverter<Gift, Version1.Gift>
     {

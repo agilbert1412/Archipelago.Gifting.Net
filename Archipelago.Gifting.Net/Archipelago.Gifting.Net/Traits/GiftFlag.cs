@@ -1,4 +1,4 @@
-﻿namespace Archipelago.Gifting.Net
+﻿namespace Archipelago.Gifting.Net.Traits
 {
     public class GiftFlag
     {

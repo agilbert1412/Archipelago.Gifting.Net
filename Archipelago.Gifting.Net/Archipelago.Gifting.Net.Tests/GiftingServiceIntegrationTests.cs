@@ -1,4 +1,8 @@
-using Archipelago.Gifting.Net.DTO;
+using Archipelago.Gifting.Net.Giftboxes;
+using Archipelago.Gifting.Net.Gifts;
+using Archipelago.Gifting.Net.Gifts.Versions;
+using Archipelago.Gifting.Net.Service;
+using Archipelago.Gifting.Net.Traits;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
@@ -728,7 +732,7 @@ namespace Archipelago.Gifting.Net.Tests
             // Assert
             success.Should().BeTrue();
             var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{ReceiverTeam};{ReceiverSlot}"];
-            var gifts = new DTO.Version1.Converter().ReadFromDataStorage(existingGiftBox);
+            var gifts = new Gifts.Versions.Version1.Converter().ReadFromDataStorage(existingGiftBox);
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
@@ -891,11 +895,11 @@ namespace Archipelago.Gifting.Net.Tests
 
         private void SendVersion1Gift(GiftItem item, GiftTrait[] traits, out Guid giftId)
         {
-            var gift = new DTO.Version1.Gift(item, traits, SenderName, ReceiverName, SenderTeam, ReceiverTeam);
+            var gift = new Gifts.Versions.Version1.Gift(item, traits, SenderName, ReceiverName, SenderTeam, ReceiverTeam);
             giftId = Guid.Parse(gift.ID);
             var giftboxKey = $"GiftBox;{ReceiverTeam};{ReceiverSlot}";
             
-            var newGiftEntry = new Dictionary<Guid, DTO.Version1.Gift>
+            var newGiftEntry = new Dictionary<Guid, Gifts.Versions.Version1.Gift>
             {
                 { giftId, gift },
             };
@@ -905,11 +909,11 @@ namespace Archipelago.Gifting.Net.Tests
 
         private void SendVersion2Gift(GiftItem item, GiftTrait[] traits, string giftId)
         {
-            var gift = new DTO.Version2.Gift(item.Name, item.Amount, item.Value, traits, SenderSlot, ReceiverSlot, SenderTeam, ReceiverTeam);
+            var gift = new Gifts.Versions.Current.Gift(item.Name, item.Amount, item.Value, traits, SenderSlot, ReceiverSlot, SenderTeam, ReceiverTeam);
             gift.ID = giftId;
             var giftboxKey = $"GiftBox;{ReceiverTeam};{ReceiverSlot}";
 
-            var newGiftEntry = new Dictionary<string, DTO.Version2.Gift>
+            var newGiftEntry = new Dictionary<string, Gifts.Versions.Current.Gift>
             {
                 { gift.ID, gift },
             };

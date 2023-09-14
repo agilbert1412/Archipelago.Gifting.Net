@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Archipelago.Gifting.Net.DTO.Version2;
+using Archipelago.Gifting.Net.Gifts;
+using Archipelago.Gifting.Net.Gifts.Versions.Current;
+using Archipelago.Gifting.Net.Traits;
 
-namespace Archipelago.Gifting.Net
+namespace Archipelago.Gifting.Net.Service
 {
     public interface IGiftingServiceSync
     {

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Archipelago.Gifting.Net
+namespace Archipelago.Gifting.Net.Gifts
 {
     public class GiftItem
     {

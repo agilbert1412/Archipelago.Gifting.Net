@@ -1,4 +1,7 @@
-﻿using Archipelago.Gifting.Net.DTO.Version2;
+﻿using Archipelago.Gifting.Net.Gifts;
+using Archipelago.Gifting.Net.Gifts.Versions;
+using Archipelago.Gifting.Net.Traits;
+using Archipelago.Gifting.Net.Utilities;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
@@ -8,8 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Archipelago.Gifting.Net.Giftboxes;
+using Archipelago.Gifting.Net.Gifts.Versions.Current;
 
-namespace Archipelago.Gifting.Net
+namespace Archipelago.Gifting.Net.Service
 {
     public class GiftingService : IGiftingService
     {

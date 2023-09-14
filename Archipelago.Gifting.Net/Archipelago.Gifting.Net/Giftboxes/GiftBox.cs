@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Archipelago.Gifting.Net.Gifts.Versions;
 
-namespace Archipelago.Gifting.Net
+namespace Archipelago.Gifting.Net.Giftboxes
 {
-    public class GiftBox
+    internal class GiftBox
     {
         public bool IsOpen { get; set; }
         public bool AcceptsAnyGift { get; set; }

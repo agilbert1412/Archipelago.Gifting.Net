@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Numerics;
+using Archipelago.Gifting.Net.Traits;
 
-namespace Archipelago.Gifting.Net.DTO.Version1
+namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
 {
-    public class Gift
+    internal class Gift
     {
         public string ID { get; set; }
         public GiftItem Item { get; set; }

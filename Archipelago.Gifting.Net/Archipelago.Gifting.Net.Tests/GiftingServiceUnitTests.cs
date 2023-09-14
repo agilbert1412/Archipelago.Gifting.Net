@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Archipelago.Gifting.Net.Service;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Helpers;
 using FluentAssertions;

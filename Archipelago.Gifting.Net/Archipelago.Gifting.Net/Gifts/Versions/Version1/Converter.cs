@@ -6,7 +6,7 @@ using System.Linq;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Archipelago.Gifting.Net.DTO.Version1
+namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
 {
     internal class Converter : IVersionedConverter<Gift, object>
     {

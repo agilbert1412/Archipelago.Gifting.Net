@@ -1,6 +1,6 @@
-﻿namespace Archipelago.Gifting.Net
+﻿namespace Archipelago.Gifting.Net.Gifts.Versions
 {
-    public static class DataVersion
+    internal static class DataVersion
     {
         public const int GIFT_DATA_VERSION_1 = 1;
         public const int GIFT_DATA_VERSION_2 = 2;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Archipelago.Gifting.Net.DTO
+namespace Archipelago.Gifting.Net.Gifts.Versions
 {
     internal interface IVersionedConverter<TCurrentGift, TPreviousGift>
     {
