@@ -17,6 +17,8 @@ namespace Archipelago.Gifting.Net.Giftboxes
         public GiftBox(bool isOpen) : this()
         {
             IsOpen = isOpen;
+            AcceptsAnyGift = true;
+            DesiredTraits = new string[0];
             MinimumGiftDataVersion = DataVersion.FirstVersion;
             MaximumGiftDataVersion = DataVersion.Current;
         }

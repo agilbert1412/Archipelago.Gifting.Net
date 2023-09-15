@@ -326,7 +326,7 @@ namespace Archipelago.Gifting.Net.Service
             }
 
             var owner = _playerProvider.GetPlayer(playerSlot, playerTeam);
-            if (giftBox.AcceptsAnyGift || owner.Game == _playerProvider.CurrentPlayerGame)
+            if (giftBox.AcceptsAnyGift)
             {
                 return true;
             }
