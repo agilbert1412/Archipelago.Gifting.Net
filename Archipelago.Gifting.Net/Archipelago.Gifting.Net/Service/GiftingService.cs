@@ -347,37 +347,15 @@ namespace Archipelago.Gifting.Net.Service
         public void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             var dataStorageKey = _keyProvider.GetGiftBoxDataStorageKey();
-            // _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue) => OnNewGift(originalValue, newValue, newGiftsCallback);
-            var notifyPacker = new SetNotifyPacket()
-            {
-                Keys = new[] { dataStorageKey },
-            };
-            _session.Socket.SendPacket(notifyPacker);
-            _session.Socket.PacketReceived += (packet) => OnNewGift(packet, newGiftsCallback);
+            _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue) => OnNewGift(originalValue, newValue, newGiftsCallback);
         }
 
-        private void OnNewGift(ArchipelagoPacketBase packet, Action<Dictionary<string, Gift>> newGiftsCallback)
+        private void OnNewGift(JToken originalValue, JToken newValue, Action<Dictionary<string, Gift>> newGiftsCallback)
         {
-            if (!(packet is SetReplyPacket replyPacket))
-            {
-                return;
-            }
-
-            var gifts = _currentConverter.ReadFromDataStorage(replyPacket.Value);
-            if (gifts == null || !gifts.Any())
-            {
-                return;
-            }
-
-            newGiftsCallback(gifts);
-        }
-
-        private void OnNewGift(JToken originalValue, JToken newValue, Action newGiftsCallback)
-        {
-            var newGifts = newValue.ToObject<Dictionary<string, Gift>>();
+            var newGifts = _currentConverter.ReadFromDataStorage(newValue);
             if (newGifts.Any())
             {
-                newGiftsCallback();
+                newGiftsCallback(newGifts);
             }
         }
     }

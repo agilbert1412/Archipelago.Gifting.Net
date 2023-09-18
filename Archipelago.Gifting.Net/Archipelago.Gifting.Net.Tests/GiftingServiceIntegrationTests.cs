@@ -845,6 +845,34 @@ namespace Archipelago.Gifting.Net.Tests
             }
         }
 
+        [Test]
+        public void TestCanSubscribeAndGetNotified()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            Wait();
+            var giftItem = NewGiftItem();
+            var hasBeenNotified = false;
+            _serviceReceiver.SubscribeToNewGifts((gifts) =>
+            {
+                hasBeenNotified = true;
+                gifts.Should().NotBeNull();
+                gifts.Should().HaveCount(1);
+                var notifiedGift = gifts.Values.First();
+                notifiedGift.ItemName.Should().Be(giftItem.Name);
+                notifiedGift.Amount.Should().Be(giftItem.Amount);
+                notifiedGift.ItemValue.Should().Be(giftItem.Value);
+            });
+            Wait();
+
+            // Act
+            _serviceSender.SendGift(giftItem, ReceiverName);
+            Wait();
+
+            // Assert
+            hasBeenNotified.Should().BeTrue();
+        }
+
         private GiftItem NewGiftItem(string suffix = "")
         {
             return new GiftItem("Test Gift" + (string.IsNullOrEmpty(suffix) ? "" : $" {suffix}"), _random.Next(1, 10), _random.Next(1, 100));
