@@ -44,15 +44,14 @@ These specifications are **Data Version 2**. Previous versions are available in 
 |-------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | ID                | String             | Unique ID for the Gift. This should be a Globally unique Id. The recommended format is a GUID "00000000-0000-0000-0000-000000000000" |
 | ItemName          | String             | Name of the Item                                                                                                                     |
-| Amount            | Integer            | Amount of the Item being gifted                                                                                                      |
-| ItemValue         | Integer            | Value per unit of the item                                                                                                           |
+| Amount            | Integer            | Amount of the Item being gifted. Must be a positive integer.                                                                         |
+| ItemValue         | Integer            | Value per unit of the item. Must be a non-negative integer.                                                                          |
 | Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification))                                                        |
 | SenderSlot        | Integer            | Slot Number of the player sending the gift                                                                                           |
 | ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                                                         |
 | SenderTeam        | Integer            | Team Number of the player sending the gift                                                                                           |
 | ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                                                                         |
 | IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                                                   |
-| GiftValue         | Integer            | Total value of the gift (Item Value \* Item Amount)                                                                                  |
 
 ### GiftTrait Specification
 
