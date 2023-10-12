@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Archipelago.Gifting.Net.Gifts;
 using Archipelago.Gifting.Net.Gifts.Versions.Current;
+using Archipelago.Gifting.Net.Service.TraitAcceptance;
 using Archipelago.Gifting.Net.Traits;
 
 namespace Archipelago.Gifting.Net.Service
@@ -20,6 +21,21 @@ namespace Archipelago.Gifting.Net.Service
         bool CanGiftToPlayer(int playerSlot, int playerTeam);
         bool CanGiftToPlayer(int playerSlot, IEnumerable<string> giftTraits);
         bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits);
+
+        /// <summary>
+        /// Provided a list of traits that you can send, get the full information, for every player in the multiworld, about which of these traits they can get
+        /// </summary>
+        /// <param name="giftTraits">The traits you can send</param>
+        /// <returns>The accepted traits, by player, by team</returns>
+        AcceptedTraitsByTeam GetAcceptedTraitsByTeam(IEnumerable<string> giftTraits);
+
+        /// <summary>
+        /// Provided a list of traits that you can send, get the full information, for every player in a specific team, about which of these traits they can get
+        /// </summary>
+        /// <param name="team">The team to query players from</param>
+        /// <param name="giftTraits">The traits you can send</param>
+        /// <returns>The accepted traits, by player</returns>
+        AcceptedTraitsByPlayer GetAcceptedTraitsByPlayer(int team, IEnumerable<string> giftTraits);
         bool SendGift(GiftItem item, string playerName);
         bool SendGift(GiftItem item, string playerName, int playerTeam);
         bool SendGift(GiftItem item, GiftTrait[] traits, string playerName);

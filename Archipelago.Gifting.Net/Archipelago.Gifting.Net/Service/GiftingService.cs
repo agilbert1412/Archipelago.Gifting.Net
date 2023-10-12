@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Archipelago.Gifting.Net.Giftboxes;
 using Archipelago.Gifting.Net.Gifts.Versions.Current;
+using Archipelago.Gifting.Net.Service.TraitAcceptance;
 
 namespace Archipelago.Gifting.Net.Service
 {
@@ -73,6 +74,55 @@ namespace Archipelago.Gifting.Net.Service
                 {_playerProvider.CurrentPlayerSlot, entry},
             };
             _session.DataStorage[Scope.Global, motherboxKey] += Operation.Update(myGiftBoxEntry);
+        }
+
+        public AcceptedTraitsByTeam GetAcceptedTraitsByTeam(IEnumerable<string> giftTraits)
+        {
+            var acceptedTraitsByTeam = new AcceptedTraitsByTeam();
+            foreach (var team in _playerProvider.GetAllTeams())
+            {
+                var acceptedTraitsByPlayer = GetAcceptedTraitsByPlayer(team, giftTraits);
+                if (acceptedTraitsByPlayer.Any())
+                {
+                    acceptedTraitsByTeam.Add(team, acceptedTraitsByPlayer);
+                }
+            }
+
+            return acceptedTraitsByTeam;
+        }
+
+        public AcceptedTraitsByPlayer GetAcceptedTraitsByPlayer(int team, IEnumerable<string> giftTraits)
+        {
+            var acceptedTraitsByPlayer = new AcceptedTraitsByPlayer();
+            var teamMotherbox = GetMotherbox(team);
+            if (teamMotherbox == null || !teamMotherbox.Any())
+            {
+                return acceptedTraitsByPlayer;
+            }
+
+            foreach (var playerGiftbox in teamMotherbox)
+            {
+                var player = playerGiftbox.Key;
+                var giftbox = playerGiftbox.Value;
+                var acceptedTraits = GetAcceptedTraitsForPlayer(giftbox, giftTraits);
+                if (acceptedTraits.Any())
+                {
+                    acceptedTraitsByPlayer.Add(player, acceptedTraits);
+                }
+            }
+
+            return acceptedTraitsByPlayer;
+        }
+
+        private static AcceptedTraits GetAcceptedTraitsForPlayer(GiftBox giftbox, IEnumerable<string> giftTraits)
+        {
+            if (giftbox == null || !giftbox.IsOpen)
+            {
+                return new AcceptedTraits();
+            }
+
+            var acceptedTraits = new AcceptedTraits(giftTraits.Where(x => giftbox.AcceptsAnyGift || giftbox.DesiredTraits.Contains(x)));
+            return acceptedTraits;
         }
 
         public bool SendGift(GiftItem item, string playerName)
@@ -163,8 +213,8 @@ namespace Archipelago.Gifting.Net.Service
                 var targetPlayer = gift.IsRefund
                     ? _playerProvider.GetPlayer(gift.SenderSlot, gift.SenderTeam)
                     : _playerProvider.GetPlayer(gift.ReceiverSlot, gift.ReceiverTeam);
-                var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(targetPlayer.Team);
-                var motherBox = _session.DataStorage[Scope.Global, motherboxKey].To<Dictionary<int, GiftBox>>();
+
+                var motherBox = GetMotherbox(targetPlayer.Team);
                 var giftboxMetadata = motherBox[targetPlayer.Slot];
                 var giftboxVersion = giftboxMetadata.MaximumGiftDataVersion;
                 if (giftboxVersion < DataVersion.FirstVersion)
@@ -299,9 +349,15 @@ namespace Archipelago.Gifting.Net.Service
 
         public bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)
         {
+            var motherBox = GetMotherbox(playerTeam);
+            return CanGiftToPlayer(playerSlot, playerTeam, giftTraits, motherBox);
+        }
+
+        private Dictionary<int, GiftBox> GetMotherbox(int playerTeam)
+        {
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(playerTeam);
             var motherBox = _session.DataStorage[Scope.Global, motherboxKey].To<Dictionary<int, GiftBox>>();
-            return CanGiftToPlayer(playerSlot, playerTeam, giftTraits, motherBox);
+            return motherBox;
         }
 
         public async Task<bool> CanGiftToPlayerAsync(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)

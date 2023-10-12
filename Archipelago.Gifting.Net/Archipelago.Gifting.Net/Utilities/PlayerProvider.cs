@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Helpers;
@@ -74,6 +76,16 @@ namespace Archipelago.Gifting.Net.Utilities
         public PlayerInfo GetPlayer(int playerSlot, int playerTeam)
         {
             return _session.Players.Players[playerTeam].First(player => player.Slot == playerSlot);
+        }
+
+        public IEnumerable<int> GetAllTeams()
+        {
+            return _session.Players.Players.Keys;
+        }
+
+        public IEnumerable<int> GetAllPlayerSlotsInTeam(int playerTeam)
+        {
+            return _session.Players.Players[playerTeam].Select(x => x.Slot);
         }
     }
 }
