@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Archipelago.Gifting.Net.Giftboxes;
 using Archipelago.Gifting.Net.Gifts;
 using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Service.TraitAcceptance;
@@ -13,6 +14,12 @@ namespace Archipelago.Gifting.Net.Service
         void OpenGiftBox();
         void OpenGiftBox(bool acceptAnyGift, string[] desiredTraits);
         void CloseGiftBox();
+
+        /// <summary>
+        /// Gets the current metadata state of your own giftbox, as registered in the motherbox
+        /// </summary>
+        /// <returns>Your own giftbox information</returns>
+        GiftBox GetCurrentGiftboxState();
         bool CanGiftToPlayer(string playerName);
         bool CanGiftToPlayer(string playerName, int playerTeam);
         bool CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits);

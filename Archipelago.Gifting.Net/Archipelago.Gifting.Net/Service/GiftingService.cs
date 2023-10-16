@@ -66,6 +66,20 @@ namespace Archipelago.Gifting.Net.Service
             EmptyGiftBox();
         }
 
+        public GiftBox GetCurrentGiftboxState()
+        {
+            var team = _playerProvider.CurrentPlayerTeam;
+            var player = _playerProvider.CurrentPlayerSlot;
+            var motherBox = GetMotherbox(team);
+            if (!motherBox.ContainsKey(player))
+            {
+                return null;
+            }
+
+            var giftBox = motherBox[player];
+            return giftBox;
+        }
+
         internal void UpdateGiftBox(GiftBox entry)
         {
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey();
