@@ -1,27 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Archipelago.Gifting.Net.Service.TraitAcceptance
 {
-    public class AcceptedTraits : IEnumerable<string>
+    public class AcceptedTraits
     {
-        private IEnumerable<string> _traits;
+        public int Team { get; }
+        public int Player { get; }
+        public string[] Traits { get; }
 
-        internal AcceptedTraits() : this(new string[0]) { }
+        internal AcceptedTraits(int team, int player) : this(team, player, new string[0]) { }
 
-        internal AcceptedTraits(IEnumerable<string> traits)
+        internal AcceptedTraits(int team, int player, string[] traits)
         {
-            _traits = traits;
+            Team = team;
+            Player = player;
+            Traits = traits;
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public bool Any()
         {
-            return _traits.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            return Traits.Any();
         }
     }
 }
