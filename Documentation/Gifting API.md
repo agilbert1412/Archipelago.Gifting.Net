@@ -45,7 +45,7 @@ These specifications are **Data Version 2**. Previous versions are available in 
 | ID                | String             | Unique ID for the Gift. This should be a Globally unique Id. The recommended format is a GUID "00000000-0000-0000-0000-000000000000" |
 | ItemName          | String             | Name of the Item                                                                                                                     |
 | Amount            | Integer            | Amount of the Item being gifted. Must be a positive integer.                                                                         |
-| ItemValue         | Integer            | Value per unit of the item. in Archipelago Currency (EnergyLink). Can be used to "sell" gifts that cannot be received properly.      |
+| ItemValue         | Unbounded Integer  | Value per unit of the item. in Archipelago Currency (EnergyLink). Can be used to "sell" gifts that cannot be received properly.      |
 | Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification))                                                        |
 | SenderSlot        | Integer            | Slot Number of the player sending the gift                                                                                           |
 | ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                                                         |
