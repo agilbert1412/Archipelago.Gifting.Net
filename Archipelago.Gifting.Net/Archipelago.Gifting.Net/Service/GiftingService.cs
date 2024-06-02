@@ -418,7 +418,7 @@ namespace Archipelago.Gifting.Net.Service
         public void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             var dataStorageKey = _keyProvider.GetGiftBoxDataStorageKey();
-            _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue) => OnNewGift(originalValue, newValue, newGiftsCallback);
+            _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue, additionalArguments) => OnNewGift(originalValue, newValue, newGiftsCallback);
         }
 
         private void OnNewGift(JToken originalValue, JToken newValue, Action<Dictionary<string, Gift>> newGiftsCallback)
