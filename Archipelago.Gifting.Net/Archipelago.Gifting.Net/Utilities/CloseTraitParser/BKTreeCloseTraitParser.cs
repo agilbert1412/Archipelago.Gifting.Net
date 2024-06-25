@@ -77,7 +77,7 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
             child.RegisterAvailableGift(availableGift, traits);
         }
 
-        private void GetItems(GiftTrait[] giftTraits, ref double bestDistance, ref List<object> closestItems)
+        private void FindClosestAvailableGift(GiftTrait[] giftTraits, ref double bestDistance, ref List<object> closestItems)
         {
             double distance = Distance(giftTraits);
             if (Math.Abs(distance - bestDistance) < 0.0001)
@@ -95,16 +95,16 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
             {
                 if (distance - keyValuePair.Key < bestDistance + 0.0001)
                 {
-                    keyValuePair.Value.GetItems(giftTraits, ref bestDistance, ref closestItems);
+                    keyValuePair.Value.FindClosestAvailableGift(giftTraits, ref bestDistance, ref closestItems);
                 }
             }
         }
 
-        public List<object> FindClosest(GiftTrait[] giftTraits)
+        public List<object> FindClosestAvailableGift(GiftTrait[] giftTraits)
         {
             List<object> closestItems = new List<object>();
             double bestDistance = double.MaxValue;
-            GetItems(giftTraits, ref bestDistance, ref closestItems);
+            FindClosestAvailableGift(giftTraits, ref bestDistance, ref closestItems);
             return closestItems;
         }
     }

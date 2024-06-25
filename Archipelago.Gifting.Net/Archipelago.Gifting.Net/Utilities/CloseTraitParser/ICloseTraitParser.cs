@@ -7,6 +7,6 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
     {
         void RegisterAvailableGift(object availableGift, GiftTrait[] traits);
 
-        List<object> FindClosest(GiftTrait[] traits);
+        List<object> FindClosestAvailableGift(GiftTrait[] traits);
     }
 }

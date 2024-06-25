@@ -17,7 +17,7 @@ namespace Archipelago.Gifting.Net.Tests
                 new GiftTrait("a", 1, 1),
                 new GiftTrait("b", 1, 1)
             });
-            List<object> matches = closeTraitParser.FindClosest(new[] { new GiftTrait("a", 1, 1) });
+            List<object> matches = closeTraitParser.FindClosestAvailableGift(new[] { new GiftTrait("a", 1, 1) });
             matches.Count.Should().Be(1);
             matches[0].Should().Be(1);
         }
@@ -35,7 +35,7 @@ namespace Archipelago.Gifting.Net.Tests
                 new GiftTrait("a", 1, 1),
                 new GiftTrait("b", 1, 1)
             });
-            List<object> matches = closeTraitParser.FindClosest(new[] { new GiftTrait("a", 1, 1) });
+            List<object> matches = closeTraitParser.FindClosestAvailableGift(new[] { new GiftTrait("a", 1, 1) });
             matches.Count.Should().Be(2);
             matches.Should().Contain(1);
             matches.Should().Contain(2);
@@ -52,7 +52,7 @@ namespace Archipelago.Gifting.Net.Tests
                 new GiftTrait("a", 1, 1),
                 new GiftTrait("b", 1, 1)
             });
-            List<object> matches = closeTraitParser.FindClosest(new[] { new GiftTrait("a", 2, 1) });
+            List<object> matches = closeTraitParser.FindClosestAvailableGift(new[] { new GiftTrait("a", 2, 1) });
             matches.Count.Should().Be(1);
             matches[0].Should().Be(1);
         }
@@ -71,7 +71,7 @@ namespace Archipelago.Gifting.Net.Tests
                 new GiftTrait("a", 1, 1),
                 new GiftTrait("c", 1, 1)
             });
-            List<object> matches = closeTraitParser.FindClosest(new[] { new GiftTrait("a", 1, 1) });
+            List<object> matches = closeTraitParser.FindClosestAvailableGift(new[] { new GiftTrait("a", 1, 1) });
             matches.Count.Should().Be(2);
             matches.Should().Contain(1);
             matches.Should().Contain(2);
