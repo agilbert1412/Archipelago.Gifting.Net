@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Archipelago.Gifting.Net.Gifts;
 using Archipelago.Gifting.Net.Traits;
 
 namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
 {
     public class BKTreeCloseTraitParser : ICloseTraitParser
     {
-        private readonly List<GiftItem> Items;
+        private readonly List<object> Items;
         private readonly Dictionary<string, Tuple<double, double>> Traits;
         private readonly Dictionary<double, BKTreeCloseTraitParser> Children;
 
         public BKTreeCloseTraitParser()
         {
-            Items = new List<GiftItem>();
+            Items = new List<object>();
             Traits = new Dictionary<string, Tuple<double, double>>();
             Children = new Dictionary<double, BKTreeCloseTraitParser>();
         }
@@ -42,12 +41,12 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
             return distance;
         }
 
-        public void RegisterGiftItem(GiftItem item, GiftTrait[] giftTraits)
+        public void RegisterAvailableGift(object availableGift, GiftTrait[] traits)
         {
             if (Items.Count == 0)
             {
-                Items.Add(item);
-                foreach (GiftTrait giftTrait in giftTraits)
+                Items.Add(availableGift);
+                foreach (GiftTrait giftTrait in traits)
                 {
                     if (Traits.TryGetValue(giftTrait.Trait, out Tuple<double, double> values))
                     {
@@ -62,10 +61,10 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
                 return;
             }
 
-            double distance = Distance(giftTraits);
+            double distance = Distance(traits);
             if (distance == 0)
             {
-                Items.Add(item);
+                Items.Add(availableGift);
                 return;
             }
 
@@ -75,10 +74,10 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
                 Children[distance] = child;
             }
 
-            child.RegisterGiftItem(item, giftTraits);
+            child.RegisterAvailableGift(availableGift, traits);
         }
 
-        private void GetItems(GiftTrait[] giftTraits, ref double bestDistance, ref List<GiftItem> closestItems)
+        private void GetItems(GiftTrait[] giftTraits, ref double bestDistance, ref List<object> closestItems)
         {
             double distance = Distance(giftTraits);
             if (Math.Abs(distance - bestDistance) < 0.0001)
@@ -101,9 +100,9 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
             }
         }
 
-        public List<GiftItem> FindClosest(GiftTrait[] giftTraits)
+        public List<object> FindClosest(GiftTrait[] giftTraits)
         {
-            List<GiftItem> closestItems = new List<GiftItem>();
+            List<object> closestItems = new List<object>();
             double bestDistance = double.MaxValue;
             GetItems(giftTraits, ref bestDistance, ref closestItems);
             return closestItems;
