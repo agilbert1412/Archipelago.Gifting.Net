@@ -71,10 +71,26 @@ namespace Archipelago.Gifting.Net.Tests
                 new GiftTrait("a", 1, 1),
                 new GiftTrait("c", 1, 1)
             });
+            closeTraitParser.RegisterAvailableGift(3, new[]
+            {
+                new GiftTrait("d", 1, 1)
+            });
             List<int> matches = closeTraitParser.FindClosestAvailableGift(new[] { new GiftTrait("a", 1, 1) });
             matches.Count.Should().Be(2);
             matches.Should().Contain(1);
             matches.Should().Contain(2);
+        }
+
+        [Test]
+        public void TestNoMatch()
+        {
+            ICloseTraitParser<int> closeTraitParser = new BKTreeCloseTraitParser<int>();
+            closeTraitParser.RegisterAvailableGift(1, new[]
+            {
+                new GiftTrait("a", 1, 1)
+            });
+            List<int> matches = closeTraitParser.FindClosestAvailableGift(new[] { new GiftTrait("b", 1, 1) });
+            matches.Count.Should().Be(0);
         }
     }
 }

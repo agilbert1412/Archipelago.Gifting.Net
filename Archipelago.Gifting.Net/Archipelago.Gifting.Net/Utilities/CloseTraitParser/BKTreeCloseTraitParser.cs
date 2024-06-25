@@ -18,27 +18,47 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
             Children = new Dictionary<double, BKTreeCloseTraitParser<T>>();
         }
 
-        private double Distance(GiftTrait[] giftTraits)
+        private static double Distance(GiftTrait[] giftTraits, Dictionary<string, Tuple<double, double>> recordedTraits)
         {
-            Dictionary<string, Tuple<double, double>> recordedTraits =
-                new Dictionary<string, Tuple<double, double>>(Traits);
             double distance = 0;
+            int nRecordedTraits = recordedTraits.Count;
             foreach (GiftTrait giftTrait in giftTraits)
             {
                 if (recordedTraits.TryGetValue(giftTrait.Trait, out Tuple<double, double> values))
                 {
-                    recordedTraits[giftTrait.Trait] = new Tuple<double, double>(values.Item1 - giftTrait.Quality,
-                        values.Item2 - giftTrait.Duration);
+                    recordedTraits.Remove(giftTrait.Trait);
+                    if (values.Item1 * giftTrait.Quality <= 0)
+                    {
+                        distance += 1;
+                    }
+                    else
+                    {
+                        distance += Math.Abs(Math.Log(values.Item1 / giftTrait.Quality));
+                    }
+                    if (values.Item1 * giftTrait.Duration <= 0)
+                    {
+                        distance += 1;
+                    }
+                    else
+                    {
+                        distance += Math.Abs(Math.Log(values.Item1 / giftTrait.Duration));
+                    }
                 }
                 else
                 {
-                    distance += giftTrait.Quality + giftTrait.Duration;
+                    distance += 1;
                 }
             }
 
-            distance += recordedTraits.Sum(keyValuePair =>
-                Math.Abs(keyValuePair.Value.Item1) + Math.Abs(keyValuePair.Value.Item2));
-            return distance;
+            if (nRecordedTraits == recordedTraits.Count)
+                return double.PositiveInfinity;
+            
+            return distance + recordedTraits.Count;
+        }
+
+        private double Distance(GiftTrait[] giftTraits)
+        {
+            return Distance(giftTraits, new Dictionary<string, Tuple<double, double>>(Traits));
         }
 
         public void RegisterAvailableGift(T availableGift, GiftTrait[] traits)
@@ -58,6 +78,7 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
                         Traits[giftTrait.Trait] = new Tuple<double, double>(giftTrait.Quality, giftTrait.Duration);
                     }
                 }
+
                 return;
             }
 
@@ -90,8 +111,8 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
                 closestItems.AddRange(Items);
                 bestDistance = distance;
             }
-            
-            foreach (KeyValuePair<double,BKTreeCloseTraitParser<T>> keyValuePair in Children)
+
+            foreach (KeyValuePair<double, BKTreeCloseTraitParser<T>> keyValuePair in Children)
             {
                 if (distance - keyValuePair.Key < bestDistance + 0.0001)
                 {
