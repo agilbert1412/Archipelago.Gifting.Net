@@ -32,15 +32,17 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
                     }
                     else
                     {
-                        distance += Math.Abs(Math.Log(values.Item1 / giftTrait.Quality));
+                        double d = values.Item1 / giftTrait.Quality;
+                        distance += 1 - (d > 1 ? 1/d : d);
                     }
-                    if (values.Item1 * giftTrait.Duration <= 0)
+                    if (values.Item2 * giftTrait.Duration <= 0)
                     {
                         distance += 1;
                     }
                     else
                     {
-                        distance += Math.Abs(Math.Log(values.Item1 / giftTrait.Duration));
+                        double d = values.Item2 / giftTrait.Duration;
+                        distance += 1 - (d > 1 ? 1/d : d);
                     }
                 }
                 else

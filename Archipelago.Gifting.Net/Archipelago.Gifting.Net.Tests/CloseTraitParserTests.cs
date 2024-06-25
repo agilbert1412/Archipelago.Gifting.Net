@@ -92,5 +92,27 @@ namespace Archipelago.Gifting.Net.Tests
             List<int> matches = closeTraitParser.FindClosestAvailableGift(new[] { new GiftTrait("b", 1, 1) });
             matches.Count.Should().Be(0);
         }
+
+        [Test]
+        public void TestGoodClosest()
+        {
+            ICloseTraitParser<int> closeTraitParser = new BKTreeCloseTraitParser<int>();
+            closeTraitParser.RegisterAvailableGift(1, new[]
+            {
+                new GiftTrait("a", 1, 1)
+            });
+            closeTraitParser.RegisterAvailableGift(2, new[]
+            {
+                new GiftTrait("a", 1, 1),
+                new GiftTrait("b", 20, 1)
+            });
+            List<int> matches = closeTraitParser.FindClosestAvailableGift(new[]
+            {
+                new GiftTrait("a", 1, 1),
+                new GiftTrait("b", 1, 1)
+            });
+            matches.Count.Should().Be(1);
+            matches[0].Should().Be(2);
+        }
     }
 }
