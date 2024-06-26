@@ -161,6 +161,32 @@ If the gift is not sent successfully, it is recommended not to take away the ite
 
 The out parameter is also optional, but it provides the uniquely generated ID for the gift you just sent. Keeping this around can help debugging, or identifying refunded gifts.
 
+## Processing a Gift
+
+If you wish to, you can use a generic handler to process the traits of the gifts you receive to get the closest gift according to their traits. This shouldn't be the only way to process gifts but it is a fallback method to handle gifts that don't have a specific handling
+
+To initialize it, you need to register one by one everything that could be received. Results can be of any type but the valid types should be precised as generic parameter of the class.
+BKTreeCloseTraitParser is currently the only implementation of ICloseTraitParser
+In the following examples, the chosen type was string, but it could have been anything
+
+```cs
+ICloseTraitParser<string> closeTraitParser = new BKTreeCloseTraitParser<string>();
+// For all pairs of item and traits do
+closeTraitParser.RegisterAvailableGift(item, traits);
+```
+
+This object should be kept in memory then when wanting to process traits, you just need to call
+```cs
+List<string> matches = closeTraitParser.FindClosestAvailableGift(gift.Traits);
+```
+This list might be empty if no item was found that shared any trait.
+
+If you aren't pleased by the the closeness algorithm, you may provide your own as an argument to BKTreeCloseTraitParser, having the following signature
+```cs
+double Distance(GiftTrait[] giftTraits, Dictionary<string, Tuple<double, double>> traits, out bool isCompatible);
+```
+For this methods, all the traits of the registered gift with the same name have been added together for performance reasons
+
 ## Rejecting a Gift
 
 If you receive a gift that you cannot or will not process properly in the current game, 3 options are available to you.
