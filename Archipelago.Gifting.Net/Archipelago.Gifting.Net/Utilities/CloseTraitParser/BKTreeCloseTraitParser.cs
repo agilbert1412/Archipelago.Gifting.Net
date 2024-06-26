@@ -6,22 +6,22 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
 {
     public class BKTreeCloseTraitParser<T> : ICloseTraitParser<T>
     {
-        private readonly List<T> Items;
-        private readonly Dictionary<string, Tuple<double, double>> Traits;
-        private readonly Dictionary<double, BKTreeCloseTraitParser<T>> Children;
+        private readonly List<T> _items;
+        private readonly Dictionary<string, Tuple<double, double>> _traits;
+        private readonly Dictionary<double, BKTreeCloseTraitParser<T>> _children;
 
         public delegate double DistanceDelegate(GiftTrait[] giftTraits,
             Dictionary<string, Tuple<double, double>> traits,
             out bool isCompatible);
 
-        private readonly DistanceDelegate Distance;
+        private readonly DistanceDelegate _distance;
 
         public BKTreeCloseTraitParser(DistanceDelegate distanceDelegate = null)
         {
-            Items = new List<T>();
-            Traits = new Dictionary<string, Tuple<double, double>>();
-            Children = new Dictionary<double, BKTreeCloseTraitParser<T>>();
-            Distance = distanceDelegate ?? DefaultDistance;
+            _items = new List<T>();
+            _traits = new Dictionary<string, Tuple<double, double>>();
+            _children = new Dictionary<double, BKTreeCloseTraitParser<T>>();
+            _distance = distanceDelegate ?? DefaultDistance;
         }
 
         private static double DefaultDistance(GiftTrait[] giftTraits, Dictionary<string, Tuple<double, double>> traits,
@@ -68,36 +68,36 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
 
         public void RegisterAvailableGift(T availableGift, GiftTrait[] traits)
         {
-            if (Items.Count == 0)
+            if (_items.Count == 0)
             {
-                Items.Add(availableGift);
+                _items.Add(availableGift);
                 foreach (GiftTrait giftTrait in traits)
                 {
-                    if (Traits.TryGetValue(giftTrait.Trait, out Tuple<double, double> values))
+                    if (_traits.TryGetValue(giftTrait.Trait, out Tuple<double, double> values))
                     {
-                        Traits[giftTrait.Trait] = new Tuple<double, double>(values.Item1 + giftTrait.Quality,
+                        _traits[giftTrait.Trait] = new Tuple<double, double>(values.Item1 + giftTrait.Quality,
                             values.Item2 + giftTrait.Duration);
                     }
                     else
                     {
-                        Traits[giftTrait.Trait] = new Tuple<double, double>(giftTrait.Quality, giftTrait.Duration);
+                        _traits[giftTrait.Trait] = new Tuple<double, double>(giftTrait.Quality, giftTrait.Duration);
                     }
                 }
 
                 return;
             }
 
-            double distance = Distance(traits, Traits, out _);
+            double distance = _distance(traits, _traits, out _);
             if (distance == 0)
             {
-                Items.Add(availableGift);
+                _items.Add(availableGift);
                 return;
             }
 
-            if (!Children.TryGetValue(distance, out BKTreeCloseTraitParser<T> child))
+            if (!_children.TryGetValue(distance, out BKTreeCloseTraitParser<T> child))
             {
-                child = new BKTreeCloseTraitParser<T>(Distance);
-                Children[distance] = child;
+                child = new BKTreeCloseTraitParser<T>(_distance);
+                _children[distance] = child;
             }
 
             child.RegisterAvailableGift(availableGift, traits);
@@ -105,22 +105,22 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
 
         private void FindClosestAvailableGift(GiftTrait[] giftTraits, ref double bestDistance, ref List<T> closestItems)
         {
-            double distance = Distance(giftTraits, Traits, out bool isCompatible);
+            double distance = _distance(giftTraits, _traits, out bool isCompatible);
             if (isCompatible)
             {
                 if (Math.Abs(distance - bestDistance) < 0.0001)
                 {
-                    closestItems.AddRange(Items);
+                    closestItems.AddRange(_items);
                 }
                 else if (distance < bestDistance)
                 {
                     closestItems.Clear();
-                    closestItems.AddRange(Items);
+                    closestItems.AddRange(_items);
                     bestDistance = distance;
                 }
             }
 
-            foreach (KeyValuePair<double, BKTreeCloseTraitParser<T>> keyValuePair in Children)
+            foreach (KeyValuePair<double, BKTreeCloseTraitParser<T>> keyValuePair in _children)
             {
                 if (distance - keyValuePair.Key < bestDistance + 0.0001)
                 {
