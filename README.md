@@ -163,11 +163,18 @@ The out parameter is also optional, but it provides the uniquely generated ID fo
 
 ## Processing a Gift
 
-If you wish to, you can use a generic handler to process the traits of the gifts you receive to get the closest gift according to their traits. This shouldn't be the only way to process gifts but it is a fallback method to handle gifts that don't have a specific handling
+Games can choose to process gifts as they wish. They can use the item name, they can use the traits, or any combination of both. Usually, gifts that come from the same game can be parsed by name for maximum accuracy, but within reason, games should try to understand items from other games too.
 
-To initialize it, you need to register one by one everything that could be received. Results can be of any type but the valid types should be precised as generic parameter of the class.
-BKTreeCloseTraitParser is currently the only implementation of ICloseTraitParser
-In the following examples, the chosen type was string, but it could have been anything
+Parsing by traits can be done however you wish. But the library offers a generic handler, called a "CloseTraitParser", that will allow you a simple, decent parsing system for traits into items from your game.
+
+To use it, you must first initialize it, and then register every one of your possible receivable gifts in the parser, with their traits.
+This list can come directly from the gifts you can send other players, or all in-game items, or any set you wish. But every item should have traits. The more items you have, the more traits you will need on the average item to get accurate parsing.
+
+For example, if you have 10 items that all have the same traits, the Parser will not be able to distinguish them. The "Perfect" item list has every item with distinct traits. But even an imperfect list will work.
+
+Your items can be any type you want, and the class is build as a generic so that you can tell it what types are your items. In the following example, the type `string` is used and the game is presumed to freely create items by name.
+
+BKTreeCloseTraitParser is currently the only implementation of ICloseTraitParser, other implementations can be created by consumers of the API.
 
 ```cs
 ICloseTraitParser<string> closeTraitParser = new BKTreeCloseTraitParser<string>();
@@ -175,7 +182,8 @@ ICloseTraitParser<string> closeTraitParser = new BKTreeCloseTraitParser<string>(
 closeTraitParser.RegisterAvailableGift(item, traits);
 ```
 
-This object should be kept in memory then when wanting to process traits, you just need to call
+The parser should be kept in memory for the whole duration of the session, to avoid having to register the same things over and over.
+When you receive a gift that you wish to parse by traits, you can do:
 ```cs
 List<string> matches = closeTraitParser.FindClosestAvailableGift(gift.Traits);
 ```
@@ -185,7 +193,7 @@ If you aren't pleased by the the closeness algorithm, you may provide your own a
 ```cs
 double Distance(GiftTrait[] giftTraits, Dictionary<string, Tuple<double, double>> traits, out bool isCompatible);
 ```
-For this methods, all the traits of the registered gift with the same name have been added together for performance reasons
+For this method, all the traits of the registered gift with the same name have been added together for performance reasons
 
 ## Rejecting a Gift
 
