@@ -36,15 +36,16 @@
         public const string Slowness = "Slowness";
         public const string Currency = "Currency";
         public const string Damage = "Damage";
-        public const string Heat = "Heat";
-        public const string Cold = "Cold";
+        public const string Fire = "Fire";
+        public const string Ice = "Ice";
         public const string Energy = "Energy";
+        public const string Light = "Light";
 
         public static readonly string[] AllFlags = new[]
         {
             Speed, Consumable, Food, Drink, Heal, Mana, Key, Trap, Buff, Life, Weapon, Armor, Tool,
             Fish, Animal, Cure, Seed, Metal, Bomb, Monster, Resource, Material, Wood, Stone, Ore, Grass,
-            Meat, Vegetable, Fruit, Slowness, Currency, Damage, Heat, Cold, Egg, Energy,
+            Meat, Vegetable, Fruit, Slowness, Currency, Damage, Fire, Ice, Egg, Energy, Light
         };
     }
 }

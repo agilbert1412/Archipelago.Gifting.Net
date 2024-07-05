@@ -284,7 +284,8 @@ Here is a list of "common" Gift traits. Everything on this list is a suggestion,
 | Egg               | Animal Product, container that can spawn something                                   |
 | Slowness          | Status effect, opposite of speed                                                     |
 | Damage            | Deals damage, reduce HP                                                              |
-| Heat              | Status effect, warm, fire                                                            |
-| Cold              | Status effect, cool, ice                                                             |
+| Fire              | Status effect, warm, heat, burn                                                            |
+| Ice               | Status effect, cold, freeze, slow                                                             |
 | Currency          | Item that can be used as currency. Consider using the Energylink instead of gifts    |
 | Energy            | Stores or is Energy, electricity. Consider using the EnergyLink instead of gifts     |
+| Light             | Is a light source or light itself, can help against darkness                         |
