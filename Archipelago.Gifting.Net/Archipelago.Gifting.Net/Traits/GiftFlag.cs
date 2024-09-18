@@ -29,7 +29,7 @@
         public const string Stone = "Stone";
         public const string Ore = "Ore";
         public const string Grass = "Grass";
-        public const string Meat = "Vegetable";
+        public const string Meat = "Meat";
         public const string Vegetable = "Vegetable";
         public const string Fruit = "Fruit";
         public const string Egg = "Egg";
