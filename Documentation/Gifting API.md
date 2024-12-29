@@ -64,7 +64,9 @@ These specifications are **Data Version 2**. Previous versions are available in 
 | Duration          | Float\*          | Duration of the Trait (1.0 means "average duration")                                |
 
 \* These values should be floating point numbers that are scaled around "1.0", as a factor of it.
+
 1.0 should represent the average item with this trait in your world. Scaling linearly is recommended but not required, for example an item with 2.0 is twice as strong, and one with 0.33 is 3 times weaker. Games with exponential scaling, for example idle games, might decide on a different scaling system for their traits in order to not cause massive inflation.
+
 While the format technically allows for zero or negative values, it is **recommended** to stick to strictly positive values, as there is no official definition for what 0 or -1 would mean. Games can use it to handle special cases if they have any, but should expect other games to not necessarily understand it.
 
 ## Examples
