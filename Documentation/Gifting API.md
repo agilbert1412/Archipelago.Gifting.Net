@@ -40,28 +40,30 @@ These specifications are **Data Version 2**. Previous versions are available in 
 
 ### Gift Specification
 
-| Field             | Type               | Description                                                                                                                                 |
-|-------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| ID                | String             | Unique ID for the Gift. This should be a Globally unique Id. The recommended format is a GUID "00000000-0000-0000-0000-000000000000"        |
-| ItemName          | String             | Name of the Item                                                                                                                            |
-| Amount            | Integer            | Amount of the Item being gifted. Must be a positive integer.                                                                                |
-| ItemValue         | Unbounded Integer  | Value per unit of the item. in Archipelago Currency (EnergyLink). Can be used to "sell" gifts that cannot be received properly.             |
+| Field             | Type               | Description                                                                                                                                  |
+|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| ID                | String             | Unique ID for the Gift. This should be a Globally unique Id. The recommended format is a GUID "00000000-0000-0000-0000-000000000000"         |
+| ItemName          | String             | Name of the Item                                                                                                                             |
+| Amount            | Integer            | Amount of the Item being gifted. Must be a positive integer.                                                                                 |
+| ItemValue         | Unbounded Integer  | Value per unit of the item. in Archipelago Currency (EnergyLink). Can be used to "sell" gifts that cannot be received properly.              |
 | Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification)). Can be empty\*, but at least one trait is highly recommended  |
-| SenderSlot        | Integer            | Slot Number of the player sending the gift                                                                                                  |
-| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                                                                |
-| SenderTeam        | Integer            | Team Number of the player sending the gift                                                                                                  |
-| ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                                                                                |
-| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                                                          |
+| SenderSlot        | Integer            | Slot Number of the player sending the gift                                                                                                   |
+| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                                                                 |
+| SenderTeam        | Integer            | Team Number of the player sending the gift                                                                                                   |
+| ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                                                                                 |
+| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                                                           |
 
 \* If a gift has no traits, it can only be parsed by name. In some cases, notably same-game gifting, this is acceptable. But across games, traits are much preferable because of their versatility. For example, two items can have the same name but be significantly different. Or two items can be extremely similar, but not share a name (HP Potion / Health Potion / Heal Potion)
 
 ### GiftTrait Specification
 
-| Field             | Type           | Description                                                                        |
-|-------------------|----------------|------------------------------------------------------------------------------------|
-| Trait             | String         | Identifier for the Trait                                                           |
-| Quality           | Float          | How powerful the Trait is (1.0 means "average power")                               |
-| Duration          | Float          | Duration of the Trait (1.0 means "average duration")                                |
+| Field             | Type             | Description                                                                         |
+|-------------------|------------------|-------------------------------------------------------------------------------------|
+| Trait             | String           | Identifier for the Trait                                                            |
+| Quality           | Float\*          | How powerful the Trait is (1.0 means "average power")                               |
+| Duration          | Float\*          | Duration of the Trait (1.0 means "average duration")                                |
+
+\*These values should be floating point numbers that are scaled around "1.0", as a factor of it. 1.0 should represent the average item with this trait in your world. An item with 2.0 is twice as strong, and one with 0.33 is 3 times weaker. While the format technically allows for zero or negative values, it is **recommended** to stick to strictly positive values, as there is no official definition for what 0 or -1 would mean. Games can use it to handle special cases if they have any, but should expect other games to not necessarily understand it.
 
 ## Examples
 
