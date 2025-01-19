@@ -1,0 +1,4 @@
+1: Navigate to `TestFiles/`, and host the multiworld found in this folder on port 38281. Alternatively, use the yamls to generate it yourself before hosting it
+2: Run the tests, they will interact with the multiworld
+
+If you want to do it from scratch, you simply need a multiworld with two Clique slots, named "Sender" and "Receiver"

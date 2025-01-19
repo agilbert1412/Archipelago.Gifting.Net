@@ -1,0 +1,10 @@
+name: Sender
+game: Clique
+description: Used for integration tests in the C# Gifting API
+Clique:
+  progression_balancing: '50'
+  accessibility: full
+  color: red
+  hard_mode: 'false'
+  start_inventory: {}
+  start_inventory_from_pool: {}

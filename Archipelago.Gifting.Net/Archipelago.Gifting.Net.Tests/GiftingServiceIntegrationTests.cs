@@ -17,7 +17,7 @@ namespace Archipelago.Gifting.Net.Tests
         private const int PORT = 38281;
         private const string SenderName = "Sender";
         private const string ReceiverName = "Receiver";
-        private const string GAME = "Stardew Valley";
+        private const string GAME = "Clique";
 
         private int SenderSlot => _sessionSender.ConnectionInfo.Slot;
         private int ReceiverSlot => _sessionReceiver.ConnectionInfo.Slot;
@@ -867,7 +867,7 @@ namespace Archipelago.Gifting.Net.Tests
 
             // Act
             _serviceSender.SendGift(giftItem, ReceiverName);
-            Wait();
+            Wait(200);
 
             // Assert
             hasBeenNotified.Should().BeTrue();
@@ -893,9 +893,9 @@ namespace Archipelago.Gifting.Net.Tests
             return traits.ToArray();
         }
 
-        private void Wait()
+        private void Wait(int ms = 50)
         {
-            Thread.Sleep(50);
+            Thread.Sleep(ms);
         }
 
         private void SetAlias(ArchipelagoSession session, string alias)
