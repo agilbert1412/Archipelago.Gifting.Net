@@ -5,7 +5,7 @@ using Archipelago.MultiClient.Net.Helpers;
 using FluentAssertions;
 using Moq;
 
-namespace Archipelago.Gifting.Net.Tests
+namespace Archipelago.Gifting.Net.Tests.UnitTests
 {
     [Ignore("Cannot mock things the way I need to")]
     public class GiftingServiceUnitTests

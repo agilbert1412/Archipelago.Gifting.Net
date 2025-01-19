@@ -1,130 +1,18 @@
-using Archipelago.Gifting.Net.Giftboxes;
 using Archipelago.Gifting.Net.Gifts;
-using Archipelago.Gifting.Net.Gifts.Versions;
-using Archipelago.Gifting.Net.Service;
 using Archipelago.Gifting.Net.Traits;
-using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
 using FluentAssertions;
 
-namespace Archipelago.Gifting.Net.Tests
+namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 {
-    public class GiftingServiceIntegrationTests
+    public class GiftingServiceIntegrationTests : IntegrationTestBase
     {
-        private const string IP = "localhost";
-        private const int PORT = 38281;
-        private const string SenderName = "Sender";
-        private const string ReceiverName = "Receiver";
-        private const string GAME = "Clique";
-
-        private int SenderSlot => _sessionSender.ConnectionInfo.Slot;
-        private int ReceiverSlot => _sessionReceiver.ConnectionInfo.Slot;
-        private int SenderTeam => _sessionSender.ConnectionInfo.Team;
-        private int ReceiverTeam => _sessionReceiver.ConnectionInfo.Team;
-
-        private ArchipelagoSession? _sessionSender;
-        private ArchipelagoSession? _sessionReceiver;
-        private GiftingService? _serviceSender;
-        private GiftingService? _serviceReceiver;
-
-        private Random _random = new Random(1234);
-
-        [SetUp]
-        public void Setup()
-        {
-            Wait();
-            InitializeSessions();
-            Wait();
-            InitializeGiftingServices();
-            Wait();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Wait();
-            CloseGiftBoxesAndShutdownGiftingServices();
-            Wait();
-            DisconnectSessions();
-            Wait();
-        }
-
-        private void InitializeSessions()
-        {
-            var itemsHandling = ItemsHandlingFlags.AllItems;
-            var minimumVersion = new Version(0, 4, 2);
-            var tags = new[] { "AP" };
-            InitializeSenderSession(itemsHandling, minimumVersion, tags);
-            InitializeReceiverSession(itemsHandling, minimumVersion, tags);
-        }
-
-        private void InitializeSenderSession(ItemsHandlingFlags itemsHandling, Version minimumVersion, string[] tags)
-        {
-            _sessionSender = ArchipelagoSessionFactory.CreateSession(IP, PORT);
-            var result = _sessionSender.TryConnectAndLogin(GAME, SenderName, itemsHandling, minimumVersion, tags);
-            if (result is not LoginSuccessful)
-            {
-                throw new Exception($"Failed to connect as {SenderName}");
-            }
-        }
-
-        private void InitializeReceiverSession(ItemsHandlingFlags itemsHandling, Version minimumVersion, string[] tags)
-        {
-            _sessionReceiver = ArchipelagoSessionFactory.CreateSession(IP, PORT);
-            var result = _sessionReceiver.TryConnectAndLogin(GAME, ReceiverName, itemsHandling, minimumVersion, tags);
-            if (result is not LoginSuccessful)
-            {
-                throw new Exception($"Failed to connect as {SenderName}");
-            }
-        }
-
-        private void InitializeGiftingServices()
-        {
-            _serviceSender = new GiftingService(_sessionSender);
-            _serviceReceiver = new GiftingService(_sessionReceiver);
-            _serviceSender.CloseGiftBox();
-            _serviceReceiver.CloseGiftBox();
-        }
-
-        private void CloseGiftBoxesAndShutdownGiftingServices()
-        {
-            if (_serviceSender != null)
-            {
-                _serviceSender.CloseGiftBox();
-                _serviceSender = null;
-            }
-
-            if (_serviceReceiver != null)
-            {
-                _serviceReceiver.CloseGiftBox();
-                _serviceReceiver = null;
-            }
-        }
-
-        private void DisconnectSessions()
-        {
-            if (_sessionSender != null)
-            {
-                RemoveAlias(_sessionSender);
-                _sessionSender.Socket.DisconnectAsync();
-                _sessionSender = null;
-            }
-
-            if (_sessionReceiver != null)
-            {
-                RemoveAlias(_sessionReceiver);
-                _sessionReceiver.Socket.DisconnectAsync();
-                _sessionReceiver = null;
-            }
-        }
-
         [Test]
         public void TestCannotSendGiftToNeverOpenedBox()
         {
             // Arrange
-            _serviceReceiver.CloseGiftBox();
+            CloseReceiverGiftBox();
             Wait();
 
             // Assume
@@ -326,8 +214,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
+            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -359,14 +247,14 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift1.ItemName.Should().Be(gift1.Name);
             receivedGift1.Amount.Should().Be(gift1.Amount);
             receivedGift1.ItemValue.Should().Be(gift1.Value);
-            receivedGift1.SenderSlot.Should().Be(SenderSlot);
-            receivedGift1.ReceiverSlot.Should().Be(ReceiverSlot);
+            receivedGift1.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift1.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
             receivedGift1.SenderTeam.Should().Be(receivedGift1.ReceiverTeam);
             receivedGift2.ItemName.Should().Be(gift2.Name);
             receivedGift2.Amount.Should().Be(gift2.Amount);
             receivedGift2.ItemValue.Should().Be(gift2.Value);
-            receivedGift2.SenderSlot.Should().Be(SenderSlot);
-            receivedGift2.ReceiverSlot.Should().Be(ReceiverSlot);
+            receivedGift2.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift2.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
             receivedGift2.SenderTeam.Should().Be(receivedGift2.ReceiverTeam);
         }
 
@@ -396,8 +284,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
+            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -476,7 +364,7 @@ namespace Archipelago.Gifting.Net.Tests
             gifts.Should().NotBeNull().And.HaveCount(4);
 
             // Act
-            _serviceReceiver.RemoveGiftsFromGiftBox(new[] {giftId1, giftId4});
+            _serviceReceiver.RemoveGiftsFromGiftBox(new[] { giftId1, giftId4 });
             Wait();
 
             // Assert
@@ -594,8 +482,8 @@ namespace Archipelago.Gifting.Net.Tests
             var giftReceiver = giftsReceiver[giftId];
             giftReceiver.IsRefund.Should().BeFalse();
             giftReceiver.ItemName.Should().Be(gift.Name);
-            giftReceiver.SenderSlot.Should().Be(SenderSlot);
-            giftReceiver.ReceiverSlot.Should().Be(ReceiverSlot);
+            giftReceiver.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            giftReceiver.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
             giftReceiver.SenderTeam.Should().Be(giftReceiver.ReceiverTeam);
             var giftsSender = _serviceSender.CheckGiftBox();
             giftsSender.Should().BeEmpty();
@@ -615,8 +503,8 @@ namespace Archipelago.Gifting.Net.Tests
             giftSender.IsRefund.Should().BeTrue();
             giftSender.ItemName.Should().Be(gift.Name);
             giftSender.ItemName.Should().Be(gift.Name);
-            giftSender.SenderSlot.Should().Be(SenderSlot);
-            giftSender.ReceiverSlot.Should().Be(ReceiverSlot);
+            giftSender.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            giftSender.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
         }
 
         [Test]
@@ -646,8 +534,8 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
+            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
         }
 
@@ -681,168 +569,9 @@ namespace Archipelago.Gifting.Net.Tests
             receivedGift.ItemName.Should().Be(gift.Name);
             receivedGift.Amount.Should().Be(gift.Amount);
             receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
+            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
             receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
-        }
-
-        [Test]
-        public void TestCanReadOutdatedGift()
-        {
-            // Arrange
-            _serviceReceiver.OpenGiftBox();
-            var giftItem = NewGiftItem();
-            Wait();
-            SendVersion1Gift(giftItem, new GiftTrait[0], out var giftId);
-            Wait();
-
-            // Act
-            var gifts = _serviceReceiver.CheckGiftBox();
-
-            // Assert
-            gifts.Should().NotBeNull().And.HaveCount(1);
-            var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId.ToString());
-            receivedGift.ID.Should().Be(giftId.ToString());
-            receivedGift.ItemName.Should().Be(giftItem.Name);
-            receivedGift.Amount.Should().Be(giftItem.Amount);
-            receivedGift.ItemValue.Should().Be(giftItem.Value);
-            receivedGift.SenderSlot.Should().Be(SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
-            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
-        }
-
-        [Test]
-        public void TestCanCreateOutdatedGift()
-        {
-            // Arrange
-            var outdatedGiftbox = new GiftBox(true)
-            {
-                MinimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
-                MaximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
-            };
-            _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
-            var giftItem = NewGiftItem();
-            Wait();
-
-            // Act
-            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
-            Wait();
-
-            // Assert
-            success.Should().BeTrue();
-            var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{ReceiverTeam};{ReceiverSlot}"];
-            var gifts = new Gifts.Versions.Version1.Converter().ReadFromDataStorage(existingGiftBox);
-            gifts.Should().NotBeNull().And.HaveCount(1);
-            var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
-            receivedGift.Item.Should().NotBeNull();
-            receivedGift.Item.Name.Should().Be(giftItem.Name);
-            receivedGift.Item.Amount.Should().Be(giftItem.Amount);
-            receivedGift.Item.Value.Should().Be(giftItem.Value);
-            receivedGift.SenderName.Should().Be(SenderName);
-            receivedGift.ReceiverName.Should().Be(ReceiverName);
-            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
-        }
-
-        [Test]
-        public void TestCanCreateCurrentGiftForFutureGiftBoxThatIsBackwardCompatible()
-        {
-            // Arrange
-            var outdatedGiftbox = new GiftBox(true)
-            {
-                MinimumGiftDataVersion = DataVersion.FirstVersion,
-                MaximumGiftDataVersion = DataVersion.Current + 1,
-            };
-            _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
-            var giftItem = NewGiftItem();
-            Wait();
-
-            // Assume
-            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeTrue();
-
-            // Act
-            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
-            Wait();
-            var gifts = _serviceReceiver.CheckGiftBox();
-
-            // Assert
-            success.Should().BeTrue();
-            gifts.Should().NotBeNull().And.HaveCount(1);
-            var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
-            receivedGift.ItemName.Should().Be(giftItem.Name);
-            receivedGift.Amount.Should().Be(giftItem.Amount);
-            receivedGift.ItemValue.Should().Be(giftItem.Value);
-            receivedGift.SenderSlot.Should().Be(SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(ReceiverSlot);
-            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
-        }
-
-        [Test]
-        public void TestCannotCreateCurrentGiftForFutureGiftBoxThatIsNotBackwardCompatible()
-        {
-            // Arrange
-            var outdatedGiftbox = new GiftBox(true)
-            {
-                MinimumGiftDataVersion = DataVersion.Current + 1,
-                MaximumGiftDataVersion = DataVersion.Current + 1,
-            };
-            _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
-            var giftItem = NewGiftItem();
-            Wait();
-
-            // Assume
-            var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeFalse();
-
-            // Act
-            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
-            Wait();
-            var gifts = _serviceReceiver.CheckGiftBox();
-
-            // Assert
-            success.Should().BeFalse();
-            gifts.Should().NotBeNull().And.BeEmpty();
-        }
-
-        [Test]
-        public void TestCanUnderstandGiftboxWithAllGiftVersions()
-        {
-            // Arrange
-            _serviceReceiver.OpenGiftBox();
-            Wait();
-            var giftItems = new[] { NewGiftItem("1"), NewGiftItem("2"), NewGiftItem("3") };
-            var giftIds = new string[3];
-            SendVersion1Gift(giftItems[0], new GiftTrait[0], out var giftId1);
-            giftIds[0] = giftId1.ToString();
-            giftIds[1] = Guid.NewGuid().ToString();
-            SendVersion2Gift(giftItems[1], new GiftTrait[0], giftIds[1]);
-            giftIds[2] = "Unique Id that is not a Valid Guid";
-            SendVersion2Gift(giftItems[2], new GiftTrait[0], giftIds[2]);
-            Wait();
-
-            // Act
-            var gifts = _serviceReceiver.CheckGiftBox();
-
-            // Assert
-            gifts.Should().NotBeNull().And.HaveCount(3);
-            for (var i = 0; i < 3; i++)
-            {
-                var giftId = giftIds[i];
-                gifts.Should().ContainKey(giftId);
-                var gift = gifts[giftId];
-                gift.ID.Should().Be(giftId);
-                gift.ItemName.Should().Be(giftItems[i].Name);
-                gift.Amount.Should().Be(giftItems[i].Amount);
-                gift.ItemValue.Should().Be(giftItems[i].Value);
-                gift.SenderSlot.Should().Be(SenderSlot);
-                gift.ReceiverSlot.Should().Be(ReceiverSlot);
-                gift.SenderTeam.Should().Be(gift.ReceiverTeam);
-            }
         }
 
         [Test]
@@ -871,82 +600,6 @@ namespace Archipelago.Gifting.Net.Tests
 
             // Assert
             hasBeenNotified.Should().BeTrue();
-        }
-
-        private GiftItem NewGiftItem(string suffix = "")
-        {
-            return new GiftItem("Test Gift" + (string.IsNullOrEmpty(suffix) ? "" : $" {suffix}"), _random.Next(1, 10), _random.Next(1, 100));
-        }
-
-        private GiftTrait[] NewGiftTraits()
-        {
-            var count = _random.Next(0, 5);
-            var allFlags = GiftFlag.AllFlags;
-            var traits = new List<GiftTrait>();
-            for (var i = 0; i < count; i++)
-            {
-                var trait = new GiftTrait(trait: allFlags[_random.Next(0, allFlags.Length)],
-                    duration: _random.NextDouble() * 2, quality: _random.NextDouble() * 2);
-                traits.Add(trait);
-            }
-
-            return traits.ToArray();
-        }
-
-        private void Wait(int ms = 50)
-        {
-            Thread.Sleep(ms);
-        }
-
-        private void SetAlias(ArchipelagoSession session, string alias)
-        {
-
-            var packet = new SayPacket()
-            {
-                Text = $"!alias {alias}",
-            };
-
-            session.Socket.SendPacket(packet);
-            Wait();
-        }
-
-        private void RemoveAlias(ArchipelagoSession session)
-        {
-            var packet = new SayPacket()
-            {
-                Text = $"!alias",
-            };
-
-            session.Socket.SendPacket(packet);
-            Wait();
-        }
-
-        private void SendVersion1Gift(GiftItem item, GiftTrait[] traits, out Guid giftId)
-        {
-            var gift = new Gifts.Versions.Version1.Gift(item, traits, SenderName, ReceiverName, SenderTeam, ReceiverTeam);
-            giftId = Guid.Parse(gift.ID);
-            var giftboxKey = $"GiftBox;{ReceiverTeam};{ReceiverSlot}";
-            
-            var newGiftEntry = new Dictionary<Guid, Gifts.Versions.Version1.Gift>
-            {
-                { giftId, gift },
-            };
-
-            _sessionSender.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
-        }
-
-        private void SendVersion2Gift(GiftItem item, GiftTrait[] traits, string giftId)
-        {
-            var gift = new Gifts.Versions.Current.Gift(item.Name, item.Amount, item.Value, traits, SenderSlot, ReceiverSlot, SenderTeam, ReceiverTeam);
-            gift.ID = giftId;
-            var giftboxKey = $"GiftBox;{ReceiverTeam};{ReceiverSlot}";
-
-            var newGiftEntry = new Dictionary<string, Gifts.Versions.Current.Gift>
-            {
-                { gift.ID, gift },
-            };
-
-            _sessionSender.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
         }
     }
 }
