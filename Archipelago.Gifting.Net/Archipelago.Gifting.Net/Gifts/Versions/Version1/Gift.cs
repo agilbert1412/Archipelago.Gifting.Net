@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Numerics;
-using Archipelago.Gifting.Net.Traits;
 
 namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
 {

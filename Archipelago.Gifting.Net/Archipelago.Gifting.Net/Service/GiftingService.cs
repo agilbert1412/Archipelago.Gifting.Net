@@ -27,6 +27,8 @@ namespace Archipelago.Gifting.Net.Service
         private JToken EmptyMotherboxDictionary => JToken.FromObject(new Dictionary<int, GiftBox>());
         private JToken EmptyGiftDictionary => JToken.FromObject(new Dictionary<string, Gift>());
 
+        internal PlayerProvider PlayerProvider => _playerProvider;
+
         public GiftingService(ArchipelagoSession session)
         {
             _session = session;
@@ -177,13 +179,13 @@ namespace Archipelago.Gifting.Net.Service
 
         public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId)
         {
-            var canGift = CanGiftToPlayer(playerName, playerTeam, traits.Select(x => x.Trait));
+            var canGift = CanGiftToPlayer(playerName, playerTeam, traits.Select(x => x.trait));
             return SendGift(item, traits, playerName, playerTeam, canGift, out giftId);
         }
 
         public async Task<bool> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
         {
-            var canGift = await CanGiftToPlayerAsync(playerName, playerTeam, traits.Select(x => x.Trait));
+            var canGift = await CanGiftToPlayerAsync(playerName, playerTeam, traits.Select(x => x.trait));
             return SendGift(item, traits, playerName, playerTeam, canGift, out _);
         }
 
@@ -206,18 +208,18 @@ namespace Archipelago.Gifting.Net.Service
 
             var receiverSlot = receivingPlayer.Slot;
             var gift = new Gift(item.Name, item.Amount, item.Value, traits, senderSlot, receiverSlot, senderTeam, playerTeam);
-            giftId = gift.ID;
+            giftId = gift.id;
             return SendGift(gift);
         }
 
         public bool RefundGift(Gift gift)
         {
-            if (gift.IsRefund)
+            if (gift.isRefund)
             {
                 return false;
             }
 
-            gift.IsRefund = true;
+            gift.isRefund = true;
             return SendGift(gift);
         }
 
@@ -225,9 +227,9 @@ namespace Archipelago.Gifting.Net.Service
         {
             try
             {
-                var targetPlayer = gift.IsRefund
-                    ? _playerProvider.GetPlayer(gift.SenderSlot, gift.SenderTeam)
-                    : _playerProvider.GetPlayer(gift.ReceiverSlot, gift.ReceiverTeam);
+                var targetPlayer = gift.isRefund
+                    ? _playerProvider.GetPlayer(gift.senderSlot, gift.senderTeam)
+                    : _playerProvider.GetPlayer(gift.receiverSlot, gift.receiverTeam);
 
                 var motherBox = GetMotherbox(targetPlayer.Team);
                 var giftboxMetadata = motherBox[targetPlayer.Slot];

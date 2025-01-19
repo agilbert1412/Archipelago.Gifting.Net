@@ -1,4 +1,5 @@
 ﻿using Archipelago.Gifting.Net.Gifts;
+using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Service;
 using Archipelago.Gifting.Net.Traits;
 using Archipelago.MultiClient.Net.Enums;
@@ -133,8 +134,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var traits = new List<GiftTrait>();
             for (var i = 0; i < count; i++)
             {
-                var trait = new GiftTrait(trait: allFlags[_random.Next(0, allFlags.Length)],
-                    duration: _random.NextDouble() * 2, quality: _random.NextDouble() * 2);
+                var trait = new GiftTrait(allFlags[_random.Next(0, allFlags.Length)],
+                    _random.NextDouble() * 2, _random.NextDouble() * 2);
                 traits.Add(trait);
             }
 

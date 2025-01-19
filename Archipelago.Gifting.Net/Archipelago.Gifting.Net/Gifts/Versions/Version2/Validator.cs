@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Archipelago.Gifting.Net.Gifts.Versions.Current
+namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
 {
     internal class Validator
     {
         public Validator()
         {
+
         }
 
         public bool Validate(Dictionary<string, Gift> gifts, out IList<string> errors)
@@ -17,11 +18,11 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Current
             }
 
             var allValid = true;
-            foreach (var giftEntry in gifts)
+            foreach (var idAndGift in gifts)
             {
-                if (!Validate(giftEntry.Value))
+                if (!Validate(idAndGift.Value))
                 {
-                    errors.Add(giftEntry.Key);
+                    errors.Add(idAndGift.Key);
                     allValid = false;
                 }
             }
@@ -36,7 +37,7 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Current
                 return false;
             }
 
-            if (gift.itemName == null || gift.amount <= 0 || gift.traits == null)
+            if (gift.ItemName == null || gift.Amount <= 0 || gift.Traits == null)
             {
                 return false;
             }

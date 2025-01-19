@@ -1,4 +1,4 @@
-﻿namespace Archipelago.Gifting.Net.Traits
+﻿namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
 {
     public class GiftTrait
     {

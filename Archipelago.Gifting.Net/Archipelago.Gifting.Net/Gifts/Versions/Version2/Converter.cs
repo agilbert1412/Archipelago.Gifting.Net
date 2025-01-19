@@ -6,20 +6,22 @@ using Archipelago.Gifting.Net.Utilities;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Archipelago.Gifting.Net.Gifts.Versions.Current
+namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
 {
-    internal class Converter : IVersionedConverter<Gift, Version2.Gift>
+    internal class Converter : IVersionedConverter<Gift, Version1.Gift>
     {
-        public int Version => DataVersion.GIFT_DATA_VERSION_3;
-        public int PreviousVersion => DataVersion.GIFT_DATA_VERSION_2;
+        public int Version => DataVersion.GIFT_DATA_VERSION_2;
+        public int PreviousVersion => DataVersion.GIFT_DATA_VERSION_1;
 
-        private readonly Validator _validator;
-        private readonly IVersionedConverter<Version2.Gift, Version1.Gift> _previousConverter;
+        private PlayerProvider _playerProvider;
+        private Validator _validator;
+        private IVersionedConverter<Version1.Gift, object> _previousConverter;
 
         public Converter(PlayerProvider playerProvider)
         {
+            _playerProvider = playerProvider;
             _validator = new Validator();
-            _previousConverter = new Version2.Converter(playerProvider);
+            _previousConverter = new Version1.Converter();
         }
 
         public Dictionary<string, Gift> ReadFromDataStorage(DataStorageElement element)
@@ -44,6 +46,7 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Current
                 }
 
                 return giftboxContent;
+
             }
             catch (Exception)
             {
@@ -89,42 +92,46 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Current
 
             var newGiftEntry = new Dictionary<string, Gift>
             {
-                { gift.id, gift },
+                { gift.ID, gift },
             };
 
             return newGiftEntry;
         }
 
-        public Gift ConvertToCurrentVersion(Version2.Gift olderGift)
+        public Gift ConvertToCurrentVersion(Version1.Gift olderGift)
         {
-            var currentGift = new Gift(olderGift.ItemName,
-                olderGift.Amount,
-                olderGift.ItemValue,
+            var sender = _playerProvider.GetPlayer(olderGift.SenderName, olderGift.SenderTeam);
+            var receiver = _playerProvider.GetPlayer(olderGift.ReceiverName, olderGift.ReceiverTeam);
+            var currentGift = new Gift(olderGift.Item.Name,
+                olderGift.Item.Amount,
+                olderGift.Item.Value,
                 ConvertTraits(olderGift.Traits),
-                olderGift.SenderSlot,
-                olderGift.ReceiverSlot,
+                sender.Slot,
+                receiver.Slot,
                 olderGift.SenderTeam,
                 olderGift.ReceiverTeam);
-            currentGift.id = olderGift.ID;
+            currentGift.ID = olderGift.ID;
             return currentGift;
         }
 
-        public Version2.Gift ConvertToPreviousVersion(Gift currentGift)
+        public Version1.Gift ConvertToPreviousVersion(Gift currentGift)
         {
-            var olderGift = new Version2.Gift(currentGift.itemName, currentGift.amount, currentGift.itemValue, ConvertTraits(currentGift.traits), currentGift.senderSlot,
-                currentGift.receiverSlot, currentGift.senderTeam, currentGift.receiverTeam);
-            olderGift.ID = currentGift.id;
+            var giftItem = new GiftItem(currentGift.ItemName, currentGift.Amount, currentGift.ItemValue);
+            var sender = _playerProvider.GetPlayer(currentGift.SenderSlot, currentGift.SenderTeam);
+            var receiver = _playerProvider.GetPlayer(currentGift.ReceiverSlot, currentGift.ReceiverTeam);
+            var olderGift = new Version1.Gift(giftItem, ConvertTraits(currentGift.Traits), sender.Name, receiver.Name, currentGift.SenderTeam, currentGift.ReceiverTeam);
+            olderGift.ID = currentGift.ID;
             return olderGift;
         }
 
-        private GiftTrait[] ConvertTraits(Version2.GiftTrait[] olderGiftTraits)
+        private GiftTrait[] ConvertTraits(Version1.GiftTrait[] olderGiftTraits)
         {
             return olderGiftTraits.Select(x => new GiftTrait(x.Trait, x.Duration, x.Quality)).ToArray();
         }
 
-        private Version2.GiftTrait[] ConvertTraits(GiftTrait[] newerGiftTraits)
+        private Version1.GiftTrait[] ConvertTraits(GiftTrait[] newerGiftTraits)
         {
-            return newerGiftTraits.Select(x => new Version2.GiftTrait(x.trait, x.duration, x.quality)).ToArray();
+            return newerGiftTraits.Select(x => new Version1.GiftTrait(x.Trait, x.Duration, x.Quality)).ToArray();
         }
     }
 }

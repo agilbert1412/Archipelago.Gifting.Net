@@ -1,3 +1,4 @@
+using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Traits;
 using Archipelago.Gifting.Net.Utilities.CloseTraitParser;
 using FluentAssertions;

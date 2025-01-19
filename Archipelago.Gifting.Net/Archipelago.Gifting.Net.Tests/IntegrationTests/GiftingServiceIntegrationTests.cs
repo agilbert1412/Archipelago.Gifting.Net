@@ -210,13 +210,13 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId.ToString());
-            receivedGift.ItemName.Should().Be(gift.Name);
-            receivedGift.Amount.Should().Be(gift.Amount);
-            receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
-            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.itemName.Should().Be(gift.Name);
+            receivedGift.amount.Should().Be(gift.Amount);
+            receivedGift.itemValue.Should().Be(gift.Value);
+            receivedGift.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift.senderTeam.Should().Be(receivedGift.receiverTeam);
         }
 
         [Test]
@@ -244,18 +244,18 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(2);
             var receivedGift1 = gifts[giftId1];
             var receivedGift2 = gifts[giftId2];
-            receivedGift1.ItemName.Should().Be(gift1.Name);
-            receivedGift1.Amount.Should().Be(gift1.Amount);
-            receivedGift1.ItemValue.Should().Be(gift1.Value);
-            receivedGift1.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            receivedGift1.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
-            receivedGift1.SenderTeam.Should().Be(receivedGift1.ReceiverTeam);
-            receivedGift2.ItemName.Should().Be(gift2.Name);
-            receivedGift2.Amount.Should().Be(gift2.Amount);
-            receivedGift2.ItemValue.Should().Be(gift2.Value);
-            receivedGift2.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            receivedGift2.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
-            receivedGift2.SenderTeam.Should().Be(receivedGift2.ReceiverTeam);
+            receivedGift1.itemName.Should().Be(gift1.Name);
+            receivedGift1.amount.Should().Be(gift1.Amount);
+            receivedGift1.itemValue.Should().Be(gift1.Value);
+            receivedGift1.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift1.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift1.senderTeam.Should().Be(receivedGift1.receiverTeam);
+            receivedGift2.itemName.Should().Be(gift2.Name);
+            receivedGift2.amount.Should().Be(gift2.Amount);
+            receivedGift2.itemValue.Should().Be(gift2.Value);
+            receivedGift2.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift2.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift2.senderTeam.Should().Be(receivedGift2.receiverTeam);
         }
 
         [Test]
@@ -280,13 +280,13 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId.ToString());
-            receivedGift.ItemName.Should().Be(gift.Name);
-            receivedGift.Amount.Should().Be(gift.Amount);
-            receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
-            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.itemName.Should().Be(gift.Name);
+            receivedGift.amount.Should().Be(gift.Amount);
+            receivedGift.itemValue.Should().Be(gift.Value);
+            receivedGift.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift.senderTeam.Should().Be(receivedGift.receiverTeam);
         }
 
         [Test]
@@ -396,16 +396,16 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
             var receivedGift = gifts[giftId];
-            receivedGift.ItemName.Should().Be(gift.Name);
-            receivedGift.Amount.Should().Be(gift.Amount);
-            receivedGift.ItemValue.Should().Be(gift.Value);
-            var receivedTraits = receivedGift.Traits;
+            receivedGift.itemName.Should().Be(gift.Name);
+            receivedGift.amount.Should().Be(gift.Amount);
+            receivedGift.itemValue.Should().Be(gift.Value);
+            var receivedTraits = receivedGift.traits;
             receivedTraits.Should().HaveCount(traits.Length);
             for (var i = 0; i < traits.Length; i++)
             {
-                receivedTraits[i].Trait.Should().BeEquivalentTo(traits[i].Trait);
-                receivedTraits[i].Quality.Should().BeApproximately(traits[i].Quality, 0.001);
-                receivedTraits[i].Duration.Should().BeApproximately(traits[i].Duration, 0.001);
+                receivedTraits[i].trait.Should().BeEquivalentTo(traits[i].trait);
+                receivedTraits[i].quality.Should().BeApproximately(traits[i].quality, 0.001);
+                receivedTraits[i].duration.Should().BeApproximately(traits[i].duration, 0.001);
             }
         }
 
@@ -437,28 +437,28 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull();
             gifts.Should().HaveCount(2);
             var receivedGift1 = gifts[giftId1];
-            receivedGift1.ItemName.Should().Be(gift1.Name);
-            receivedGift1.Amount.Should().Be(gift1.Amount);
-            receivedGift1.ItemValue.Should().Be(gift1.Value);
-            var receivedTraits1 = receivedGift1.Traits;
+            receivedGift1.itemName.Should().Be(gift1.Name);
+            receivedGift1.amount.Should().Be(gift1.Amount);
+            receivedGift1.itemValue.Should().Be(gift1.Value);
+            var receivedTraits1 = receivedGift1.traits;
             receivedTraits1.Should().HaveCount(traits1.Length);
             for (var i = 0; i < traits1.Length; i++)
             {
-                receivedTraits1[i].Trait.Should().BeEquivalentTo(traits1[i].Trait);
-                receivedTraits1[i].Quality.Should().BeApproximately(traits1[i].Quality, 0.001);
-                receivedTraits1[i].Duration.Should().BeApproximately(traits1[i].Duration, 0.001);
+                receivedTraits1[i].trait.Should().BeEquivalentTo(traits1[i].trait);
+                receivedTraits1[i].quality.Should().BeApproximately(traits1[i].quality, 0.001);
+                receivedTraits1[i].duration.Should().BeApproximately(traits1[i].duration, 0.001);
             }
             var receivedGift2 = gifts[giftId2];
-            receivedGift2.ItemName.Should().Be(gift2.Name);
-            receivedGift2.Amount.Should().Be(gift2.Amount);
-            receivedGift2.ItemValue.Should().Be(gift2.Value);
-            var receivedTraits2 = receivedGift2.Traits;
+            receivedGift2.itemName.Should().Be(gift2.Name);
+            receivedGift2.amount.Should().Be(gift2.Amount);
+            receivedGift2.itemValue.Should().Be(gift2.Value);
+            var receivedTraits2 = receivedGift2.traits;
             receivedTraits2.Should().HaveCount(traits2.Length);
             for (var i = 0; i < traits2.Length; i++)
             {
-                receivedTraits2[i].Trait.Should().BeEquivalentTo(traits2[i].Trait);
-                receivedTraits2[i].Quality.Should().BeApproximately(traits2[i].Quality, 0.001);
-                receivedTraits2[i].Duration.Should().BeApproximately(traits2[i].Duration, 0.001);
+                receivedTraits2[i].trait.Should().BeEquivalentTo(traits2[i].trait);
+                receivedTraits2[i].quality.Should().BeApproximately(traits2[i].quality, 0.001);
+                receivedTraits2[i].duration.Should().BeApproximately(traits2[i].duration, 0.001);
             }
         }
 
@@ -480,11 +480,11 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             giftsReceiver.Should().NotBeNull();
             giftsReceiver.Should().HaveCount(1);
             var giftReceiver = giftsReceiver[giftId];
-            giftReceiver.IsRefund.Should().BeFalse();
-            giftReceiver.ItemName.Should().Be(gift.Name);
-            giftReceiver.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            giftReceiver.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
-            giftReceiver.SenderTeam.Should().Be(giftReceiver.ReceiverTeam);
+            giftReceiver.isRefund.Should().BeFalse();
+            giftReceiver.itemName.Should().Be(gift.Name);
+            giftReceiver.senderSlot.Should().Be(_testSessions.SenderSlot);
+            giftReceiver.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            giftReceiver.senderTeam.Should().Be(giftReceiver.receiverTeam);
             var giftsSender = _serviceSender.CheckGiftBox();
             giftsSender.Should().BeEmpty();
 
@@ -500,11 +500,11 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             giftsSender = _serviceSender.CheckGiftBox();
             giftsSender.Should().NotBeNull().And.HaveCount(1);
             var giftSender = giftsSender[giftId];
-            giftSender.IsRefund.Should().BeTrue();
-            giftSender.ItemName.Should().Be(gift.Name);
-            giftSender.ItemName.Should().Be(gift.Name);
-            giftSender.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            giftSender.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            giftSender.isRefund.Should().BeTrue();
+            giftSender.itemName.Should().Be(gift.Name);
+            giftSender.itemName.Should().Be(gift.Name);
+            giftSender.senderSlot.Should().Be(_testSessions.SenderSlot);
+            giftSender.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
         }
 
         [Test]
@@ -530,13 +530,13 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId.ToString());
-            receivedGift.ItemName.Should().Be(gift.Name);
-            receivedGift.Amount.Should().Be(gift.Amount);
-            receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
-            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.itemName.Should().Be(gift.Name);
+            receivedGift.amount.Should().Be(gift.Amount);
+            receivedGift.itemValue.Should().Be(gift.Value);
+            receivedGift.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift.senderTeam.Should().Be(receivedGift.receiverTeam);
         }
 
         [Test]
@@ -565,13 +565,13 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId.ToString());
-            receivedGift.ItemName.Should().Be(gift.Name);
-            receivedGift.Amount.Should().Be(gift.Amount);
-            receivedGift.ItemValue.Should().Be(gift.Value);
-            receivedGift.SenderSlot.Should().Be(_testSessions.SenderSlot);
-            receivedGift.ReceiverSlot.Should().Be(_testSessions.ReceiverSlot);
-            receivedGift.SenderTeam.Should().Be(receivedGift.ReceiverTeam);
+            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.itemName.Should().Be(gift.Name);
+            receivedGift.amount.Should().Be(gift.Amount);
+            receivedGift.itemValue.Should().Be(gift.Value);
+            receivedGift.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift.senderTeam.Should().Be(receivedGift.receiverTeam);
         }
 
         [Test]
@@ -588,15 +588,15 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
                 gifts.Should().NotBeNull();
                 gifts.Should().HaveCount(1);
                 var notifiedGift = gifts.Values.First();
-                notifiedGift.ItemName.Should().Be(giftItem.Name);
-                notifiedGift.Amount.Should().Be(giftItem.Amount);
-                notifiedGift.ItemValue.Should().Be(giftItem.Value);
+                notifiedGift.itemName.Should().Be(giftItem.Name);
+                notifiedGift.amount.Should().Be(giftItem.Amount);
+                notifiedGift.itemValue.Should().Be(giftItem.Value);
             });
             Wait();
 
             // Act
             _serviceSender.SendGift(giftItem, ReceiverName);
-            Wait(200);
+            Wait(300);
 
             // Assert
             hasBeenNotified.Should().BeTrue();
