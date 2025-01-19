@@ -87,12 +87,45 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Current
                 return _previousConverter.CreateDataStorageUpdateEntry(ConvertToPreviousVersion(gift), version);
             }
 
-            var newGiftEntry = new Dictionary<string, Gift>
+            var jsonObject = JObject.FromObject(gift);
+            foreach (var property in jsonObject.Properties())
             {
-                { gift.id, gift },
+                if (property.Name != "traits")
+                {
+                    continue;
+                }
+
+                var traits = property.Value;
+                foreach (var trait in traits)
+                {
+                    RemoveDefaultValueProperties(trait, new[] { "quality", "duration" }, 1.0);
+                }
+            }
+
+            var newGiftEntry = new Dictionary<string, JObject>
+            {
+                { gift.id, jsonObject },
             };
 
             return newGiftEntry;
+        }
+
+        private static void RemoveDefaultValueProperties(JToken trait, string[] propertiesToCheck, double valueToOmit)
+        {
+            foreach (var propertyName in propertiesToCheck)
+            {
+                var quality = trait[propertyName];
+                if (quality != null && IsDefaultValue(quality, valueToOmit))
+                {
+                    quality.Parent.Remove();
+                }
+            }
+        }
+
+        private static bool IsDefaultValue(JToken quality, double defaultValue)
+        {
+            const double epsilon = 0.001;
+            return Math.Abs(quality.Value<double>() - defaultValue) < epsilon;
         }
 
         public Gift ConvertToCurrentVersion(Version2.Gift olderGift)

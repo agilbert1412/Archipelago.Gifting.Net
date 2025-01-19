@@ -1,8 +1,11 @@
 using Archipelago.Gifting.Net.Gifts;
+using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Traits;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using FluentAssertions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 {
@@ -210,7 +213,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.id.Should().Be(giftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -280,7 +283,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.id.Should().Be(giftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -530,7 +533,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.id.Should().Be(giftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -565,7 +568,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGift.id.Should().Be(giftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -600,6 +603,59 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Assert
             hasBeenNotified.Should().BeTrue();
+        }
+
+        [Test]
+        public void TestSendGiftWithDefaultQualitiesAndDurationsOmitsThemFromDataStorage()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            var gift = NewGiftItem();
+            var traits = new GiftTrait[] { new("Food"), new("Drink", 2.0), new("Heal", 1.0, 0.0), new("Damage", 1.1, -1.0) };
+            Wait();
+
+            // Assume
+            var gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().BeEmpty();
+
+            // Act
+            var result = _serviceSender.SendGift(gift, traits, ReceiverName, out var giftId);
+            Wait();
+
+            // Assert
+            result.Should().BeTrue();
+
+            var giftboxKey = $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}";
+            var content = _sessionReceiver.DataStorage[Scope.Global, giftboxKey].To<JToken>().ToString(Formatting.None);
+            content.Should().NotBeNullOrWhiteSpace();
+            content.Should().Contain("{\"trait\":\"Food\"}");
+            content.Should().Contain("{\"trait\":\"Drink\",\"quality\":2.0}");
+            content.Should().Contain("{\"trait\":\"Heal\",\"duration\":0.0}");
+            content.Should().Contain("{\"trait\":\"Damage\",\"quality\":1.1,\"duration\":-1.0}");
+
+            gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull().And.HaveCount(1);
+            var (receivedGiftId, receivedGift) = gifts.First();
+            receivedGiftId.Should().Be(giftId);
+            receivedGift.id.Should().Be(giftId);
+            receivedGift.itemName.Should().Be(gift.Name);
+            receivedGift.amount.Should().Be(gift.Amount);
+            receivedGift.itemValue.Should().Be(gift.Value);
+            receivedGift.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift.senderTeam.Should().Be(receivedGift.receiverTeam);
+            receivedGift.traits[0].trait.Should().Be("Food");
+            receivedGift.traits[0].quality.Should().BeApproximately(1.0, 0.1);
+            receivedGift.traits[0].duration.Should().BeApproximately(1.0, 0.1);
+            receivedGift.traits[1].trait.Should().Be("Drink");
+            receivedGift.traits[1].quality.Should().BeApproximately(2.0, 0.1);
+            receivedGift.traits[1].duration.Should().BeApproximately(1.0, 0.1);
+            receivedGift.traits[2].trait.Should().Be("Heal");
+            receivedGift.traits[2].quality.Should().BeApproximately(1.0, 0.1);
+            receivedGift.traits[2].duration.Should().BeApproximately(0.0, 0.1);
+            receivedGift.traits[3].trait.Should().Be("Damage");
+            receivedGift.traits[3].quality.Should().BeApproximately(1.1, 0.1);
+            receivedGift.traits[3].duration.Should().BeApproximately(-1.0, 0.1);
         }
     }
 }
