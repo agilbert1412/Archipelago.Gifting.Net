@@ -73,8 +73,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var outdatedGiftbox = new GiftBox(true)
             {
-                MinimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
-                MaximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
+                minimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
+                maximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
@@ -107,8 +107,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var outdatedGiftbox = new GiftBox(true)
             {
-                MinimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
-                MaximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
+                minimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
+                maximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
@@ -140,8 +140,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var futureGiftBox = new GiftBox(true)
             {
-                MinimumGiftDataVersion = DataVersion.FirstVersion,
-                MaximumGiftDataVersion = DataVersion.Current + 1,
+                minimumGiftDataVersion = DataVersion.FirstVersion,
+                maximumGiftDataVersion = DataVersion.Current + 1,
             };
             _serviceReceiver.UpdateGiftBox(futureGiftBox);
             var giftItem = NewGiftItem();
@@ -176,8 +176,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var outdatedGiftbox = new GiftBox(true)
             {
-                MinimumGiftDataVersion = DataVersion.Current + 1,
-                MaximumGiftDataVersion = DataVersion.Current + 1,
+                minimumGiftDataVersion = DataVersion.Current + 1,
+                maximumGiftDataVersion = DataVersion.Current + 1,
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();

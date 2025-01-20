@@ -132,12 +132,12 @@ namespace Archipelago.Gifting.Net.Service
 
         private static AcceptedTraits GetAcceptedTraits(int team, int player, GiftBox giftbox, IEnumerable<string> giftTraits)
         {
-            if (giftbox == null || !giftbox.IsOpen)
+            if (giftbox == null || !giftbox.isOpen)
             {
                 return new AcceptedTraits(team, player);
             }
 
-            var traits = giftTraits.Where(x => giftbox.AcceptsAnyGift || giftbox.DesiredTraits.Contains(x));
+            var traits = giftTraits.Where(x => giftbox.acceptsAnyGift || giftbox.desiredTraits.Contains(x));
             var acceptedTraits = new AcceptedTraits(team, player, traits.ToArray());
             return acceptedTraits;
         }
@@ -233,7 +233,7 @@ namespace Archipelago.Gifting.Net.Service
 
                 var motherBox = GetMotherbox(targetPlayer.Team);
                 var giftboxMetadata = motherBox[targetPlayer.Slot];
-                var giftboxVersion = giftboxMetadata.MaximumGiftDataVersion;
+                var giftboxVersion = giftboxMetadata.maximumGiftDataVersion;
                 if (giftboxVersion < DataVersion.FirstVersion)
                 {
                     giftboxVersion = DataVersion.FirstVersion;
@@ -393,18 +393,18 @@ namespace Archipelago.Gifting.Net.Service
             }
 
             var giftBox = motherBox[playerSlot];
-            if (!giftBox.IsOpen || giftBox.MinimumGiftDataVersion > DataVersion.Current)
+            if (!giftBox.isOpen || giftBox.minimumGiftDataVersion > DataVersion.Current)
             {
                 return false;
             }
 
             var owner = _playerProvider.GetPlayer(playerSlot, playerTeam);
-            if (giftBox.AcceptsAnyGift)
+            if (giftBox.acceptsAnyGift)
             {
                 return true;
             }
 
-            return giftBox.DesiredTraits.Any(trait => giftTraits.Contains(trait, StringComparer.OrdinalIgnoreCase));
+            return giftBox.desiredTraits.Any(trait => giftTraits.Contains(trait, StringComparer.OrdinalIgnoreCase));
         }
 
         private void CreateMotherboxIfNeeded(string motherboxKey)
