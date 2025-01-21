@@ -5,7 +5,6 @@ using Archipelago.Gifting.Net.Gifts;
 using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Service.Result;
 using Archipelago.Gifting.Net.Service.TraitAcceptance;
-using Archipelago.Gifting.Net.Traits;
 
 namespace Archipelago.Gifting.Net.Service
 {
@@ -54,5 +53,17 @@ namespace Archipelago.Gifting.Net.Service
         void RemoveGiftsFromGiftBox(IEnumerable<string> giftIds);
         void RemoveGiftFromGiftBox(string giftId);
         void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback);
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        bool SendGift(GiftItem item, string playerName, out string giftId);
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        bool SendGift(GiftItem item, string playerName, int playerTeam, out string giftId);
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out string giftId);
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId);
     }
 }

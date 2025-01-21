@@ -424,5 +424,41 @@ namespace Archipelago.Gifting.Net.Service
                 newGiftsCallback(newGifts);
             }
         }
+
+        #region Obsolete stuff
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        public bool SendGift(GiftItem item, string playerName, out string giftId)
+        {
+            var result = SendGift(item, playerName);
+            giftId = result.GiftId;
+            return result.Success;
+        }
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        public bool SendGift(GiftItem item, string playerName, int playerTeam, out string giftId)
+        {
+            var result = SendGift(item, playerName, playerTeam);
+            giftId = result.GiftId;
+            return result.Success;
+        }
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out string giftId)
+        {
+            var result = SendGift(item, traits, playerName);
+            giftId = result.GiftId;
+            return result.Success;
+        }
+
+        [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
+        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId)
+        {
+            var result = SendGift(item, traits, playerName, playerTeam);
+            giftId = result.GiftId;
+            return result.Success;
+        }
+
+        #endregion Obsolete stuff
     }
 }
