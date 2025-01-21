@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Archipelago.Gifting.Net.Giftboxes;
 using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Service.TraitAcceptance;
+using Archipelago.Gifting.Net.Service.Result;
 
 namespace Archipelago.Gifting.Net.Service
 {
@@ -132,75 +133,68 @@ namespace Archipelago.Gifting.Net.Service
 
         private static AcceptedTraits GetAcceptedTraits(int team, int player, GiftBox giftbox, IEnumerable<string> giftTraits)
         {
-            if (giftbox == null || !giftbox.isOpen)
+            if (giftbox == null || !giftbox.IsOpen)
             {
                 return new AcceptedTraits(team, player);
             }
 
-            var traits = giftTraits.Where(x => giftbox.acceptsAnyGift || giftbox.desiredTraits.Contains(x));
+            var traits = giftTraits.Where(x => giftbox.AcceptsAnyGift || giftbox.DesiredTraits.Contains(x));
             var acceptedTraits = new AcceptedTraits(team, player, traits.ToArray());
             return acceptedTraits;
         }
 
-        public bool SendGift(GiftItem item, string playerName)
+        public GiftingResult SendGift(GiftItem item, string playerName)
         {
-            return SendGift(item, playerName, out _);
+            return SendGift(item, new GiftTrait[0], playerName);
         }
 
-        public bool SendGift(GiftItem item, string playerName, out string giftId)
+        public async Task<GiftingResult> SendGiftAsync(GiftItem item, string playerName)
         {
-            return SendGift(item, new GiftTrait[0], playerName, out giftId);
+            return await SendGiftAsync(item, new GiftTrait[0], playerName);
         }
 
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName)
+        public GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName)
         {
-            return SendGift(item, traits, playerName, out _);
+            return SendGift(item, traits, playerName, _session.ConnectionInfo.Team);
         }
 
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out string giftId)
+        public async Task<GiftingResult> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName)
         {
-            return SendGift(item, traits, playerName, _session.ConnectionInfo.Team, out giftId);
+            return await SendGiftAsync(item, traits, playerName, _session.ConnectionInfo.Team);
         }
 
-        public bool SendGift(GiftItem item, string playerName, int playerTeam)
+        public GiftingResult SendGift(GiftItem item, string playerName, int playerTeam)
         {
-            return SendGift(item, playerName, playerTeam, out _);
+            return SendGift(item, new GiftTrait[0], playerName, playerTeam);
         }
 
-        public bool SendGift(GiftItem item, string playerName, int playerTeam, out string giftId)
+        public async Task<GiftingResult> SendGiftAsync(GiftItem item, string playerName, int playerTeam)
         {
-            return SendGift(item, new GiftTrait[0], playerName, playerTeam, out giftId);
+            return await SendGiftAsync(item, new GiftTrait[0], playerName, playerTeam);
         }
 
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
-        {
-            return SendGift(item, traits, playerName, playerTeam, out _);
-        }
-
-        public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId)
+        public GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
         {
             var canGift = CanGiftToPlayer(playerName, playerTeam, traits.Select(x => x.trait));
-            return SendGift(item, traits, playerName, playerTeam, canGift, out giftId);
+            return SendGift(item, traits, playerName, playerTeam, canGift);
         }
 
-        public async Task<bool> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
+        public async Task<GiftingResult> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
         {
             var canGift = await CanGiftToPlayerAsync(playerName, playerTeam, traits.Select(x => x.trait));
-            return SendGift(item, traits, playerName, playerTeam, canGift, out _);
+            return SendGift(item, traits, playerName, playerTeam, canGift);
         }
 
-        private bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, bool canGift, out string giftId)
+        private GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, bool canGift)
         {
             if (!canGift)
             {
-                giftId = string.Empty;
-                return false;
+                return new FailedGifting();
             }
 
             if (!_playerProvider.TryGetPlayer(playerName, playerTeam, out var receivingPlayer))
             {
-                giftId = string.Empty;
-                return false;
+                return new FailedGifting();
             }
 
             var senderSlot = _playerProvider.CurrentPlayerSlot;
@@ -208,22 +202,21 @@ namespace Archipelago.Gifting.Net.Service
 
             var receiverSlot = receivingPlayer.Slot;
             var gift = new Gift(item.Name, item.Amount, item.Value, traits, senderSlot, receiverSlot, senderTeam, playerTeam);
-            giftId = gift.id;
             return SendGift(gift);
         }
 
-        public bool RefundGift(Gift gift)
+        public GiftingResult RefundGift(Gift gift)
         {
             if (gift.isRefund)
             {
-                return false;
+                return new FailedGifting();
             }
 
             gift.isRefund = true;
             return SendGift(gift);
         }
 
-        private bool SendGift(Gift gift)
+        private GiftingResult SendGift(Gift gift)
         {
             try
             {
@@ -233,7 +226,7 @@ namespace Archipelago.Gifting.Net.Service
 
                 var motherBox = GetMotherbox(targetPlayer.Team);
                 var giftboxMetadata = motherBox[targetPlayer.Slot];
-                var giftboxVersion = giftboxMetadata.maximumGiftDataVersion;
+                var giftboxVersion = giftboxMetadata.MaximumGiftDataVersion;
                 if (giftboxVersion < DataVersion.FirstVersion)
                 {
                     giftboxVersion = DataVersion.FirstVersion;
@@ -244,11 +237,11 @@ namespace Archipelago.Gifting.Net.Service
                 CreateGiftboxIfNeeded(giftboxKey);
                 var newGiftEntry = _currentConverter.CreateDataStorageUpdateEntry(gift, giftboxVersion);
                 _session.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
-                return true;
+                return new SuccessfulGifting(gift.id);
             }
             catch (Exception)
             {
-                return false;
+                return new FailedGifting(gift.id);
             }
         }
 
@@ -393,18 +386,18 @@ namespace Archipelago.Gifting.Net.Service
             }
 
             var giftBox = motherBox[playerSlot];
-            if (!giftBox.isOpen || giftBox.minimumGiftDataVersion > DataVersion.Current)
+            if (!giftBox.IsOpen || giftBox.MinimumGiftDataVersion > DataVersion.Current)
             {
                 return false;
             }
 
             var owner = _playerProvider.GetPlayer(playerSlot, playerTeam);
-            if (giftBox.acceptsAnyGift)
+            if (giftBox.AcceptsAnyGift)
             {
                 return true;
             }
 
-            return giftBox.desiredTraits.Any(trait => giftTraits.Contains(trait, StringComparer.OrdinalIgnoreCase));
+            return giftBox.DesiredTraits.Any(trait => giftTraits.Contains(trait, StringComparer.OrdinalIgnoreCase));
         }
 
         private void CreateMotherboxIfNeeded(string motherboxKey)

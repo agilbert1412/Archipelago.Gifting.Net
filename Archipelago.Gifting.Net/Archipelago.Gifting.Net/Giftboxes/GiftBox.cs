@@ -4,11 +4,11 @@ namespace Archipelago.Gifting.Net.Giftboxes
 {
     public class GiftBox
     {
-        public bool isOpen { get; set; }
-        public bool acceptsAnyGift { get; set; }
-        public string[] desiredTraits { get; set; }
-        public int minimumGiftDataVersion { get; set; }
-        public int maximumGiftDataVersion { get; set; }
+        public bool IsOpen { get; set; }
+        public bool AcceptsAnyGift { get; set; }
+        public string[] DesiredTraits { get; set; }
+        public int MinimumGiftDataVersion { get; set; }
+        public int MaximumGiftDataVersion { get; set; }
 
         internal GiftBox()
         {
@@ -16,17 +16,17 @@ namespace Archipelago.Gifting.Net.Giftboxes
 
         internal GiftBox(bool isOpen) : this()
         {
-            this.isOpen = isOpen;
-            acceptsAnyGift = true;
-            desiredTraits = new string[0];
-            minimumGiftDataVersion = DataVersion.FirstVersion;
-            maximumGiftDataVersion = DataVersion.Current;
+            IsOpen = isOpen;
+            AcceptsAnyGift = true;
+            DesiredTraits = new string[0];
+            MinimumGiftDataVersion = DataVersion.FirstVersion;
+            MaximumGiftDataVersion = DataVersion.Current;
         }
 
         internal GiftBox(bool acceptsAnyGift, string[] desiredTraits) : this(true)
         {
-            this.acceptsAnyGift = acceptsAnyGift;
-            this.desiredTraits = desiredTraits;
+            AcceptsAnyGift = acceptsAnyGift;
+            DesiredTraits = desiredTraits;
         }
     }
 }

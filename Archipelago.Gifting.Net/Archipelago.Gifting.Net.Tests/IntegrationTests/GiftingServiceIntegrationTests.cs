@@ -186,7 +186,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var result = _serviceSender.SendGift(gift, ReceiverName);
 
             // Assert
-            result.Should().BeFalse();
+            result.Success.Should().BeFalse();
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().BeEmpty();
         }
@@ -204,16 +204,16 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().BeEmpty();
 
             // Act
-            var result = _serviceSender.SendGift(gift, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, ReceiverName);
             Wait();
 
             // Assert
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.id.Should().Be(result.GiftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -236,17 +236,17 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().BeEmpty();
 
             // Act
-            var result1 = _serviceSender.SendGift(gift1, ReceiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, ReceiverName, out var giftId2);
+            var result1 = _serviceSender.SendGift(gift1, ReceiverName);
+            var result2 = _serviceSender.SendGift(gift2, ReceiverName);
             Wait();
 
             // Assert
-            result1.Should().BeTrue();
-            result2.Should().BeTrue();
+            result1.Success.Should().BeTrue();
+            result2.Success.Should().BeTrue();
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(2);
-            var receivedGift1 = gifts[giftId1];
-            var receivedGift2 = gifts[giftId2];
+            var receivedGift1 = gifts[result1.GiftId];
+            var receivedGift2 = gifts[result2.GiftId];
             receivedGift1.itemName.Should().Be(gift1.Name);
             receivedGift1.amount.Should().Be(gift1.Amount);
             receivedGift1.itemValue.Should().Be(gift1.Value);
@@ -268,11 +268,11 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
             Wait();
-            var result = _serviceSender.SendGift(gift, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, ReceiverName);
             Wait();
 
             // Assume
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
 
             // Act
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -282,8 +282,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.id.Should().Be(result.GiftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -303,7 +303,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             Wait();
 
             // Assume
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
 
             // Act
             var gifts = _serviceReceiver.GetAllGiftsAndEmptyGiftbox();
@@ -322,24 +322,24 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var gift1 = NewGiftItem();
             var gift2 = NewGiftItem();
             Wait();
-            var result1 = _serviceSender.SendGift(gift1, ReceiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, ReceiverName, out var giftId2);
+            var result1 = _serviceSender.SendGift(gift1, ReceiverName);
+            var result2 = _serviceSender.SendGift(gift2, ReceiverName);
             Wait();
 
             // Assume
-            result1.Should().BeTrue();
-            result2.Should().BeTrue();
+            result1.Success.Should().BeTrue();
+            result2.Success.Should().BeTrue();
             var gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(2);
 
             // Act
-            _serviceReceiver.RemoveGiftFromGiftBox(giftId2);
+            _serviceReceiver.RemoveGiftFromGiftBox(result2.GiftId);
             Wait();
 
             // Assert
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
-            gifts.Should().ContainKey(giftId1);
+            gifts.Should().ContainKey(result1.GiftId);
         }
 
         [Test]
@@ -352,29 +352,29 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var gift3 = NewGiftItem();
             var gift4 = NewGiftItem();
             Wait();
-            var result1 = _serviceSender.SendGift(gift1, ReceiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, ReceiverName, out var giftId2);
-            var result3 = _serviceSender.SendGift(gift3, ReceiverName, out var giftId3);
-            var result4 = _serviceSender.SendGift(gift4, ReceiverName, out var giftId4);
+            var result1 = _serviceSender.SendGift(gift1, ReceiverName);
+            var result2 = _serviceSender.SendGift(gift2, ReceiverName);
+            var result3 = _serviceSender.SendGift(gift3, ReceiverName);
+            var result4 = _serviceSender.SendGift(gift4, ReceiverName);
             Wait();
 
             // Assume
-            result1.Should().BeTrue();
-            result2.Should().BeTrue();
-            result3.Should().BeTrue();
-            result4.Should().BeTrue();
+            result1.Success.Should().BeTrue();
+            result2.Success.Should().BeTrue();
+            result3.Success.Should().BeTrue();
+            result4.Success.Should().BeTrue();
             var gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(4);
 
             // Act
-            _serviceReceiver.RemoveGiftsFromGiftBox(new[] { giftId1, giftId4 });
+            _serviceReceiver.RemoveGiftsFromGiftBox(new[] { result1.GiftId, result4.GiftId });
             Wait();
 
             // Assert
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(2);
-            gifts.Should().ContainKey(giftId2);
-            gifts.Should().ContainKey(giftId3);
+            gifts.Should().ContainKey(result2.GiftId);
+            gifts.Should().ContainKey(result3.GiftId);
         }
 
         [Test]
@@ -391,14 +391,14 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().NotBeNull().And.HaveCount(0);
 
             // Act
-            var result = _serviceSender.SendGift(gift, traits, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, traits, ReceiverName);
             Wait();
 
             // Assert
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
-            var receivedGift = gifts[giftId];
+            var receivedGift = gifts[result.GiftId];
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -429,17 +429,17 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().HaveCount(0);
 
             // Act
-            var result1 = _serviceSender.SendGift(gift1, traits1, ReceiverName, out var giftId1);
-            var result2 = _serviceSender.SendGift(gift2, traits2, ReceiverName, out var giftId2);
+            var result1 = _serviceSender.SendGift(gift1, traits1, ReceiverName);
+            var result2 = _serviceSender.SendGift(gift2, traits2, ReceiverName);
             Wait();
 
             // Assert
-            result1.Should().BeTrue();
-            result2.Should().BeTrue();
+            result1.Success.Should().BeTrue();
+            result2.Success.Should().BeTrue();
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull();
             gifts.Should().HaveCount(2);
-            var receivedGift1 = gifts[giftId1];
+            var receivedGift1 = gifts[result1.GiftId];
             receivedGift1.itemName.Should().Be(gift1.Name);
             receivedGift1.amount.Should().Be(gift1.Amount);
             receivedGift1.itemValue.Should().Be(gift1.Value);
@@ -451,7 +451,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
                 receivedTraits1[i].quality.Should().BeApproximately(traits1[i].quality, 0.001);
                 receivedTraits1[i].duration.Should().BeApproximately(traits1[i].duration, 0.001);
             }
-            var receivedGift2 = gifts[giftId2];
+            var receivedGift2 = gifts[result2.GiftId];
             receivedGift2.itemName.Should().Be(gift2.Name);
             receivedGift2.amount.Should().Be(gift2.Amount);
             receivedGift2.itemValue.Should().Be(gift2.Value);
@@ -474,15 +474,15 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var gift = NewGiftItem();
             var traits = NewGiftTraits();
             Wait();
-            var result = _serviceSender.SendGift(gift, traits, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, traits, ReceiverName);
             Wait();
 
             // Assume
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
             var giftsReceiver = _serviceReceiver.CheckGiftBox();
             giftsReceiver.Should().NotBeNull();
             giftsReceiver.Should().HaveCount(1);
-            var giftReceiver = giftsReceiver[giftId];
+            var giftReceiver = giftsReceiver[result.GiftId];
             giftReceiver.isRefund.Should().BeFalse();
             giftReceiver.itemName.Should().Be(gift.Name);
             giftReceiver.senderSlot.Should().Be(_testSessions.SenderSlot);
@@ -493,16 +493,16 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             giftsReceiver = _serviceReceiver.GetAllGiftsAndEmptyGiftbox();
-            result = _serviceReceiver.RefundGift(giftsReceiver[giftId]);
+            result = _serviceReceiver.RefundGift(giftsReceiver[result.GiftId]);
             Wait();
 
             // Assert
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
             giftsReceiver = _serviceReceiver.CheckGiftBox();
             giftsReceiver.Should().BeEmpty();
             giftsSender = _serviceSender.CheckGiftBox();
             giftsSender.Should().NotBeNull().And.HaveCount(1);
-            var giftSender = giftsSender[giftId];
+            var giftSender = giftsSender[result.GiftId];
             giftSender.isRefund.Should().BeTrue();
             giftSender.itemName.Should().Be(gift.Name);
             giftSender.itemName.Should().Be(gift.Name);
@@ -524,16 +524,16 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().BeEmpty();
 
             // Act
-            var result = _serviceSender.SendGift(gift, "receiver2", out var giftId);
+            var result = _serviceSender.SendGift(gift, "receiver2");
             Wait();
 
             // Assert
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.id.Should().Be(result.GiftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -557,18 +557,18 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().BeEmpty();
 
             // Act
-            var result = _serviceSender.SendGift(gift, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, ReceiverName);
             Wait();
 
             // Assert
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
             var giftsSender = _serviceSender.CheckGiftBox();
             giftsSender.Should().BeEmpty();
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.id.Should().Be(result.GiftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);
@@ -619,11 +619,11 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts.Should().BeEmpty();
 
             // Act
-            var result = _serviceSender.SendGift(gift, traits, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(gift, traits, ReceiverName);
             Wait();
 
             // Assert
-            result.Should().BeTrue();
+            result.Success.Should().BeTrue();
 
             var giftboxKey = $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}";
             var content = _sessionReceiver.DataStorage[Scope.Global, giftboxKey].To<JToken>().ToString(Formatting.None);
@@ -636,8 +636,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.id.Should().Be(result.GiftId);
             receivedGift.itemName.Should().Be(gift.Name);
             receivedGift.amount.Should().Be(gift.Amount);
             receivedGift.itemValue.Should().Be(gift.Value);

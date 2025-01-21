@@ -21,7 +21,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OpenGiftBox();
             var giftItem = NewGiftItem();
             Wait();
-            SendVersion1Gift(giftItem, new Gifts.Versions.Version1.GiftTrait[0], out var giftId);
+            var giftId = SendVersion1Gift(giftItem, new Gifts.Versions.Version1.GiftTrait[0]);
             Wait();
 
             // Act
@@ -57,8 +57,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Assert
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId.ToString());
-            receivedGift.id.Should().Be(giftId.ToString());
+            receivedGiftId.Should().Be(giftId);
+            receivedGift.id.Should().Be(giftId);
             receivedGift.itemName.Should().Be(giftItem.Name);
             receivedGift.amount.Should().Be(giftItem.Amount);
             receivedGift.itemValue.Should().Be(giftItem.Value);
@@ -73,25 +73,25 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var outdatedGiftbox = new GiftBox(true)
             {
-                minimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
-                maximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
+                MinimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
+                MaximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_1,
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
             Wait();
 
             // Act
-            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(giftItem, ReceiverName);
             Wait();
 
             // Assert
-            success.Should().BeTrue();
+            result.Success.Should().BeTrue();
             var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}"];
             var gifts = new Gifts.Versions.Version1.Converter().ReadFromDataStorage(existingGiftBox);
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.ID.Should().Be(result.GiftId);
             receivedGift.Item.Should().NotBeNull();
             receivedGift.Item.Name.Should().Be(giftItem.Name);
             receivedGift.Item.Amount.Should().Be(giftItem.Amount);
@@ -107,25 +107,25 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var outdatedGiftbox = new GiftBox(true)
             {
-                minimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
-                maximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
+                MinimumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
+                MaximumGiftDataVersion = DataVersion.GIFT_DATA_VERSION_2,
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
             Wait();
 
             // Act
-            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(giftItem, ReceiverName);
             Wait();
 
             // Assert
-            success.Should().BeTrue();
+            result.Success.Should().BeTrue();
             var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}"];
             var gifts = new Gifts.Versions.Version2.Converter(_serviceReceiver.PlayerProvider).ReadFromDataStorage(existingGiftBox);
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.ID.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.ID.Should().Be(result.GiftId);
             receivedGift.ItemName.Should().Be(giftItem.Name);
             receivedGift.Amount.Should().Be(giftItem.Amount);
             receivedGift.ItemValue.Should().Be(giftItem.Value);
@@ -140,8 +140,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var futureGiftBox = new GiftBox(true)
             {
-                minimumGiftDataVersion = DataVersion.FirstVersion,
-                maximumGiftDataVersion = DataVersion.Current + 1,
+                MinimumGiftDataVersion = DataVersion.FirstVersion,
+                MaximumGiftDataVersion = DataVersion.Current + 1,
             };
             _serviceReceiver.UpdateGiftBox(futureGiftBox);
             var giftItem = NewGiftItem();
@@ -152,16 +152,16 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             canGift.Should().BeTrue();
 
             // Act
-            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(giftItem, ReceiverName);
             Wait();
             var gifts = _serviceReceiver.CheckGiftBox();
 
             // Assert
-            success.Should().BeTrue();
+            result.Success.Should().BeTrue();
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
-            receivedGiftId.Should().Be(giftId);
-            receivedGift.id.Should().Be(giftId);
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.id.Should().Be(result.GiftId);
             receivedGift.itemName.Should().Be(giftItem.Name);
             receivedGift.amount.Should().Be(giftItem.Amount);
             receivedGift.itemValue.Should().Be(giftItem.Value);
@@ -176,8 +176,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             var outdatedGiftbox = new GiftBox(true)
             {
-                minimumGiftDataVersion = DataVersion.Current + 1,
-                maximumGiftDataVersion = DataVersion.Current + 1,
+                MinimumGiftDataVersion = DataVersion.Current + 1,
+                MaximumGiftDataVersion = DataVersion.Current + 1,
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
@@ -188,12 +188,12 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             canGift.Should().BeFalse();
 
             // Act
-            var success = _serviceSender.SendGift(giftItem, ReceiverName, out var giftId);
+            var result = _serviceSender.SendGift(giftItem, ReceiverName);
             Wait();
             var gifts = _serviceReceiver.CheckGiftBox();
 
             // Assert
-            success.Should().BeFalse();
+            result.Success.Should().BeFalse();
             gifts.Should().NotBeNull().And.BeEmpty();
         }
 
@@ -205,7 +205,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             Wait();
             var giftItems = new[] { NewGiftItem("1"), NewGiftItem("2"), NewGiftItem("3"), NewGiftItem("4") };
             var giftIds = new string[4];
-            SendVersion1Gift(giftItems[0], new Gifts.Versions.Version1.GiftTrait[0], out var giftId1);
+            var giftId1 = SendVersion1Gift(giftItems[0], new Gifts.Versions.Version1.GiftTrait[0]);
             giftIds[0] = giftId1.ToString();
             giftIds[1] = Guid.NewGuid().ToString();
             SendVersion2Gift(giftItems[1], new Gifts.Versions.Version2.GiftTrait[0], giftIds[1]);
@@ -235,10 +235,10 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             }
         }
 
-        private void SendVersion1Gift(GiftItem item, Gifts.Versions.Version1.GiftTrait[] traits, out Guid giftId)
+        private Guid SendVersion1Gift(GiftItem item, Gifts.Versions.Version1.GiftTrait[] traits)
         {
             var gift = new Gifts.Versions.Version1.Gift(item, traits, SenderName, ReceiverName, _testSessions.SenderTeam, _testSessions.ReceiverTeam);
-            giftId = Guid.Parse(gift.ID);
+            var giftId = Guid.Parse(gift.ID);
             var giftboxKey = $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}";
 
             var newGiftEntry = new Dictionary<Guid, Gifts.Versions.Version1.Gift>
@@ -247,6 +247,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             };
 
             _sessionSender.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
+            return giftId;
         }
 
         private void SendVersion2Gift(GiftItem item, Gifts.Versions.Version2.GiftTrait[] traits, string giftId)

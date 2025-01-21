@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Archipelago.Gifting.Net.Gifts;
 using Archipelago.Gifting.Net.Gifts.Versions.Current;
+using Archipelago.Gifting.Net.Service.Result;
 using Archipelago.Gifting.Net.Traits;
 
 namespace Archipelago.Gifting.Net.Service
@@ -10,6 +11,9 @@ namespace Archipelago.Gifting.Net.Service
     {
         Task<Dictionary<string, Gift>> CheckGiftBoxAsync();
         Task<bool> CanGiftToPlayerAsync(int playerSlot, int playerTeam, IEnumerable<string> giftTraits);
-        Task<bool> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam);
+        Task<GiftingResult> SendGiftAsync(GiftItem item, string playerName);
+        Task<GiftingResult> SendGiftAsync(GiftItem item, string playerName, int playerTeam);
+        Task<GiftingResult> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName);
+        Task<GiftingResult> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam);
     }
 }

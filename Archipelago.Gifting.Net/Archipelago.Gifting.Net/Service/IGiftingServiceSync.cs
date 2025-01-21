@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Archipelago.Gifting.Net.Giftboxes;
 using Archipelago.Gifting.Net.Gifts;
 using Archipelago.Gifting.Net.Gifts.Versions.Current;
+using Archipelago.Gifting.Net.Service.Result;
 using Archipelago.Gifting.Net.Service.TraitAcceptance;
 using Archipelago.Gifting.Net.Traits;
 
@@ -43,15 +44,11 @@ namespace Archipelago.Gifting.Net.Service
         /// <param name="giftTraits">The traits you can send</param>
         /// <returns>The accepted traits, by player</returns>
         AcceptedTraitsByPlayer GetAcceptedTraitsByPlayer(int team, IEnumerable<string> giftTraits);
-        bool SendGift(GiftItem item, string playerName);
-        bool SendGift(GiftItem item, string playerName, int playerTeam);
-        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName);
-        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam);
-        bool SendGift(GiftItem item, string playerName, out string giftId);
-        bool SendGift(GiftItem item, string playerName, int playerTeam, out string giftId);
-        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, out string giftId);
-        bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId);
-        bool RefundGift(Gift gift);
+        GiftingResult SendGift(GiftItem item, string playerName);
+        GiftingResult SendGift(GiftItem item, string playerName, int playerTeam);
+        GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName);
+        GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam);
+        GiftingResult RefundGift(Gift gift);
         Dictionary<string, Gift> GetAllGiftsAndEmptyGiftbox();
         Dictionary<string, Gift> CheckGiftBox();
         void RemoveGiftsFromGiftBox(IEnumerable<string> giftIds);
