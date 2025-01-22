@@ -16,7 +16,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             CloseReceiverGiftBox();
-            Wait();
+            WaitShort();
 
             // Assume
 
@@ -38,7 +38,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
 
             // Assert
             canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
@@ -50,7 +50,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
 
             // Assume
 
@@ -66,7 +66,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
             SetAlias(_sessionReceiver, "receiver2");
 
             // Assume
@@ -83,7 +83,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
             SetAlias(_sessionSender, "receiver2");
             SetAlias(_sessionReceiver, "receiver2");
 
@@ -101,7 +101,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
             SetAlias(_sessionSender, ReceiverName);
             SetAlias(_sessionReceiver, SenderName);
 
@@ -136,7 +136,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
 
             // Assume
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
@@ -144,7 +144,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             _serviceReceiver.CloseGiftBox();
-            Wait();
+            WaitShort();
 
             // Assert
             canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
@@ -156,7 +156,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceSender.OpenGiftBox();
-            Wait();
+            WaitShort();
 
             // Assume
             var giftsBeforeClosingBox = _serviceSender.CheckGiftBox();
@@ -176,7 +176,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             _serviceReceiver.CloseGiftBox();
             var gift = NewGiftItem();
-            Wait();
+            WaitShort();
 
             // Assume
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -197,7 +197,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
-            Wait();
+            WaitShort();
 
             // Assume
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -205,7 +205,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             var result = _serviceSender.SendGift(gift, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -229,7 +229,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OpenGiftBox();
             var gift1 = NewGiftItem();
             var gift2 = NewGiftItem();
-            Wait();
+            WaitShort();
 
             // Assume
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -238,7 +238,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Act
             var result1 = _serviceSender.SendGift(gift1, ReceiverName);
             var result2 = _serviceSender.SendGift(gift2, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result1.Success.Should().BeTrue();
@@ -267,9 +267,9 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
-            Wait();
+            WaitShort();
             var result = _serviceSender.SendGift(gift, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assume
             result.Success.Should().BeTrue();
@@ -298,9 +298,9 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
-            Wait();
+            WaitShort();
             var result = _serviceSender.SendGift(gift, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assume
             result.Success.Should().BeTrue();
@@ -321,10 +321,10 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OpenGiftBox();
             var gift1 = NewGiftItem();
             var gift2 = NewGiftItem();
-            Wait();
+            WaitShort();
             var result1 = _serviceSender.SendGift(gift1, ReceiverName);
             var result2 = _serviceSender.SendGift(gift2, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assume
             result1.Success.Should().BeTrue();
@@ -334,7 +334,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             _serviceReceiver.RemoveGiftFromGiftBox(result2.GiftId);
-            Wait();
+            WaitShort();
 
             // Assert
             gifts = _serviceReceiver.CheckGiftBox();
@@ -351,12 +351,12 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var gift2 = NewGiftItem();
             var gift3 = NewGiftItem();
             var gift4 = NewGiftItem();
-            Wait();
+            WaitShort();
             var result1 = _serviceSender.SendGift(gift1, ReceiverName);
             var result2 = _serviceSender.SendGift(gift2, ReceiverName);
             var result3 = _serviceSender.SendGift(gift3, ReceiverName);
             var result4 = _serviceSender.SendGift(gift4, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assume
             result1.Success.Should().BeTrue();
@@ -368,7 +368,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             _serviceReceiver.RemoveGiftsFromGiftBox(new[] { result1.GiftId, result4.GiftId });
-            Wait();
+            WaitShort();
 
             // Assert
             gifts = _serviceReceiver.CheckGiftBox();
@@ -384,7 +384,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
             var traits = NewGiftTraits();
-            Wait();
+            WaitShort();
 
             // Assume
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -392,7 +392,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             var result = _serviceSender.SendGift(gift, traits, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -421,7 +421,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var gift2 = NewGiftItem();
             var traits1 = NewGiftTraits();
             var traits2 = NewGiftTraits();
-            Wait();
+            WaitShort();
 
             // Assume
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -431,7 +431,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Act
             var result1 = _serviceSender.SendGift(gift1, traits1, ReceiverName);
             var result2 = _serviceSender.SendGift(gift2, traits2, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result1.Success.Should().BeTrue();
@@ -473,9 +473,9 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceSender.OpenGiftBox();
             var gift = NewGiftItem();
             var traits = NewGiftTraits();
-            Wait();
+            WaitShort();
             var result = _serviceSender.SendGift(gift, traits, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assume
             result.Success.Should().BeTrue();
@@ -494,7 +494,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Act
             giftsReceiver = _serviceReceiver.GetAllGiftsAndEmptyGiftbox();
             result = _serviceReceiver.RefundGift(giftsReceiver[result.GiftId]);
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -515,7 +515,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
             SetAlias(_sessionReceiver, "receiver2");
             var gift = NewGiftItem();
 
@@ -525,7 +525,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             var result = _serviceSender.SendGift(gift, "receiver2");
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -548,7 +548,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             _serviceSender.OpenGiftBox();
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
             SetAlias(_sessionSender, ReceiverName);
             var gift = NewGiftItem();
 
@@ -558,7 +558,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             var result = _serviceSender.SendGift(gift, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -578,31 +578,179 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         }
 
         [Test]
-        public void TestCanSubscribeAndGetNotified()
+        public void TestCanSubscribeAndGetNotifiedOnce()
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
             var giftItem = NewGiftItem();
-            var hasBeenNotified = false;
-            _serviceReceiver.SubscribeToNewGifts((gifts) =>
+            var hasBeenNotified = 0;
+
+            void NewGiftsCallback(Gift gift)
             {
-                hasBeenNotified = true;
-                gifts.Should().NotBeNull();
-                gifts.Should().HaveCount(1);
-                var notifiedGift = gifts.Values.First();
-                notifiedGift.itemName.Should().Be(giftItem.Name);
-                notifiedGift.amount.Should().Be(giftItem.Amount);
-                notifiedGift.itemValue.Should().Be(giftItem.Value);
-            });
-            Wait();
+                hasBeenNotified += 1;
+                gift.Should().NotBeNull();
+                gift.itemName.Should().Be(giftItem.Name);
+                gift.amount.Should().Be(giftItem.Amount);
+                gift.itemValue.Should().Be(giftItem.Value);
+            }
+
+            _serviceReceiver.OnNewGift += NewGiftsCallback;
+            WaitShort();
 
             // Act
             _serviceSender.SendGift(giftItem, ReceiverName);
-            Wait(300);
+            WaitLong();
 
             // Assert
-            hasBeenNotified.Should().BeTrue();
+            hasBeenNotified.Should().Be(1);
+        }
+
+        [Test]
+        public void TestCanSubscribeAndGetNotifiedThreeTimes()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            WaitShort();
+            var giftItem1 = NewGiftItem();
+            var giftItem2 = NewGiftItem();
+            var giftItem3 = NewGiftItem();
+            var giftItems = new []{giftItem1, giftItem2, giftItem3};
+            var hasBeenNotified = 0;
+
+            void NewGiftsCallback(Gift gift)
+            {
+                gift.Should().NotBeNull();
+                gift.itemName.Should().Be(giftItems[hasBeenNotified].Name);
+                gift.amount.Should().Be(giftItems[hasBeenNotified].Amount);
+                gift.itemValue.Should().Be(giftItems[hasBeenNotified].Value);
+                hasBeenNotified += 1;
+            }
+
+            _serviceReceiver.OnNewGift += NewGiftsCallback;
+            WaitShort();
+
+            // Act
+            _serviceSender.SendGift(giftItem1, ReceiverName);
+            WaitLong();
+
+            hasBeenNotified.Should().Be(1);
+
+            _serviceSender.SendGift(giftItem2, ReceiverName);
+            _serviceSender.SendGift(giftItem3, ReceiverName);
+            WaitLong();
+
+            // Assert
+            hasBeenNotified.Should().Be(3);
+        }
+
+        [Test]
+        public void TestCanUnsubscribe()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            WaitShort();
+            var giftItem1 = NewGiftItem();
+            var giftItem2 = NewGiftItem();
+            var giftItems = new[] { giftItem1, giftItem2 };
+            var hasBeenNotified = 0;
+
+            void NewGiftsCallback(Gift gift)
+            {
+                hasBeenNotified.Should().BeLessThan(1);
+                gift.Should().NotBeNull();
+                gift.itemName.Should().Be(giftItems[hasBeenNotified].Name);
+                gift.amount.Should().Be(giftItems[hasBeenNotified].Amount);
+                gift.itemValue.Should().Be(giftItems[hasBeenNotified].Value);
+                hasBeenNotified += 1;
+            }
+
+            _serviceReceiver.OnNewGift += NewGiftsCallback;
+            WaitShort();
+
+            // Act
+            _serviceSender.SendGift(giftItem1, ReceiverName);
+            WaitLong();
+            hasBeenNotified.Should().Be(1);
+
+            _serviceReceiver.OnNewGift -= NewGiftsCallback;
+            WaitShort();
+
+            _serviceSender.SendGift(giftItem2, ReceiverName);
+            WaitLong();
+
+            // Assert
+            hasBeenNotified.Should().Be(1);
+        }
+
+        [Test]
+        public void TestCanHaveMultipleSubscribedHandlers()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            WaitShort();
+            var giftItem1 = NewGiftItem();
+            var giftItem2 = NewGiftItem();
+            var giftItem3 = NewGiftItem();
+            var giftItem4 = NewGiftItem();
+            var callback1Count = 0;
+            var callback2Count = 0;
+            var callback3Count = 0;
+
+            void NewGiftsCallback1(Gift gift)
+            {
+                gift.Should().NotBeNull();
+                callback1Count += 1;
+            }
+
+            void NewGiftsCallback2(Gift gift)
+            {
+                gift.Should().NotBeNull();
+                callback2Count += 1;
+            }
+
+            void NewGiftsCallback3(Gift gift)
+            {
+                gift.Should().NotBeNull();
+                callback3Count += 1;
+            }
+
+            // Act
+            _serviceReceiver.OnNewGift += NewGiftsCallback1;
+            WaitShort();
+
+            _serviceSender.SendGift(giftItem1, ReceiverName);
+            WaitLong();
+            callback1Count.Should().Be(1);
+            callback2Count.Should().Be(0);
+            callback3Count.Should().Be(0);
+
+            _serviceReceiver.OnNewGift += NewGiftsCallback2;
+            _serviceSender.SendGift(giftItem2, ReceiverName);
+            WaitLong();
+            callback1Count.Should().Be(2);
+            callback2Count.Should().Be(1);
+            callback3Count.Should().Be(0);
+
+            _serviceReceiver.OnNewGift += NewGiftsCallback3;
+            _serviceReceiver.OnNewGift -= NewGiftsCallback1;
+
+            _serviceSender.SendGift(giftItem3, ReceiverName);
+            WaitLong();
+            callback1Count.Should().Be(2);
+            callback2Count.Should().Be(2);
+            callback3Count.Should().Be(1);
+
+            _serviceReceiver.OnNewGift -= NewGiftsCallback3;
+            _serviceReceiver.OnNewGift -= NewGiftsCallback2;
+
+            _serviceSender.SendGift(giftItem4, ReceiverName);
+            WaitLong();
+
+            // Assert
+            callback1Count.Should().Be(2);
+            callback2Count.Should().Be(2);
+            callback3Count.Should().Be(1);
         }
 
         [Test]
@@ -612,7 +760,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
             var traits = new GiftTrait[] { new("Food"), new("Drink", 2.0), new("Heal", 1.0, 0.0), new("Damage", 1.1, -1.0) };
-            Wait();
+            WaitShort();
 
             // Assume
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -620,7 +768,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             var result = _serviceSender.SendGift(gift, traits, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -657,5 +805,38 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             receivedGift.traits[3].quality.Should().BeApproximately(1.1, 0.1);
             receivedGift.traits[3].duration.Should().BeApproximately(-1.0, 0.1);
         }
+
+        #region Obsolete Stuff
+        
+        [Test]
+        [Obsolete("Testing the old notification implementation")]
+        public void TestCanSubscribeAndGetNotifiedObsolete()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            WaitShort();
+            var giftItem = NewGiftItem();
+            var hasBeenNotified = false;
+            _serviceReceiver.SubscribeToNewGifts((gifts) =>
+            {
+                hasBeenNotified = true;
+                gifts.Should().NotBeNull();
+                gifts.Should().HaveCount(1);
+                var notifiedGift = gifts.Values.First();
+                notifiedGift.itemName.Should().Be(giftItem.Name);
+                notifiedGift.amount.Should().Be(giftItem.Amount);
+                notifiedGift.itemValue.Should().Be(giftItem.Value);
+            });
+            WaitLong();
+
+            // Act
+            _serviceSender.SendGift(giftItem, ReceiverName);
+            WaitLong();
+
+            // Assert
+            hasBeenNotified.Should().BeTrue();
+        }
+
+        #endregion Obsolete Stuff
     }
 }

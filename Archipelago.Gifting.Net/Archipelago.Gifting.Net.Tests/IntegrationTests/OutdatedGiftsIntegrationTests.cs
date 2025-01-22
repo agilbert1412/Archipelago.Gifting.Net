@@ -20,9 +20,9 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             _serviceReceiver.OpenGiftBox();
             var giftItem = NewGiftItem();
-            Wait();
+            WaitShort();
             var giftId = SendVersion1Gift(giftItem, new Gifts.Versions.Version1.GiftTrait[0]);
-            Wait();
+            WaitShort();
 
             // Act
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -47,9 +47,9 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OpenGiftBox();
             var giftItem = NewGiftItem();
             var giftId = Guid.NewGuid().ToString();
-            Wait();
+            WaitShort();
             SendVersion2Gift(giftItem, new Gifts.Versions.Version2.GiftTrait[0], giftId);
-            Wait();
+            WaitShort();
 
             // Act
             var gifts = _serviceReceiver.CheckGiftBox();
@@ -78,11 +78,11 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
-            Wait();
+            WaitShort();
 
             // Act
             var result = _serviceSender.SendGift(giftItem, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -112,11 +112,11 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
-            Wait();
+            WaitShort();
 
             // Act
             var result = _serviceSender.SendGift(giftItem, ReceiverName);
-            Wait();
+            WaitShort();
 
             // Assert
             result.Success.Should().BeTrue();
@@ -145,7 +145,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             };
             _serviceReceiver.UpdateGiftBox(futureGiftBox);
             var giftItem = NewGiftItem();
-            Wait();
+            WaitShort();
 
             // Assume
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
@@ -153,7 +153,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             var result = _serviceSender.SendGift(giftItem, ReceiverName);
-            Wait();
+            WaitShort();
             var gifts = _serviceReceiver.CheckGiftBox();
 
             // Assert
@@ -181,7 +181,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             };
             _serviceReceiver.UpdateGiftBox(outdatedGiftbox);
             var giftItem = NewGiftItem();
-            Wait();
+            WaitShort();
 
             // Assume
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
@@ -189,7 +189,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Act
             var result = _serviceSender.SendGift(giftItem, ReceiverName);
-            Wait();
+            WaitShort();
             var gifts = _serviceReceiver.CheckGiftBox();
 
             // Assert
@@ -202,7 +202,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
-            Wait();
+            WaitShort();
             var giftItems = new[] { NewGiftItem("1"), NewGiftItem("2"), NewGiftItem("3"), NewGiftItem("4") };
             var giftIds = new string[4];
             var giftId1 = SendVersion1Gift(giftItems[0], new Gifts.Versions.Version1.GiftTrait[0]);
@@ -213,7 +213,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             SendVersion3Gift(giftItems[2], new GiftTrait[0], giftIds[2]);
             giftIds[3] = "Unique Id that is not a Valid Guid";
             SendVersion3Gift(giftItems[3], new GiftTrait[0], giftIds[3]);
-            Wait();
+            WaitShort();
 
             // Act
             var gifts = _serviceReceiver.CheckGiftBox();

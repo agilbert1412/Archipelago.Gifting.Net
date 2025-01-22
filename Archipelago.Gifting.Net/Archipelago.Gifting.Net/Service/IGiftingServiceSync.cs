@@ -20,6 +20,7 @@ namespace Archipelago.Gifting.Net.Service
         /// </summary>
         /// <returns>Your own giftbox information</returns>
         GiftBox GetCurrentGiftboxState();
+
         bool CanGiftToPlayer(string playerName);
         bool CanGiftToPlayer(string playerName, int playerTeam);
         bool CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits);
@@ -43,6 +44,7 @@ namespace Archipelago.Gifting.Net.Service
         /// <param name="giftTraits">The traits you can send</param>
         /// <returns>The accepted traits, by player</returns>
         AcceptedTraitsByPlayer GetAcceptedTraitsByPlayer(int team, IEnumerable<string> giftTraits);
+
         GiftingResult SendGift(GiftItem item, string playerName);
         GiftingResult SendGift(GiftItem item, string playerName, int playerTeam);
         GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName);
@@ -53,6 +55,8 @@ namespace Archipelago.Gifting.Net.Service
         void RemoveGiftsFromGiftBox(IEnumerable<string> giftIds);
         void RemoveGiftFromGiftBox(string giftId);
         void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback);
+
+        #region Obsolete Stuff
 
         [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
         bool SendGift(GiftItem item, string playerName, out string giftId);
@@ -65,5 +69,7 @@ namespace Archipelago.Gifting.Net.Service
 
         [Obsolete("The overloads with out parameters are now deprecated, please use the overloads that return a GiftingResult instead")]
         bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId);
+
+        #endregion Obsolete Stuff
     }
 }

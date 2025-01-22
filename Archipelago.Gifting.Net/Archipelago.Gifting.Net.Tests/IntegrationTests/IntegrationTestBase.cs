@@ -31,21 +31,21 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         [SetUp]
         public void Setup()
         {
-            Wait();
+            WaitShort();
             InitializeSessions();
-            Wait();
+            WaitShort();
             InitializeGiftingServices();
-            Wait();
+            WaitShort();
         }
 
         [TearDown]
         public void TearDown()
         {
-            Wait();
+            WaitShort();
             CloseGiftBoxesAndShutdownGiftingServices();
-            Wait();
+            WaitShort();
             DisconnectSessions();
-            Wait();
+            WaitShort();
         }
 
         protected void InitializeSessions()
@@ -117,7 +117,17 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             }
         }
 
-        protected void Wait(int ms = 50)
+        protected void WaitShort()
+        {
+            Wait(50);
+        }
+
+        protected void WaitLong()
+        {
+            Wait(500);
+        }
+
+        private void Wait(int ms)
         {
             Thread.Sleep(ms);
         }
@@ -151,7 +161,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             };
 
             session.Socket.SendPacket(packet);
-            Wait();
+            WaitShort();
         }
 
         protected void RemoveAlias(ArchipelagoSession session)
@@ -162,7 +172,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             };
 
             session.Socket.SendPacket(packet);
-            Wait();
+            WaitShort();
         }
 
         protected void CloseReceiverGiftBox()

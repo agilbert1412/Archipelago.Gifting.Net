@@ -410,13 +410,57 @@ namespace Archipelago.Gifting.Net.Service
             _session.DataStorage[Scope.Global, giftBoxKey].Initialize(EmptyGiftDictionary);
         }
 
+        public delegate void GiftReceivedHandler(Gift newGift);
+        private GiftReceivedHandler _giftReceivedHandler;
+
+        public event GiftReceivedHandler OnNewGift
+        {
+            add
+            {
+                if (_giftReceivedHandler == null)
+                {
+                    var dataStorageKey = _keyProvider.GetGiftBoxDataStorageKey();
+                    _session.DataStorage[dataStorageKey].OnValueChanged += GiftListener;
+                }
+
+                _giftReceivedHandler += value;
+            }
+            remove
+            {
+                _giftReceivedHandler -= value;
+                if (_giftReceivedHandler == null)
+                {
+                    var dataStorageKey = _keyProvider.GetGiftBoxDataStorageKey();
+                    _session.DataStorage[dataStorageKey].OnValueChanged -= GiftListener;
+                }
+            }
+        }
+
+        private void GiftListener(JToken originalValue, JToken newValue, Dictionary<string, JToken> additionalArguments)
+        {
+            var oldGifts = _currentConverter.ReadFromDataStorage(originalValue);
+            var newGifts = _currentConverter.ReadFromDataStorage(newValue);
+            foreach (var key in oldGifts.Keys)
+            {
+                newGifts.Remove(key);
+            }
+
+            // Process and parse gifts
+            foreach (var gift in newGifts.Values)
+            {
+                _giftReceivedHandler?.Invoke(gift);
+            }
+        }
+
+        [Obsolete("")]
         public void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             var dataStorageKey = _keyProvider.GetGiftBoxDataStorageKey();
-            _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue, additionalArguments) => OnNewGift(originalValue, newValue, newGiftsCallback);
+            _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue, additionalArguments) => OnNewGiftObsolete(originalValue, newValue, newGiftsCallback);
         }
 
-        private void OnNewGift(JToken originalValue, JToken newValue, Action<Dictionary<string, Gift>> newGiftsCallback)
+        [Obsolete("")]
+        private void OnNewGiftObsolete(JToken originalValue, JToken newValue, Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             var newGifts = _currentConverter.ReadFromDataStorage(newValue);
             if (newGifts.Any())
