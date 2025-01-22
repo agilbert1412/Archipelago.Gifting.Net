@@ -31,7 +31,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         [SetUp]
         public void Setup()
         {
-            WaitShort();
+            WaitMedium();
             InitializeSessions();
             WaitShort();
             InitializeGiftingServices();
@@ -45,13 +45,13 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             CloseGiftBoxesAndShutdownGiftingServices();
             WaitShort();
             DisconnectSessions();
-            WaitShort();
+            WaitMedium();
         }
 
         protected void InitializeSessions()
         {
             var itemsHandling = ItemsHandlingFlags.AllItems;
-            var minimumVersion = new Version(0, 4, 2);
+            var minimumVersion = new Version(0, 5, 1);
             var tags = new[] { "AP" };
             InitializeSenderSession(itemsHandling, minimumVersion, tags);
             InitializeReceiverSession(itemsHandling, minimumVersion, tags);
@@ -122,14 +122,39 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             Wait(50);
         }
 
+        protected async Task WaitShortAsync()
+        {
+            await WaitAsync(50);
+        }
+
+        protected void WaitMedium()
+        {
+            Wait(200);
+        }
+
+        protected async Task WaitMediumAsync()
+        {
+            await WaitAsync(200);
+        }
+
         protected void WaitLong()
         {
-            Wait(500);
+            Wait(1000);
+        }
+
+        protected async Task WaitLongAsync()
+        {
+            await WaitAsync(1000);
         }
 
         private void Wait(int ms)
         {
             Thread.Sleep(ms);
+        }
+
+        private async Task WaitAsync(int ms)
+        {
+            await Task.Delay(ms);
         }
 
         protected GiftItem NewGiftItem(string suffix = "")

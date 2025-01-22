@@ -578,7 +578,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
         }
 
         [Test]
-        public void TestCanSubscribeAndGetNotifiedOnce()
+        public async Task TestCanSubscribeAndGetNotifiedOnce()
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
@@ -588,26 +588,22 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             void NewGiftsCallback(Gift gift)
             {
-                hasBeenNotified += 1;
-                gift.Should().NotBeNull();
-                gift.itemName.Should().Be(giftItem.Name);
-                gift.amount.Should().Be(giftItem.Amount);
-                gift.itemValue.Should().Be(giftItem.Value);
+                AssertGiftAndIncrement(ref hasBeenNotified, hasBeenNotified, gift, giftItem);
             }
 
             _serviceReceiver.OnNewGift += NewGiftsCallback;
-            WaitShort();
+            WaitMedium();
 
             // Act
             _serviceSender.SendGift(giftItem, ReceiverName);
-            WaitLong();
+            await WaitMediumAsync();
 
             // Assert
             hasBeenNotified.Should().Be(1);
         }
 
         [Test]
-        public void TestCanSubscribeAndGetNotifiedThreeTimes()
+        public async Task TestCanSubscribeAndGetNotifiedThreeTimes()
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
@@ -620,32 +616,28 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             void NewGiftsCallback(Gift gift)
             {
-                gift.Should().NotBeNull();
-                gift.itemName.Should().Be(giftItems[hasBeenNotified].Name);
-                gift.amount.Should().Be(giftItems[hasBeenNotified].Amount);
-                gift.itemValue.Should().Be(giftItems[hasBeenNotified].Value);
-                hasBeenNotified += 1;
+                AssertGiftAndIncrement(ref hasBeenNotified, hasBeenNotified, gift, giftItems[hasBeenNotified]);
             }
 
             _serviceReceiver.OnNewGift += NewGiftsCallback;
-            WaitShort();
+            WaitMedium();
 
             // Act
             _serviceSender.SendGift(giftItem1, ReceiverName);
-            WaitLong();
+            await WaitMediumAsync();
 
             hasBeenNotified.Should().Be(1);
 
             _serviceSender.SendGift(giftItem2, ReceiverName);
             _serviceSender.SendGift(giftItem3, ReceiverName);
-            WaitLong();
+            await WaitMediumAsync();
 
             // Assert
             hasBeenNotified.Should().Be(3);
         }
 
         [Test]
-        public void TestCanUnsubscribe()
+        public async Task TestCanUnsubscribe()
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
@@ -657,27 +649,30 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             void NewGiftsCallback(Gift gift)
             {
-                hasBeenNotified.Should().BeLessThan(1);
-                gift.Should().NotBeNull();
-                gift.itemName.Should().Be(giftItems[hasBeenNotified].Name);
-                gift.amount.Should().Be(giftItems[hasBeenNotified].Amount);
-                gift.itemValue.Should().Be(giftItems[hasBeenNotified].Value);
-                hasBeenNotified += 1;
+                Console.WriteLine($"5 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
+                AssertGiftAndIncrement(ref hasBeenNotified, 0, gift, giftItems[0]);
+                Console.WriteLine($"6 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
             }
 
+            Console.WriteLine($"1 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
             _serviceReceiver.OnNewGift += NewGiftsCallback;
-            WaitShort();
+            Console.WriteLine($"2 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
+            WaitMedium();
+            Console.WriteLine($"3 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
 
             // Act
             _serviceSender.SendGift(giftItem1, ReceiverName);
-            WaitLong();
+            Console.WriteLine($"4 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
+            await WaitMediumAsync();
+            Console.WriteLine($"7 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
             hasBeenNotified.Should().Be(1);
+            Console.WriteLine($"8 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
 
             _serviceReceiver.OnNewGift -= NewGiftsCallback;
             WaitShort();
 
             _serviceSender.SendGift(giftItem2, ReceiverName);
-            WaitLong();
+            WaitMedium();
 
             // Assert
             hasBeenNotified.Should().Be(1);
@@ -699,35 +694,32 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             void NewGiftsCallback1(Gift gift)
             {
-                gift.Should().NotBeNull();
-                callback1Count += 1;
+                AssertGiftAndIncrement(ref callback1Count, callback1Count, gift);
             }
 
             void NewGiftsCallback2(Gift gift)
             {
-                gift.Should().NotBeNull();
-                callback2Count += 1;
+                AssertGiftAndIncrement(ref callback2Count, callback2Count, gift);
             }
 
             void NewGiftsCallback3(Gift gift)
             {
-                gift.Should().NotBeNull();
-                callback3Count += 1;
+                AssertGiftAndIncrement(ref callback3Count, callback3Count, gift);
             }
 
             // Act
             _serviceReceiver.OnNewGift += NewGiftsCallback1;
-            WaitShort();
+            WaitMedium();
 
             _serviceSender.SendGift(giftItem1, ReceiverName);
-            WaitLong();
+            WaitMedium();
             callback1Count.Should().Be(1);
             callback2Count.Should().Be(0);
             callback3Count.Should().Be(0);
 
             _serviceReceiver.OnNewGift += NewGiftsCallback2;
             _serviceSender.SendGift(giftItem2, ReceiverName);
-            WaitLong();
+            WaitMedium();
             callback1Count.Should().Be(2);
             callback2Count.Should().Be(1);
             callback3Count.Should().Be(0);
@@ -736,7 +728,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OnNewGift -= NewGiftsCallback1;
 
             _serviceSender.SendGift(giftItem3, ReceiverName);
-            WaitLong();
+            WaitMedium();
             callback1Count.Should().Be(2);
             callback2Count.Should().Be(2);
             callback3Count.Should().Be(1);
@@ -745,7 +737,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             _serviceReceiver.OnNewGift -= NewGiftsCallback2;
 
             _serviceSender.SendGift(giftItem4, ReceiverName);
-            WaitLong();
+            WaitMedium();
 
             // Assert
             callback1Count.Should().Be(2);
@@ -806,11 +798,34 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             receivedGift.traits[3].duration.Should().BeApproximately(-1.0, 0.1);
         }
 
+        private static void AssertGiftAndIncrement(ref int hasBeenNotified, int expectedNotified, Gift gift, GiftItem? expectedGiftItem = null)
+        {
+            try
+            {
+                hasBeenNotified.Should().Be(expectedNotified);
+                gift.Should().NotBeNull();
+                if (expectedGiftItem != null)
+                {
+                    gift.itemName.Should().Be(expectedGiftItem.Name);
+                    gift.amount.Should().Be(expectedGiftItem.Amount);
+                    gift.itemValue.Should().Be(expectedGiftItem.Value);
+                }
+
+                hasBeenNotified += 1;
+            }
+            catch (Exception ex)
+            {
+                hasBeenNotified = -1;
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
         #region Obsolete Stuff
-        
+
         [Test]
         [Obsolete("Testing the old notification implementation")]
-        public void TestCanSubscribeAndGetNotifiedObsolete()
+        public async Task TestCanSubscribeAndGetNotifiedObsolete()
         {
             // Arrange
             _serviceReceiver.OpenGiftBox();
@@ -819,6 +834,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var hasBeenNotified = false;
             _serviceReceiver.SubscribeToNewGifts((gifts) =>
             {
+                Console.WriteLine($"4 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
                 hasBeenNotified = true;
                 gifts.Should().NotBeNull();
                 gifts.Should().HaveCount(1);
@@ -826,12 +842,18 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
                 notifiedGift.itemName.Should().Be(giftItem.Name);
                 notifiedGift.amount.Should().Be(giftItem.Amount);
                 notifiedGift.itemValue.Should().Be(giftItem.Value);
+                Console.WriteLine($"5 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
             });
-            WaitLong();
+            Console.WriteLine($"1 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
+            WaitMedium();
+            Console.WriteLine($"2 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
 
             // Act
+            Console.WriteLine($"3 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
             _serviceSender.SendGift(giftItem, ReceiverName);
-            WaitLong();
+            Console.WriteLine($"6 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
+            await WaitMediumAsync();
+            Console.WriteLine($"7 - {DateTime.Now.Second}.{DateTime.Now.Millisecond}");
 
             // Assert
             hasBeenNotified.Should().BeTrue();
