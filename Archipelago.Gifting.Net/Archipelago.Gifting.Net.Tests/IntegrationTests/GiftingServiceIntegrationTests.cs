@@ -798,6 +798,59 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             receivedGift.traits[3].duration.Should().BeApproximately(-1.0, 0.1);
         }
 
+        [Test]
+        public void TestGiftPropertiesSerializeToSnakeCase()
+        {
+            // Arrange
+            _serviceReceiver.OpenGiftBox();
+            var gift = NewGiftItem();
+            var traits = new GiftTrait[] { new("Food") };
+            WaitShort();
+
+            // Assume
+            var gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().BeEmpty();
+
+            // Act
+            var result = _serviceSender.SendGift(gift, traits, ReceiverName);
+            WaitShort();
+
+            // Assert
+            result.Success.Should().BeTrue();
+
+            var giftboxKey = $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}";
+            var content = _sessionReceiver.DataStorage[Scope.Global, giftboxKey].To<JToken>().ToString(Formatting.None);
+            content.Should().NotBeNullOrWhiteSpace();
+            content.Should().Contain($"\"item_name\":\"{gift.Name}\"");
+            content.Should().Contain($"\"item_value\":{gift.Value}");
+            content.Should().Contain($"\"sender_slot\":{_testSessions.SenderSlot}");
+            content.Should().Contain($"\"receiver_slot\":{_testSessions.ReceiverSlot}");
+            content.Should().Contain($"\"sender_team\":{_testSessions.SenderTeam}");
+            content.Should().Contain($"\"receiver_team\":{_testSessions.ReceiverTeam}");
+            content.Should().Contain("\"is_refund\":false");
+            content.Should().NotContain("itemName");
+            content.Should().NotContain("itemValue");
+            content.Should().NotContain("senderSlot");
+            content.Should().NotContain("receiverSlot");
+            content.Should().NotContain("senderTeam");
+            content.Should().NotContain("receiverTeam");
+            content.Should().NotContain("isRefund");
+
+            gifts = _serviceReceiver.CheckGiftBox();
+            gifts.Should().NotBeNull().And.HaveCount(1);
+            var (receivedGiftId, receivedGift) = gifts.First();
+            receivedGiftId.Should().Be(result.GiftId);
+            receivedGift.id.Should().Be(result.GiftId);
+            receivedGift.itemName.Should().Be(gift.Name);
+            receivedGift.amount.Should().Be(gift.Amount);
+            receivedGift.itemValue.Should().Be(gift.Value);
+            receivedGift.senderSlot.Should().Be(_testSessions.SenderSlot);
+            receivedGift.receiverSlot.Should().Be(_testSessions.ReceiverSlot);
+            receivedGift.senderTeam.Should().Be(receivedGift.senderTeam);
+            receivedGift.receiverTeam.Should().Be(receivedGift.receiverTeam);
+            receivedGift.isRefund.Should().Be(false);
+        }
+
         private static void AssertGiftAndIncrement(ref int hasBeenNotified, int expectedNotified, Gift gift, GiftItem? expectedGiftItem = null)
         {
             try

@@ -37,16 +37,22 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
                 var previousVersionContent = _previousConverter.ReadFromDataStorage(element);
                 foreach (var previousIdGift in previousVersionContent)
                 {
-                    var id = previousIdGift.Key;
-                    var previousGift = previousIdGift.Value;
-                    if (!giftboxContent.ContainsKey(id) || errorIds.Contains(id))
+                    try
                     {
-                        giftboxContent[id] = ConvertToCurrentVersion(previousGift);
+                        var id = previousIdGift.Key;
+                        var previousGift = previousIdGift.Value;
+                        if (!giftboxContent.ContainsKey(id) || errorIds.Contains(id))
+                        {
+                            giftboxContent[id] = ConvertToCurrentVersion(previousGift);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // ignored, it just means at least one gift couldn't be converted. We can still attempt the rest
                     }
                 }
 
                 return giftboxContent;
-
             }
             catch (Exception)
             {

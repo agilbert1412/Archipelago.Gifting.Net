@@ -1,25 +1,40 @@
 ﻿using System;
 using System.Numerics;
+using Newtonsoft.Json;
 
 namespace Archipelago.Gifting.Net.Gifts.Versions.Current
 {
     public class Gift
     {
         public string id { get; set; }
+
+        [JsonProperty(propertyName: "item_name")]
         public string itemName { get; set; }
+
         public int amount { get; set; }
 
         /// <summary>
         /// This is the value per item, in the standard Archipelago currency.
         /// This is not the value of the whole gift. The value of the gift is the value of the item, multiplied by the amount of the item
         /// </summary>
+        [JsonProperty(propertyName: "item_value")]
         public BigInteger itemValue { get; set; }
 
         public GiftTrait[] traits { get; set; }
+
+        [JsonProperty(propertyName: "sender_slot")]
         public int senderSlot { get; set; }
+
+        [JsonProperty(propertyName: "receiver_slot")]
         public int receiverSlot { get; set; }
+
+        [JsonProperty(propertyName: "sender_team")]
         public int senderTeam { get; set; }
+
+        [JsonProperty(propertyName: "receiver_team")]
         public int receiverTeam { get; set; }
+
+        [JsonProperty(propertyName: "is_refund")]
         public bool isRefund { get; set; }
 
         public Gift()
