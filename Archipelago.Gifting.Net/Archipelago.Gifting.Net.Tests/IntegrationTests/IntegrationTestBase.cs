@@ -63,7 +63,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var result = _testSessions.SessionSender.TryConnectAndLogin(GAME, SenderName, itemsHandling, minimumVersion, tags);
             if (result is not LoginSuccessful)
             {
-                throw new Exception($"Failed to connect as {SenderName}");
+                throw new Exception($"Failed to connect as {SenderName}. {result}");
             }
         }
 
