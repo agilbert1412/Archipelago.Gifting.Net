@@ -27,7 +27,7 @@ namespace Archipelago.Gifting.Net.Tests.UnitTests
         }
 
         [Test]
-        public void TestOpenGiftboxCreatesEmptyGiftArray()
+        public void TestOpenGiftBoxCreatesEmptyGiftArray()
         {
             // Arrange
             _service = new GiftingService(_senderSession.Object);

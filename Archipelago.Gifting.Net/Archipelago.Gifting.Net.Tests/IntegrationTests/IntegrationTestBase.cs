@@ -1,7 +1,7 @@
-﻿using Archipelago.Gifting.Net.Gifts;
-using Archipelago.Gifting.Net.Gifts.Versions.Current;
-using Archipelago.Gifting.Net.Service;
+﻿using Archipelago.Gifting.Net.Service;
 using Archipelago.Gifting.Net.Traits;
+using Archipelago.Gifting.Net.Versioning.Gifts;
+using Archipelago.Gifting.Net.Versioning.Gifts.Current;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Packets;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
+namespace Archipelago.Gifting.Net.Versioning.Gifts.Version2
 {
     public class Gift
     {
@@ -14,6 +14,7 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
         /// This is not the value of the whole gift. The value of the gift is the value of the item, multiplied by the amount of the item
         /// </summary>
         public BigInteger ItemValue { get; set; }
+
         public GiftTrait[] Traits { get; set; }
         public int SenderSlot { get; set; }
         public int ReceiverSlot { get; set; }

@@ -6,16 +6,16 @@ using Archipelago.Gifting.Net.Utilities;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
+namespace Archipelago.Gifting.Net.Versioning.Gifts.Version2
 {
-    internal class Converter : IVersionedConverter<Gift, Version1.Gift>
+    internal class Converter : IVersionedGiftConverter<Gift, Version1.Gift>
     {
         public int Version => DataVersion.GIFT_DATA_VERSION_2;
         public int PreviousVersion => DataVersion.GIFT_DATA_VERSION_1;
 
         private PlayerProvider _playerProvider;
         private Validator _validator;
-        private IVersionedConverter<Version1.Gift, object> _previousConverter;
+        private IVersionedGiftConverter<Version1.Gift, object> _previousConverter;
 
         public Converter(PlayerProvider playerProvider)
         {
@@ -28,10 +28,10 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
         {
             try
             {
-                var giftboxContent = element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
-                if (_validator.Validate(giftboxContent, out var errorIds))
+                var giftBoxContent = element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
+                if (_validator.Validate(giftBoxContent, out var errorIds))
                 {
-                    return giftboxContent;
+                    return giftBoxContent;
                 }
 
                 var previousVersionContent = _previousConverter.ReadFromDataStorage(element);
@@ -41,9 +41,9 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
                     {
                         var id = previousIdGift.Key;
                         var previousGift = previousIdGift.Value;
-                        if (!giftboxContent.ContainsKey(id) || errorIds.Contains(id))
+                        if (!giftBoxContent.ContainsKey(id) || errorIds.Contains(id))
                         {
-                            giftboxContent[id] = ConvertToCurrentVersion(previousGift);
+                            giftBoxContent[id] = ConvertToCurrentVersion(previousGift);
                         }
                     }
                     catch (Exception)
@@ -52,7 +52,7 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
                     }
                 }
 
-                return giftboxContent;
+                return giftBoxContent;
             }
             catch (Exception)
             {
@@ -64,10 +64,10 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
         {
             try
             {
-                var giftboxContent = element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
-                if (_validator.Validate(giftboxContent, out var errorIds))
+                var giftBoxContent = element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
+                if (_validator.Validate(giftBoxContent, out var errorIds))
                 {
-                    return giftboxContent;
+                    return giftBoxContent;
                 }
 
                 var previousVersionContent = _previousConverter.ReadFromDataStorage(element);
@@ -75,13 +75,13 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
                 {
                     var id = previousIdGift.Key;
                     var previousGift = previousIdGift.Value;
-                    if (!giftboxContent.ContainsKey(id) || errorIds.Contains(id))
+                    if (!giftBoxContent.ContainsKey(id) || errorIds.Contains(id))
                     {
-                        giftboxContent[id] = ConvertToCurrentVersion(previousGift);
+                        giftBoxContent[id] = ConvertToCurrentVersion(previousGift);
                     }
                 }
 
-                return giftboxContent;
+                return giftBoxContent;
             }
             catch (Exception)
             {
@@ -89,16 +89,16 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version2
             }
         }
 
-        public IDictionary CreateDataStorageUpdateEntry(Gift gift, int version)
+        public IDictionary CreateDataStorageUpdateEntry(string id, Gift gift, int version)
         {
             if (version < Version)
             {
-                return _previousConverter.CreateDataStorageUpdateEntry(ConvertToPreviousVersion(gift), version);
+                return _previousConverter.CreateDataStorageUpdateEntry(id, ConvertToPreviousVersion(gift), version);
             }
 
             var newGiftEntry = new Dictionary<string, Gift>
             {
-                { gift.ID, gift },
+                { id, gift },
             };
 
             return newGiftEntry;

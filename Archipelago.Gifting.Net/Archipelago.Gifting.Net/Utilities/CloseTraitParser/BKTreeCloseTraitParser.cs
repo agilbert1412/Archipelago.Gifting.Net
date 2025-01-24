@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Traits;
+using Archipelago.Gifting.Net.Versioning.Gifts.Current;
 
 namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
 {
@@ -33,26 +33,26 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
             double distance = 0;
             foreach (GiftTrait giftTrait in giftTraits)
             {
-                if (traitsCopy.TryGetValue(giftTrait.trait, out Tuple<double, double> values))
+                if (traitsCopy.TryGetValue(giftTrait.Trait, out Tuple<double, double> values))
                 {
-                    traitsCopy.Remove(giftTrait.trait);
-                    if (values.Item1 * giftTrait.quality <= 0)
+                    traitsCopy.Remove(giftTrait.Trait);
+                    if (values.Item1 * giftTrait.Quality <= 0)
                     {
                         distance += 1;
                     }
                     else
                     {
-                        double d = values.Item1 / giftTrait.quality;
+                        double d = values.Item1 / giftTrait.Quality;
                         distance += 1 - (d > 1 ? 1 / d : d);
                     }
 
-                    if (values.Item2 * giftTrait.duration <= 0)
+                    if (values.Item2 * giftTrait.Duration <= 0)
                     {
                         distance += 1;
                     }
                     else
                     {
-                        double d = values.Item2 / giftTrait.duration;
+                        double d = values.Item2 / giftTrait.Duration;
                         distance += 1 - (d > 1 ? 1 / d : d);
                     }
                 }
@@ -74,14 +74,14 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
                 _items.Add(availableGift);
                 foreach (GiftTrait giftTrait in traits)
                 {
-                    if (_traits.TryGetValue(giftTrait.trait, out Tuple<double, double> values))
+                    if (_traits.TryGetValue(giftTrait.Trait, out Tuple<double, double> values))
                     {
-                        _traits[giftTrait.trait] = new Tuple<double, double>(values.Item1 + giftTrait.quality,
-                            values.Item2 + giftTrait.duration);
+                        _traits[giftTrait.Trait] = new Tuple<double, double>(values.Item1 + giftTrait.Quality,
+                            values.Item2 + giftTrait.Duration);
                     }
                     else
                     {
-                        _traits[giftTrait.trait] = new Tuple<double, double>(giftTrait.quality, giftTrait.duration);
+                        _traits[giftTrait.Trait] = new Tuple<double, double>(giftTrait.Quality, giftTrait.Duration);
                     }
                 }
 

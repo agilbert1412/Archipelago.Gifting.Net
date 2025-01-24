@@ -1,7 +1,7 @@
 ﻿using Archipelago.Gifting.Net.Utilities;
 using Archipelago.MultiClient.Net;
 
-namespace Archipelago.Gifting.Net.Giftboxes
+namespace Archipelago.Gifting.Net.Versioning.GiftBoxes
 {
     internal class GiftBoxKeyProvider
     {

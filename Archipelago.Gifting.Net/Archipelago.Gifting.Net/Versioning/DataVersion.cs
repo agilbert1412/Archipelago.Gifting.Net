@@ -1,4 +1,4 @@
-﻿namespace Archipelago.Gifting.Net.Gifts.Versions
+﻿namespace Archipelago.Gifting.Net.Versioning
 {
     internal static class DataVersion
     {

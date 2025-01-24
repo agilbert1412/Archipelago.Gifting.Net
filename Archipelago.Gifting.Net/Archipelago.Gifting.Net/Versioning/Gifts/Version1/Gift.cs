@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
+namespace Archipelago.Gifting.Net.Versioning.Gifts.Version1
 {
     internal class Gift
     {
@@ -27,7 +27,7 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
             SenderName = senderName;
             ReceiverName = receiverName;
             SenderTeam = senderTeam;
-            ReceiverTeam = ReceiverTeam;
+            ReceiverTeam = receiverTeam;
             IsRefund = false;
         }
     }

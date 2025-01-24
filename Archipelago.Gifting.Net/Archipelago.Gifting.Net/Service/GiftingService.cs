@@ -1,20 +1,20 @@
-﻿using Archipelago.Gifting.Net.Gifts;
-using Archipelago.Gifting.Net.Gifts.Versions;
-using Archipelago.Gifting.Net.Traits;
-using Archipelago.Gifting.Net.Utilities;
+﻿using Archipelago.Gifting.Net.Utilities;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Archipelago.Gifting.Net.Giftboxes;
-using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Service.TraitAcceptance;
 using Archipelago.Gifting.Net.Service.Result;
+using Archipelago.Gifting.Net.Versioning;
+using Archipelago.Gifting.Net.Versioning.GiftBoxes;
+using Archipelago.Gifting.Net.Versioning.GiftBoxes.Current;
+using Archipelago.Gifting.Net.Versioning.Gifts;
+using Archipelago.Gifting.Net.Versioning.Gifts.Current;
+using Converter = Archipelago.Gifting.Net.Versioning.Gifts.Current.Converter;
 
 namespace Archipelago.Gifting.Net.Service
 {
@@ -46,7 +46,7 @@ namespace Archipelago.Gifting.Net.Service
         }
 
         /// <summary>
-        /// Open a giftbox that can accept any gift with no trait preference
+        /// Open a giftBox that can accept any gift with no trait preference
         /// </summary>
         public void OpenGiftBox()
         {
@@ -54,9 +54,9 @@ namespace Archipelago.Gifting.Net.Service
         }
 
         /// <summary>
-        /// Open a giftbox with custom acceptance preference
+        /// Open a giftBox with custom acceptance preference
         /// </summary>
-        /// <param name="acceptAnyGift">Whether this giftbox can accept any gift, or only gifts with the specified traits</param>
+        /// <param name="acceptAnyGift">Whether this giftBox can accept any gift, or only gifts with the specified traits</param>
         /// <param name="desiredTraits">If can accept any gift, these are traits that make for a "good" gift. If not, these are the only accepted traits</param>
         public void OpenGiftBox(bool acceptAnyGift, string[] desiredTraits)
         {
@@ -69,7 +69,7 @@ namespace Archipelago.Gifting.Net.Service
             EmptyGiftBox();
         }
 
-        public GiftBox GetCurrentGiftboxState()
+        public GiftBox GetCurrentGiftBoxState()
         {
             var team = _playerProvider.CurrentPlayerTeam;
             var player = _playerProvider.CurrentPlayerSlot;
@@ -117,11 +117,11 @@ namespace Archipelago.Gifting.Net.Service
                 return acceptedTraitsByPlayer;
             }
 
-            foreach (var playerGiftbox in teamMotherbox)
+            foreach (var playerGiftBox in teamMotherbox)
             {
-                var player = playerGiftbox.Key;
-                var giftbox = playerGiftbox.Value;
-                var acceptedTraits = GetAcceptedTraits(team, player, giftbox, giftTraits);
+                var player = playerGiftBox.Key;
+                var giftBox = playerGiftBox.Value;
+                var acceptedTraits = GetAcceptedTraits(team, player, giftBox, giftTraits);
                 if (acceptedTraits.Any())
                 {
                     acceptedTraitsByPlayer.Add(player, acceptedTraits);
@@ -131,14 +131,14 @@ namespace Archipelago.Gifting.Net.Service
             return acceptedTraitsByPlayer;
         }
 
-        private static AcceptedTraits GetAcceptedTraits(int team, int player, GiftBox giftbox, IEnumerable<string> giftTraits)
+        private static AcceptedTraits GetAcceptedTraits(int team, int player, GiftBox giftBox, IEnumerable<string> giftTraits)
         {
-            if (giftbox == null || !giftbox.IsOpen)
+            if (giftBox == null || !giftBox.IsOpen)
             {
                 return new AcceptedTraits(team, player);
             }
 
-            var traits = giftTraits.Where(x => giftbox.AcceptsAnyGift || giftbox.DesiredTraits.Contains(x));
+            var traits = giftTraits.Where(x => giftBox.AcceptsAnyGift || giftBox.DesiredTraits.Contains(x));
             var acceptedTraits = new AcceptedTraits(team, player, traits.ToArray());
             return acceptedTraits;
         }
@@ -175,13 +175,13 @@ namespace Archipelago.Gifting.Net.Service
 
         public GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
         {
-            var canGift = CanGiftToPlayer(playerName, playerTeam, traits.Select(x => x.trait));
+            var canGift = CanGiftToPlayer(playerName, playerTeam, traits.Select(x => x.Trait));
             return SendGift(item, traits, playerName, playerTeam, canGift);
         }
 
         public async Task<GiftingResult> SendGiftAsync(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam)
         {
-            var canGift = await CanGiftToPlayerAsync(playerName, playerTeam, traits.Select(x => x.trait));
+            var canGift = await CanGiftToPlayerAsync(playerName, playerTeam, traits.Select(x => x.Trait));
             return SendGift(item, traits, playerName, playerTeam, canGift);
         }
 
@@ -207,12 +207,12 @@ namespace Archipelago.Gifting.Net.Service
 
         public GiftingResult RefundGift(Gift gift)
         {
-            if (gift.isRefund)
+            if (gift.IsRefund)
             {
                 return new FailedGifting();
             }
 
-            gift.isRefund = true;
+            gift.IsRefund = true;
             return SendGift(gift);
         }
 
@@ -220,39 +220,39 @@ namespace Archipelago.Gifting.Net.Service
         {
             try
             {
-                var targetPlayer = gift.isRefund
-                    ? _playerProvider.GetPlayer(gift.senderSlot, gift.senderTeam)
-                    : _playerProvider.GetPlayer(gift.receiverSlot, gift.receiverTeam);
+                var targetPlayer = gift.IsRefund
+                    ? _playerProvider.GetPlayer(gift.SenderSlot, gift.SenderTeam)
+                    : _playerProvider.GetPlayer(gift.ReceiverSlot, gift.ReceiverTeam);
 
                 var motherBox = GetMotherbox(targetPlayer.Team);
-                var giftboxMetadata = motherBox[targetPlayer.Slot];
-                var giftboxVersion = giftboxMetadata.MaximumGiftDataVersion;
-                if (giftboxVersion < DataVersion.FirstVersion)
+                var giftBoxMetadata = motherBox[targetPlayer.Slot];
+                var giftBoxVersion = giftBoxMetadata.MaximumGiftDataVersion;
+                if (giftBoxVersion < DataVersion.FirstVersion)
                 {
-                    giftboxVersion = DataVersion.FirstVersion;
+                    giftBoxVersion = DataVersion.FirstVersion;
                 }
 
-                var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(targetPlayer.Team, targetPlayer.Slot);
+                var giftBoxKey = _keyProvider.GetGiftBoxDataStorageKey(targetPlayer.Team, targetPlayer.Slot);
 
-                CreateGiftboxIfNeeded(giftboxKey);
-                var newGiftEntry = _currentConverter.CreateDataStorageUpdateEntry(gift, giftboxVersion);
-                _session.DataStorage[Scope.Global, giftboxKey] += Operation.Update(newGiftEntry);
-                return new SuccessfulGifting(gift.id);
+                CreateGiftBoxIfNeeded(giftBoxKey);
+                var newGiftEntry = _currentConverter.CreateDataStorageUpdateEntry(gift.ID, gift, giftBoxVersion);
+                _session.DataStorage[Scope.Global, giftBoxKey] += Operation.Update(newGiftEntry);
+                return new SuccessfulGifting(gift.ID);
             }
             catch (Exception)
             {
-                return new FailedGifting(gift.id);
+                return new FailedGifting(gift.ID);
             }
         }
 
-        public Dictionary<string, Gift> GetAllGiftsAndEmptyGiftbox()
+        public Dictionary<string, Gift> GetAllGiftsAndEmptyGiftBox()
         {
             var gifts = CheckGiftBox();
             RemoveGiftsFromGiftBox(gifts.Keys);
             return gifts;
         }
 
-        public async Task<Dictionary<string, Gift>> GetAllGiftsAndEmptyGiftboxAsync()
+        public async Task<Dictionary<string, Gift>> GetAllGiftsAndEmptyGiftBoxAsync()
         {
             var gifts = await CheckGiftBoxAsync();
             RemoveGiftsFromGiftBox(gifts.Keys);
@@ -261,21 +261,21 @@ namespace Archipelago.Gifting.Net.Service
 
         public Dictionary<string, Gift> CheckGiftBox()
         {
-            var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
-            var gifts = GetGiftboxContent(giftboxKey);
+            var giftBoxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
+            var gifts = GetGiftBoxContent(giftBoxKey);
             return gifts;
         }
 
         public async Task<Dictionary<string, Gift>> CheckGiftBoxAsync()
         {
-            var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
-            var gifts = await GetGiftboxContentAsync(giftboxKey);
+            var giftBoxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
+            var gifts = await GetGiftBoxContentAsync(giftBoxKey);
             return gifts;
         }
 
         private void EmptyGiftBox()
         {
-            GetAllGiftsAndEmptyGiftbox();
+            GetAllGiftsAndEmptyGiftBox();
         }
 
         public void RemoveGiftsFromGiftBox(IEnumerable<string> giftsIds)
@@ -288,22 +288,22 @@ namespace Archipelago.Gifting.Net.Service
 
         public void RemoveGiftFromGiftBox(string giftId)
         {
-            var giftboxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
-            _session.DataStorage[Scope.Global, giftboxKey] += Operation.Pop(giftId);
+            var giftBoxKey = _keyProvider.GetGiftBoxDataStorageKey(_playerProvider.CurrentPlayerTeam, _playerProvider.CurrentPlayerSlot);
+            _session.DataStorage[Scope.Global, giftBoxKey] += Operation.Pop(giftId);
         }
 
-        private Dictionary<string, Gift> GetGiftboxContent(string giftboxKey)
+        private Dictionary<string, Gift> GetGiftBoxContent(string giftBoxKey)
         {
-            CreateGiftboxIfNeeded(giftboxKey);
-            var existingGiftBox = _session.DataStorage[Scope.Global, giftboxKey];
+            CreateGiftBoxIfNeeded(giftBoxKey);
+            var existingGiftBox = _session.DataStorage[Scope.Global, giftBoxKey];
             var gifts = _currentConverter.ReadFromDataStorage(existingGiftBox);
             return gifts;
         }
 
-        private async Task<Dictionary<string, Gift>> GetGiftboxContentAsync(string giftboxKey)
+        private async Task<Dictionary<string, Gift>> GetGiftBoxContentAsync(string giftBoxKey)
         {
-            CreateGiftboxIfNeeded(giftboxKey);
-            var existingGiftBox = _session.DataStorage[Scope.Global, giftboxKey];
+            CreateGiftBoxIfNeeded(giftBoxKey);
+            var existingGiftBox = _session.DataStorage[Scope.Global, giftBoxKey];
             var gifts = await existingGiftBox.GetAsync();
             return _currentConverter.ReadFromDataStorage(gifts);
         }
@@ -405,7 +405,7 @@ namespace Archipelago.Gifting.Net.Service
             _session.DataStorage[Scope.Global, motherboxKey].Initialize(EmptyMotherboxDictionary);
         }
 
-        private void CreateGiftboxIfNeeded(string giftBoxKey)
+        private void CreateGiftBoxIfNeeded(string giftBoxKey)
         {
             _session.DataStorage[Scope.Global, giftBoxKey].Initialize(EmptyGiftDictionary);
         }
@@ -452,14 +452,14 @@ namespace Archipelago.Gifting.Net.Service
             }
         }
 
-        [Obsolete("")]
+        [Obsolete("SubscribeToNewGifts is deprecated. Instead, use the event OnNewGift and subscribe by adding the handlers you need")]
         public void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             var dataStorageKey = _keyProvider.GetGiftBoxDataStorageKey();
             _session.DataStorage[Scope.Global, dataStorageKey].OnValueChanged += (originalValue, newValue, additionalArguments) => OnNewGiftObsolete(originalValue, newValue, newGiftsCallback);
         }
 
-        [Obsolete("")]
+        [Obsolete("Obsolete private event used by SubscribeToNewGifts")]
         private void OnNewGiftObsolete(JToken originalValue, JToken newValue, Action<Dictionary<string, Gift>> newGiftsCallback)
         {
             var newGifts = _currentConverter.ReadFromDataStorage(newValue);

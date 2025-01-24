@@ -6,9 +6,9 @@ using System.Linq;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
+namespace Archipelago.Gifting.Net.Versioning.Gifts.Version1
 {
-    internal class Converter : IVersionedConverter<Gift, object>
+    internal class Converter : IVersionedGiftConverter<Gift, object>
     {
         public int Version => DataVersion.GIFT_DATA_VERSION_1;
         public int PreviousVersion => Version - 1;
@@ -21,8 +21,8 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
         {
             try
             {
-                var giftboxContent = element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
-                return giftboxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
+                var giftBoxContent = element.To<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
+                return giftBoxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
             }
             catch (Exception ex)
             {
@@ -34,8 +34,8 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
         {
             try
             {
-                var giftboxContent = element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
-                return giftboxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
+                var giftBoxContent = element.ToObject<Dictionary<string, Gift>>() ?? new Dictionary<string, Gift>();
+                return giftBoxContent.ToDictionary(x => x.Key.ToString(), x => x.Value);
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
             }
         }
 
-        public IDictionary CreateDataStorageUpdateEntry(Gift gift, int version)
+        public IDictionary CreateDataStorageUpdateEntry(string id, Gift gift, int version)
         {
             if (version < Version)
             {
@@ -52,7 +52,7 @@ namespace Archipelago.Gifting.Net.Gifts.Versions.Version1
 
             var newGiftEntry = new Dictionary<Guid, Gift>
             {
-                { Guid.Parse(gift.ID), gift },
+                { Guid.Parse(id), gift },
             };
 
             return newGiftEntry;

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Archipelago.Gifting.Net.Giftboxes;
-using Archipelago.Gifting.Net.Gifts;
-using Archipelago.Gifting.Net.Gifts.Versions.Current;
 using Archipelago.Gifting.Net.Service.Result;
 using Archipelago.Gifting.Net.Service.TraitAcceptance;
+using Archipelago.Gifting.Net.Versioning.GiftBoxes.Current;
+using Archipelago.Gifting.Net.Versioning.Gifts;
+using Archipelago.Gifting.Net.Versioning.Gifts.Current;
 
 namespace Archipelago.Gifting.Net.Service
 {
@@ -16,10 +16,10 @@ namespace Archipelago.Gifting.Net.Service
         void CloseGiftBox();
 
         /// <summary>
-        /// Gets the current metadata state of your own giftbox, as registered in the motherbox
+        /// Gets the current metadata state of your own giftBox, as registered in the motherbox
         /// </summary>
-        /// <returns>Your own giftbox information</returns>
-        GiftBox GetCurrentGiftboxState();
+        /// <returns>Your own giftBox information</returns>
+        GiftBox GetCurrentGiftBoxState();
 
         bool CanGiftToPlayer(string playerName);
         bool CanGiftToPlayer(string playerName, int playerTeam);
@@ -50,10 +50,12 @@ namespace Archipelago.Gifting.Net.Service
         GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName);
         GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam);
         GiftingResult RefundGift(Gift gift);
-        Dictionary<string, Gift> GetAllGiftsAndEmptyGiftbox();
+        Dictionary<string, Gift> GetAllGiftsAndEmptyGiftBox();
         Dictionary<string, Gift> CheckGiftBox();
         void RemoveGiftsFromGiftBox(IEnumerable<string> giftIds);
         void RemoveGiftFromGiftBox(string giftId);
+
+        [Obsolete("SubscribeToNewGifts is deprecated. Instead, use the event OnNewGift and subscribe by adding the handlers you need")]
         void SubscribeToNewGifts(Action<Dictionary<string, Gift>> newGiftsCallback);
 
         #region Obsolete Stuff
