@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Archipelago.Gifting.Net.Versioning.Gifts.Current
 {
-    internal class Converter : IVersionedGiftConverter<Gift, Version2.Gift>
+    internal class GiftConverter : IVersionedGiftConverter<Gift, Version2.Gift>
     {
         public int Version => DataVersion.GIFT_DATA_VERSION_3;
         public int PreviousVersion => DataVersion.GIFT_DATA_VERSION_2;
@@ -16,10 +16,10 @@ namespace Archipelago.Gifting.Net.Versioning.Gifts.Current
         private readonly Validator _validator;
         private readonly IVersionedGiftConverter<Version2.Gift, Version1.Gift> _previousConverter;
 
-        public Converter(PlayerProvider playerProvider)
+        public GiftConverter(PlayerProvider playerProvider)
         {
             _validator = new Validator();
-            _previousConverter = new Version2.Converter(playerProvider);
+            _previousConverter = new Version2.GiftConverter(playerProvider);
         }
 
         public Dictionary<string, Gift> ReadFromDataStorage(DataStorageElement element)

@@ -19,7 +19,7 @@ namespace Archipelago.Gifting.Net.Versioning.GiftBoxes.Current
         [JsonProperty(propertyName: "maximum_gift_data_version")]
         public int MaximumGiftDataVersion { get; set; }
 
-        internal GiftBox()
+        public GiftBox()
         {
         }
 

@@ -87,7 +87,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Assert
             result.Success.Should().BeTrue();
             var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}"];
-            var gifts = new Versioning.Gifts.Version1.Converter().ReadFromDataStorage(existingGiftBox);
+            var gifts = new Versioning.Gifts.Version1.GiftConverter().ReadFromDataStorage(existingGiftBox);
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(result.GiftId);
@@ -121,7 +121,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Assert
             result.Success.Should().BeTrue();
             var existingGiftBox = _sessionReceiver.DataStorage[Scope.Global, $"GiftBox;{_testSessions.ReceiverTeam};{_testSessions.ReceiverSlot}"];
-            var gifts = new Versioning.Gifts.Version2.Converter(_serviceReceiver.PlayerProvider).ReadFromDataStorage(existingGiftBox);
+            var gifts = new Versioning.Gifts.Version2.GiftConverter(_serviceReceiver.PlayerProvider).ReadFromDataStorage(existingGiftBox);
             gifts.Should().NotBeNull().And.HaveCount(1);
             var (receivedGiftId, receivedGift) = gifts.First();
             receivedGiftId.Should().Be(result.GiftId);

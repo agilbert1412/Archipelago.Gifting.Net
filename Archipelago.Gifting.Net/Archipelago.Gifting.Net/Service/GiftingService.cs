@@ -14,7 +14,6 @@ using Archipelago.Gifting.Net.Versioning.GiftBoxes;
 using Archipelago.Gifting.Net.Versioning.GiftBoxes.Current;
 using Archipelago.Gifting.Net.Versioning.Gifts;
 using Archipelago.Gifting.Net.Versioning.Gifts.Current;
-using Converter = Archipelago.Gifting.Net.Versioning.Gifts.Current.Converter;
 
 namespace Archipelago.Gifting.Net.Service
 {
@@ -23,7 +22,8 @@ namespace Archipelago.Gifting.Net.Service
         private ArchipelagoSession _session;
         private PlayerProvider _playerProvider;
         private GiftBoxKeyProvider _keyProvider;
-        private Converter _currentConverter;
+        private GiftBoxConverter _currentGiftBoxConverter;
+        private GiftConverter _currentGiftConverter;
 
         private JToken EmptyMotherboxDictionary => JToken.FromObject(new Dictionary<int, GiftBox>());
         private JToken EmptyGiftDictionary => JToken.FromObject(new Dictionary<string, Gift>());
@@ -35,7 +35,8 @@ namespace Archipelago.Gifting.Net.Service
             _session = session;
             _playerProvider = new PlayerProvider(_session);
             _keyProvider = new GiftBoxKeyProvider(_session, _playerProvider);
-            _currentConverter = new Converter(_playerProvider);
+            _currentGiftBoxConverter = new GiftBoxConverter();
+            _currentGiftConverter = new GiftConverter(_playerProvider);
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey();
             CreateMotherboxIfNeeded(motherboxKey);
         }
@@ -235,7 +236,7 @@ namespace Archipelago.Gifting.Net.Service
                 var giftBoxKey = _keyProvider.GetGiftBoxDataStorageKey(targetPlayer.Team, targetPlayer.Slot);
 
                 CreateGiftBoxIfNeeded(giftBoxKey);
-                var newGiftEntry = _currentConverter.CreateDataStorageUpdateEntry(gift.ID, gift, giftBoxVersion);
+                var newGiftEntry = _currentGiftConverter.CreateDataStorageUpdateEntry(gift.ID, gift, giftBoxVersion);
                 _session.DataStorage[Scope.Global, giftBoxKey] += Operation.Update(newGiftEntry);
                 return new SuccessfulGifting(gift.ID);
             }
@@ -296,7 +297,7 @@ namespace Archipelago.Gifting.Net.Service
         {
             CreateGiftBoxIfNeeded(giftBoxKey);
             var existingGiftBox = _session.DataStorage[Scope.Global, giftBoxKey];
-            var gifts = _currentConverter.ReadFromDataStorage(existingGiftBox);
+            var gifts = _currentGiftConverter.ReadFromDataStorage(existingGiftBox);
             return gifts;
         }
 
@@ -305,7 +306,7 @@ namespace Archipelago.Gifting.Net.Service
             CreateGiftBoxIfNeeded(giftBoxKey);
             var existingGiftBox = _session.DataStorage[Scope.Global, giftBoxKey];
             var gifts = await existingGiftBox.GetAsync();
-            return _currentConverter.ReadFromDataStorage(gifts);
+            return _currentGiftConverter.ReadFromDataStorage(gifts);
         }
 
         public bool CanGiftToPlayer(string playerName)
@@ -366,7 +367,7 @@ namespace Archipelago.Gifting.Net.Service
         private Dictionary<int, GiftBox> GetMotherbox(int playerTeam)
         {
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(playerTeam);
-            var motherBox = _session.DataStorage[Scope.Global, motherboxKey].To<Dictionary<int, GiftBox>>();
+            var motherBox = _currentGiftBoxConverter.ReadFromDataStorage(_session.DataStorage[Scope.Global, motherboxKey]);
             return motherBox;
         }
 
@@ -438,8 +439,8 @@ namespace Archipelago.Gifting.Net.Service
 
         private void GiftListener(JToken originalValue, JToken newValue, Dictionary<string, JToken> additionalArguments)
         {
-            var oldGifts = _currentConverter.ReadFromDataStorage(originalValue);
-            var newGifts = _currentConverter.ReadFromDataStorage(newValue);
+            var oldGifts = _currentGiftConverter.ReadFromDataStorage(originalValue);
+            var newGifts = _currentGiftConverter.ReadFromDataStorage(newValue);
             foreach (var key in oldGifts.Keys)
             {
                 newGifts.Remove(key);
@@ -462,7 +463,7 @@ namespace Archipelago.Gifting.Net.Service
         [Obsolete("Obsolete private event used by SubscribeToNewGifts")]
         private void OnNewGiftObsolete(JToken originalValue, JToken newValue, Action<Dictionary<string, Gift>> newGiftsCallback)
         {
-            var newGifts = _currentConverter.ReadFromDataStorage(newValue);
+            var newGifts = _currentGiftConverter.ReadFromDataStorage(newValue);
             if (newGifts.Any())
             {
                 newGiftsCallback(newGifts);

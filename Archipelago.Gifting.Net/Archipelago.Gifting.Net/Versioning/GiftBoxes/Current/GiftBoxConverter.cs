@@ -6,15 +6,15 @@ using Newtonsoft.Json.Linq;
 
 namespace Archipelago.Gifting.Net.Versioning.GiftBoxes.Current
 {
-    internal class Converter : IVersionedGiftBoxConverter<GiftBox, Version2.GiftBox>
+    internal class GiftBoxConverter : IVersionedGiftBoxConverter<GiftBox, Version2.GiftBox>
     {
         public int Version => DataVersion.GIFT_DATA_VERSION_3;
         public int PreviousVersion => DataVersion.GIFT_DATA_VERSION_2;
         private IVersionedGiftBoxConverter<Version2.GiftBox, object> _previousConverter;
 
-        public Converter()
+        public GiftBoxConverter()
         {
-            _previousConverter = new Version2.Converter();
+            _previousConverter = new Version2.GiftBoxConverter();
         }
 
         public Dictionary<int, GiftBox> ReadFromDataStorage(DataStorageElement element)

@@ -7,12 +7,12 @@ using Newtonsoft.Json.Linq;
 
 namespace Archipelago.Gifting.Net.Versioning.GiftBoxes.Version2
 {
-    internal class Converter : IVersionedGiftBoxConverter<GiftBox, object>
+    internal class GiftBoxConverter : IVersionedGiftBoxConverter<GiftBox, object>
     {
         public int Version => DataVersion.GIFT_DATA_VERSION_1;
         public int PreviousVersion => Version - 1;
 
-        public Converter()
+        public GiftBoxConverter()
         {
         }
 
