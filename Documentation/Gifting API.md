@@ -26,44 +26,49 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 
 ## Object Specifications
 
-These specifications are **Data Version 2**. Previous versions are available in the git history of this file, but clients should try to stay up to date, as cross-version gifting takes a lot of extra work that most clients will not do.
+These specifications are **Data Version 3**. Previous versions are available in the git history of this file, and the changes introduced are documented in [the changelog document](Documentation/Changelog.md), but clients should try to stay up to date, as cross-version gifting takes a lot of extra work that most clients will not do.
+The C# library available in this repo is fully forward and backward compatible. It can send and receive outdated gifts to and from outdated clients, and is itself forward compatible and will understand content from future versions of itself.
 
 ### Giftbox Metadata Specification
 
-| Field                  | Type           | Description                                                                                                                                                                                                           |
-|------------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| IsOpen                 | Boolean        | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                                                                        |
-| AcceptsAnyGift         | Boolean        | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the DesiredTraits are accepted                                                        |
-| DesiredTraits          | List of String | The list of traits that this giftbox can process. If "AcceptsAnyGift" is true, these traits can remain empty, or be used to express preferences                                                                       |
-| MinimumGiftDataVersion | Integer        | The minimum data version that this giftbox will accept. Gifts that have been created using an older data version than this value should not be sent to this giftbox.                                                  |
-| MaximumGiftDataVersion | Integer        | The maximum data version that this giftbox will accept. Gifts that have been created using a newer data version than this value should not be sent to this giftbox. Some games can generate older gifts to accomodate |
+| Field                     | Type           | Description                                                                                                                                                                                                             |
+|---------------------------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| is_open                   | Boolean        | If the giftbox is currently open. Gifts should not be sent to closed giftboxes                                                                                                                                          |
+| accepts_any_gift          | Boolean        | Whether this player can and will try to process **any** gift sent to them. If false, only gifts from the same game or following the desired_traits are accepted                                                         |
+| desired_traits            | List of String | The list of traits that this giftbox can process. If "accepts_any_gift" is true, these traits can remain empty, or be used to express preferences                                                                       |
+| minimum_gift_data_version | Integer        | The minimum data version that this giftbox will accept. Gifts that have been created using an older data version than this value should not be sent to this giftbox.                                                    |
+| maximum_gift_data_version | Integer        | The maximum data version that this giftbox will accept. Gifts that have been created using a newer data version than this value should not be sent to this giftbox. Some clients can generate older gifts to accomodate |
 
 ### Gift Specification
 
-| Field             | Type               | Description                                                                                                                                  |
-|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| ID                | String             | Unique ID for the Gift. This should be a Globally unique Id. The recommended format is a GUID "00000000-0000-0000-0000-000000000000"         |
-| ItemName          | String             | Name of the Item                                                                                                                             |
-| Amount            | Integer            | Amount of the Item being gifted. Must be a positive integer.                                                                                 |
-| ItemValue         | Unbounded Integer  | Value per unit of the item. in Archipelago Currency (EnergyLink). Can be used to "sell" gifts that cannot be received properly.              |
-| Traits            | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification)). Can be empty\*, but at least one trait is highly recommended  |
-| SenderSlot        | Integer            | Slot Number of the player sending the gift                                                                                                   |
-| ReceiverSlot      | Integer            | Slot Number of the player receiving the gift                                                                                                 |
-| SenderTeam        | Integer            | Team Number of the player sending the gift                                                                                                   |
-| ReceiverTeam      | Integer            | Team Number of the player receiving the gift                                                                                                 |
-| IsRefund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                                                           |
+| Field              | Type               | Description                                                                                                                                                    |
+|--------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id                 | String             | Unique ID for the Gift. This should be a Globally unique Id. The recommended format is a GUID "00000000-0000-0000-0000-000000000000"                           |
+| item_name          | String             | Name of the Item                                                                                                                                               |
+| amount             | Integer            | Amount of the Item being gifted. Must be a positive integer.                                                                                                   |
+| item_value         | Unbounded Integer  | Value per unit of the item. in Archipelago Currency (EnergyLink). Can be used to "sell" gifts that cannot be received properly. Can be omitted.\*              |
+| traits             | List of GiftTraits | Traits of the gift (see [Gift Trait Specification](#gifttrait-specification)). Can be empty\*\*, but at least one trait is highly recommended                  |
+| sender_slot        | Integer            | Slot Number of the player sending the gift                                                                                                                     |
+| receiver_slot      | Integer            | Slot Number of the player receiving the gift                                                                                                                   |
+| sender_team        | Integer            | Team Number of the player sending the gift                                                                                                                     |
+| receiver_team      | Integer            | Team Number of the player receiving the gift                                                                                                                   |
+| is_refund          | Boolean            | Flag describing if the gift is an original, or a refund for a previously sent gift                                                                             |
 
-\* If a gift has no traits, it can only be parsed by name. In some cases, notably same-game gifting, this is acceptable. But across games, traits are much preferable because of their versatility. For example, two items can have the same name but be significantly different. Or two items can be extremely similar, but not share a name (HP Potion / Health Potion / Heal Potion)
+\* An item with no value should not be sold. If absolutely necessary, no value can be interpreted as equivalent to zero.
+
+\*\* If a gift has no traits, it can only be parsed by name. In some cases, notably same-game gifting, this is acceptable. But across games, traits are much preferable because of their versatility. For example, two items can have the same name but be significantly different. Or two items can be extremely similar, but not share a name (HP Potion / Health Potion / Heal Potion)
 
 ### GiftTrait Specification
 
-| Field             | Type             | Description                                                                         |
-|-------------------|------------------|-------------------------------------------------------------------------------------|
-| Trait             | String           | Identifier for the Trait                                                            |
-| Quality           | Float\*          | How powerful the Trait is (1.0 means "average power")                               |
-| Duration          | Float\*          | Duration of the Trait (1.0 means "average duration")                                |
+| Field             | Type             | Description                                                                                              |
+|-------------------|------------------|----------------------------------------------------------------------------------------------------------|
+| trait             | String           | Identifier for the Trait                                                                                 |
+| quality           | Float\*          | How powerful the Trait is (1.0 means "average power"). Can be omitted.\*\*                               |
+| duration          | Float\*          | Duration of the Trait (1.0 means "average duration"). Can be omitted.\*\*                                |
 
 \* These values should be floating point numbers that are scaled around "1.0", as a factor of it.
+
+\*\* If omitted, these fields should be considered to be their default value of 1.0
 
 1.0 should represent the average item with this trait in your world. Scaling linearly is recommended but not required, for example an item with 2.0 is twice as strong, and one with 0.33 is 3 times weaker. Games with exponential scaling, for example idle games, might decide on a different scaling system for their traits in order to not cause massive inflation.
 
@@ -78,85 +83,85 @@ While the format technically allows for zero or negative values, it is **recomme
 {
 	"1":
 	{
-		"IsOpen": true,
-		"AcceptsAnyGift": true,
-		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
-		"MinimumGiftDataVersion": 1
-		"MaximumGiftDataVersion": 2
+		"is_open": true,
+		"accepts_any_gift": true,
+		"desired_traits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
+		"minimum_gift_data_version": 1
+		"maximum_gift_data_version": 3
 	},
 	"2":
 	{
-		"IsOpen": false,
-		"AcceptsAnyGift": false,
-		"DesiredTraits": ["Food", "Consumable", "Bomb", "Weapon", "Tool", "Metal", "Fish"]
-		"MinimumGiftDataVersion": 2
-		"MaximumGiftDataVersion": 2
+		"is_open": false,
+		"accepts_any_gift": false,
+		"desired_traits": ["Food", "Consumable", "Bomb", "Weapon", "Tool", "Metal", "Fish"]
+		"minimum_gift_data_version": 2
+		"maximum_gift_data_version": 3
 	},
 	"3":
 	{
-		"IsOpen": true,
-		"AcceptsAnyGift": false,
-		"DesiredTraits": ["Speed", "Slow", "Buff", "Consumable"]
-		"MinimumGiftDataVersion": 1
-		"MaximumGiftDataVersion": 1
+		"is_open": true,
+		"accepts_any_gift": false,
+		"desired_traits": ["Speed", "Slow", "Buff", "Consumable"]
+		"minimum_gift_data_version": 1
+		"maximum_gift_data_version": 1
 	}
 }
 "GiftBoxes;1":
 {
 	"1":
 	{
-		"IsOpen": true,
-		"AcceptsAnyGift": true,
-		"DesiredTraits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
-		"MinimumGiftDataVersion": 1
-		"MaximumGiftDataVersion": 2
+		"is_open": true,
+		"accepts_any_gift": true,
+		"desired_traits": ["Seed", "Speed", "Heal", "Metal", "Bomb"]
+		"minimum_gift_data_version": 1
+		"maximum_gift_data_version": 3
 	}
 }
 ```
 
 ### Gifts
 
-The Factorio player sent copper plates to the Stardew Valley player to help them with a tool upgrade.
+The DLC Quest player sent a tree to the Stardew Valley player to help them with crafting
 
-The Factorio player sent iron plates to the Witness player, but the gift was refunded as The Witness had no good way to process Iron Plates.
+The Satisfactory player sent iron plates to Kirby's Dream Land, but the gift was refunded as Kirby's Dream Land had no good way to process Iron Plates.
 
-The Stardew Valley player sent coffee to the Witness player to give them a speed boost.
+The Stardew Valley player sent a tomato to Kirby's Dream Land, and it will be interpreted as a Maxim Tomato.
 
 ```json
-"GiftBox;0;1":
+"GiftBox;0;2":
 {
 	"45703834-0906-45df-a1f2-88a728a79f17":
 	{
-		"ID": "45703834-0906-45df-a1f2-88a728a79f17",
-		"ItemName": "Copper Plate",
-		"Amount": 5,
-		"ItemValue": 288000,
-		"Traits":
+		"id": "45703834-0906-45df-a1f2-88a728a79f17",
+		"item_name": "Tree",
+		"amount": 1,
+		"item_value": 0,
+		"traits":
 		[
 			{
-				"Trait": "Metal",
-				"Quality": 1,
-				"Duration": 1
+				"trait": "Wood",
+				"quality": 1,
+				"duration": 1
 			},
 			{
-				"Trait": "Copper",
-				"Quality": 1,
-				"Duration": 1
+				"trait": "Material",
+				"quality": 1,
+				"duration": 1
 			}
 		],
-		"SenderSlot": 2,
-		"ReceiverSlot": 1,
-		"SenderTeam": 0,
-		"ReceiverTeam": 0,
-		"IsRefund": false,
+		"sender_slot": 1,
+		"receiver_slot": 2,
+		"sender_team": 0,
+		"receiver_team": 0,
+		"is_refund": false,
 	},
 },
-"GiftBox;0;2":
+"GiftBox;0;3":
 {
 	"99364460-e1d4-4777-a28d-5e86e62cae82":
 	{
-		"ID": "99364460-e1d4-4777-a28d-5e86e62cae82",
-		"ItemName": "Iron Plate",
+		"id": "99364460-e1d4-4777-a28d-5e86e62cae82",
+		"item_name": "Iron Plate",
 		"Amount": 5,
 		"ItemValue": 288000,
 		"Traits":
@@ -172,43 +177,59 @@ The Stardew Valley player sent coffee to the Witness player to give them a speed
 				"Duration": 1
 			}
 		],
-		"SenderSlot": 2,
-		"ReceiverSlot": 3,
-		"SenderTeam": 0,
-		"ReceiverTeam": 0,
-		"IsRefund": true,
+		"sender_slot": 3,
+		"receiver_slot": 4,
+		"sender_team": 0,
+		"receiver_team": 0,
+		"is_refund": true,
 	},
 }
-"GiftBox;0;3":
+"GiftBox;0;4":
 {
 	"1991ec4b-2651-4260-83c6-beda93367d79":
 	{
-		"ID": "1991ec4b-2651-4260-83c6-beda93367d79",
-		"Item":
-		{
-			"Name": "Coffee",
-			"Amount": 1,
-			"Value": 1500000000
-		},
-		"Traits":
+		"id": "1991ec4b-2651-4260-83c6-beda93367d79",
+		"item_name": "Tomato",
+		"amount": 1,
+		"item_value": 600000000,
+		"traits":
 		[
 			{
-				"Trait": "Drink",
+				"Trait": "Vegetable",
 				"Quality": 1,
 				"Duration": 1
 			},
 			{
-				"Trait": "Speed",
+				"Trait": "Consumable",
 				"Quality": 1,
-				"Duration": 2
+				"Duration": 1
+			}
+			{
+				"Trait": "Food",
+				"Quality": 1,
+				"Duration": 1
+			}
+			{
+				"Trait": "Red",
+				"Quality": 1,
+				"Duration": 1
+			}
+			{
+				"Trait": "Dye",
+				"Quality": 1,
+				"Duration": 1
+			}
+			{
+				"Trait": "Summer",
+				"Quality": 1,
+				"Duration": 1
 			}
 		],
-		"Sender": "Farmer",
-		"Receiver": "Carl",
-		"SenderTeam": 0,
-		"ReceiverTeam": 0,
-		"IsRefund": false,
-		"GiftValue": 1500000000
+		"sender_slot": 2,
+		"receiver_slot": 4,
+		"sender_team": 0,
+		"receiver_team": 0,
+		"is_refund": false,
 	}
 }
 ```
@@ -218,11 +239,11 @@ And, Gifts can also be intended as traps for a player on another team
 {
 	"06e8cc07-2989-4011-b4b6-794ceba25f28":
 	{
-		"ID": "06e8cc07-2989-4011-b4b6-794ceba25f28",
-		"Name": "Mega Bomb",
-		"Amount": 1,
-		"Value": 500000000,
-		"Traits":
+		"id": "06e8cc07-2989-4011-b4b6-794ceba25f28",
+		"item_name": "Mega Bomb",
+		"amount": 1,
+		"item_value": 500000000,
+		"traits":
 		[
 			{
 				"Trait": "Bomb",
@@ -240,11 +261,11 @@ And, Gifts can also be intended as traps for a player on another team
 				"Duration": 1
 			}
 		],
-		"SenderSlot": 1,
-		"ReceiverSlot": 1,
-		"SenderTeam": 0,
-		"ReceiverTeam": 1,
-		"IsRefund": false,
+		"sender_slot": 1,
+		"receiver_slot": 1,
+		"sender_team": 0,
+		"receiver_team": 1,
+		"is_refund": false,
 	}
 }
 ```

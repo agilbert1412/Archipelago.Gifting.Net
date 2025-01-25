@@ -13,16 +13,16 @@ This library provides a simple and easy way to interact with the [Gifting API](D
 var service = new GiftingService(session);
 ```
 
-A freshly created GiftingService instance, on its own, does not do anything. It allows usage of various utility methods to interact with Giftboxes and Gifts.
+A freshly created GiftingService instance, on its own, does not do anything. It allows usage of various utility methods to interact with GiftBoxes and Gifts.
 
-## Opening and Closing a Giftbox
+## Opening and Closing a GiftBox
 
-To inform the multiworld that your slot is willing and able to receive gifts, you must open a Giftbox.
+To inform the multiworld that your slot is willing and able to receive gifts, you must open a GiftBox.
 Using the default method will open a gift box that is marked as able to accept any gift with no preferences.
 You can also use the alternate method to specify whether you can handle any gift. If not, you must specify which traits you can accept. If so, you can still specify preferences for traits.
-This will open a giftbox on the Data Version used by your currently installed version of the library. It is recommended to stay up to date, but the C# library will make a reasonable attempt at parsing and generating gifts for older versions when it detects that they exist, for backward compatibility.
+This will open a giftBox on the Data Version used by your currently installed version of the library. It is recommended to stay up to date, but the C# library will make a reasonable attempt at parsing and generating gifts for older versions when it detects that they exist, for backward compatibility.
 
-Your giftbox will always be considered able to receive gifts from the same game. You can also process gifts by name if you wish.
+Your giftBox will always be considered able to receive gifts from the same game. You can also process gifts by name if you wish.
 
 ```cs
 _service.OpenGiftBox();
@@ -30,9 +30,9 @@ _service.OpenGiftBox(false, new [] {"Food", "Drink", "Speed"})
 _service.CloseGiftBox();
 ```
 
-Once a giftbox is open, you can close it at any time, but you do not have to. You can leave your giftbox open for as long as you wish, even across different sessions.
-An open giftbox can receive gifts at any time. If your game can only receive gifts while online (sync), you should close the giftbox when disconnecting to prevent receiving gifts while offline. If your game can receive gifts while offline, you can keep the giftbox open forever and simply check on the gifts when logging in.
-Closing a giftbox will delete all of its content, so make sure you empty it first to avoid losing gifts.
+Once a giftBox is open, you can close it at any time, but you do not have to. You can leave your giftBox open for as long as you wish, even across different sessions.
+An open giftBox can receive gifts at any time. If your game can only receive gifts while online (sync), you should close the giftBox when disconnecting to prevent receiving gifts while offline. If your game can receive gifts while offline, you can keep the giftBox open forever and simply check on the gifts when logging in.
+Closing a giftBox will delete all of its content, so make sure you empty it first to avoid losing gifts.
 
 ## Receiving Gifts
 
@@ -40,41 +40,82 @@ Closing a giftbox will delete all of its content, so make sure you empty it firs
 // Get all gifts
 var gifts = _service.CheckGiftBox();
 
-// Get all gifts and empty the giftbox immediately
-var gifts = _service.GetAllGiftsAndEmptyGiftbox();
+// Get all gifts and empty the giftBox immediately
+var gifts = _service.GetAllGiftsAndEmptyGiftBox();
 
-// Empty the giftbox, regardless of its content
-_service.RemoveGiftsFromGiftBox(giftIds);
-
-// Remove one specific gift from the giftbox
+// Remove one specific gift from the giftBox
 _service.RemoveGiftFromGiftBox(giftId);
+
+// Remove multiple gifts at once
+_service.RemoveGiftsFromGiftBox(giftIds);
 ```
 
-At any point, you can query your own giftbox for gifts. If the giftbox is currently closed, the result will always be empty.
-The result will be a dictionary of IDs and gifts (`Dicionary<string, Gift>`), with the entire content of the giftbox.
+At any point, you can query your own giftBox for gifts. If the giftBox is currently closed, the result will always be empty.
+The result will be a dictionary of IDs and gifts (`Dicionary<string, Gift>`), with the entire content of the giftBox.
 
-You have the responsibility to clean your giftbox yourself once your client has processed the gifts.
-You can either use `GetAllGiftsAndEmptyGiftbox` to get gifts and immediately empty the giftbox, or if you need to do validation before deleting the content, you can use `CheckGiftBox` and `RemoveGiftsFromGiftBox` separately so you can do what you need between the calls.
+You have the responsibility to clean your giftBox yourself once your client has processed the gifts.
+You can either use `GetAllGiftsAndEmptyGiftBox` to get gifts and immediately empty the giftBox, or if you need to do validation before deleting the content, you can use `CheckGiftBox` and `RemoveGiftsFromGiftBox` separately so you can do what you need between the calls.
 You can also remove gifts one by one using `RemoveGiftFromGiftBox` if you prefer.
 
-It is also possible to never empty your giftbox, and keep a local list of processed gift IDs to distinguish between new gifts and old ones. This method is not recommended.
+It is also possible to never empty your giftBox, and keep a local list of processed gift IDs to distinguish between new gifts and old ones. This method is not recommended, because it will leave pointless data in the server storage potentially for a very long time.
 
-It is, however, recommended to keep the list of processed gift IDs anyway, in case of a race condition with the clearing of the giftbox.
+It is, however, recommended to keep the list of processed gift IDs anyway, in case of a race condition with the clearing of the giftBox.
 
-Definition of a gift in the current Data Version 2:
+The `GiftingService` also offers async variants of most methods.
+
+## Set up notifications
+
+After processing the content of your giftBox upon logging on, you can use the event `OnNewGift` to get notified for future gifts, instead of checking it again yourself.
+This method is not mandatory, checking at regular intervals is also valid. Which strategy is better for you depends on your implementation and your needs.
+
+Here is an example of how to subscribe to get notified. You will need to provide the implementation of the Callback method
+```cs
+void NewGiftsCallback(Gift gift)
+{
+	// Process the gift
+}
+
+_service.OnNewGift += NewGiftsCallback;
+```
+
+Like all events, you can also unsubscribe to it if you need to. You can subscribe multiple handlers if you need.
+```cs
+_service.OnNewGift -= NewGiftsCallback;
+```
+
+Definition of a gift in the current Data Version 3:
 ```cs
 public class Gift
 {
-    public string ID { get; set; }
-    public string ItemName { get; set; }
-    public int Amount { get; set; }
-    public BigInteger ItemValue { get; set; }
-    public GiftTrait[] Traits { get; set; }
-    public int SenderSlot { get; set; }
-    public int ReceiverSlot { get; set; }
-    public int SenderTeam { get; set; }
-    public int ReceiverTeam { get; set; }
-    public bool IsRefund { get; set; }
+	[JsonProperty(propertyName: "id")]
+	public string ID { get; set; }
+
+	[JsonProperty(propertyName: "item_name")]
+	public string ItemName { get; set; }
+
+	[JsonProperty(propertyName: "amount")]
+	public int Amount { get; set; }
+	
+	[JsonProperty(propertyName: "item_value")]
+	public BigInteger ItemValue { get; set; }
+
+	[JsonProperty(propertyName: "traits")]
+	public GiftTrait[] Traits { get; set; }
+
+	[JsonProperty(propertyName: "sender_slot")]
+	public int SenderSlot { get; set; }
+
+	[JsonProperty(propertyName: "receiver_slot")]
+	public int ReceiverSlot { get; set; }
+
+	[JsonProperty(propertyName: "sender_team")]
+	public int SenderTeam { get; set; }
+
+	[JsonProperty(propertyName: "receiver_team")]
+	public int ReceiverTeam { get; set; }
+
+	[JsonProperty(propertyName: "is_refund")]
+	public bool IsRefund { get; set; }
 }
 ```
 
@@ -109,11 +150,24 @@ It is not recommended to add many synonymous, or very similar, traits, as this m
 ```cs
 public class GiftTrait
 {
+	[JsonProperty(propertyName: "trait")]
 	public string Trait { get; set; }
+
+	[JsonProperty(propertyName: "quality")]
 	public double Quality { get; set; }
+
+	[JsonProperty(propertyName: "duration")]
 	public double Duration { get; set; }
 
-	public GiftTrait(string trait, double duration, double quality)
+	public GiftTrait(string trait) : this(trait, 1.0)
+	{
+	}
+
+	public GiftTrait(string trait, double quality) : this(trait, quality, 1.0)
+	{
+	}
+
+	public GiftTrait(string trait, double quality, double duration)
 	{
 		Trait = trait;
 		Quality = quality;
@@ -132,9 +186,11 @@ Once again, it is completely up to the various game developers to define what th
 
 They should be used to distinguish characteristics of otherwise-similar items from the same game, and their values should always be considered relative, not absolute.
 
+Both the quality and the duration are optional, and will default to 1.0 if omitted.
+
 ## Sending Gifts
 
-Before attempting to send a gift, you can check if your desired receiver has an open Giftbox. You can provide the traits of your intended gift to also know if they can accept your gift specifically
+Before attempting to send a gift, you can check if your desired receiver has an open GiftBox. You can provide the traits of your intended gift to also know if they can accept your gift specifically
 
 ```cs
 // All parameters except the player are optional, but without providing traits, you will only know if the player can accept any gift from you, not a specific gift
@@ -143,14 +199,18 @@ public bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<strin
 var canGift = _service.CanGiftToPlayer("playerSlotName"); // Usage
 ```
 
-Checking the state of the giftbox before proceeding is optional, but recommended, to avoid pointless operations.
+Checking the state of the giftBox before proceeding is optional, but recommended, to avoid pointless operations.
 
 There are multiple methods to send a gift, but they are all variations of the following, with omitted optional parameters:
 
 ```cs
-public bool SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, out string giftId); // Definition
-var result = _servicer.SendGift(gift, giftTraits, targetSlotName, out var giftId); // Usage
+public GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam); // Definition
+var result = _servicer.SendGift(gift, giftTraits, targetSlotName); // Usage
+var success = result.Success;
+var id = resultGiftId;
 ```
+
+Sending the gift generates a unique ID for it. The response will tell you if the operation was successful, and if so, what the ID of the gift is, for if you intend to tracking them.
 
 The item and traits are the structure you have created in the previous steps. If traits are omitted, an empty array of traits will be set instead.
 The player name is the SlotName of the player to send the gift to. This can also be their current alias. Alternatively, you can provide the player's slot number as an integer
@@ -158,8 +218,6 @@ The player's team is the team number. When omitted, it will default to your own 
 
 The returned value is a boolean that depends on the success of the operation. True means that the gift was sent, false means that an error occured.
 If the gift is not sent successfully, it is recommended not to take away the item from the local player.
-
-The out parameter is also optional, but it provides the uniquely generated ID for the gift you just sent. Keeping this around can help debugging, or identifying refunded gifts.
 
 ## Processing a Gift
 
@@ -172,7 +230,7 @@ This list can come directly from the gifts you can send other players, or all in
 
 For example, if you have 10 items that all have the same traits, the Parser will not be able to distinguish them. The "Perfect" item list has every item with distinct traits. But even an imperfect list will work.
 
-Your items can be any type you want, and the class is build as a generic so that you can tell it what types are your items. In the following example, the type `string` is used and the game is presumed to freely create items by name.
+Your items can be any type you want, and the class is built as a generic so that you can tell it what types are your items. In the following example, the type `string` is used and the game is presumed to freely create items by name.
 
 BKTreeCloseTraitParser is currently the only implementation of ICloseTraitParser, other implementations can be created by consumers of the API.
 
@@ -210,6 +268,6 @@ When refunding a gift, that gift will be sent back to the original sender, with 
 It is then up to the original sender client to decide what to do with it. Typically, they would simply give back the item to the player.
 
 2: Selling the gift
-The gift carries a value in Archipelago currency, which can be added to the EnergyLink for everyone to use, if your game supports interacting with the EnergyLink. A value of zero should be interpreted as "coming from a game without multiworld currency", and selling is not a good choice for these gifts
+The gift can carry a value in Archipelago currency, which can be added to the EnergyLink for everyone to use, if your game supports interacting with the EnergyLink. A value of zero should be interpreted as "coming from a game without multiworld currency", and selling is not a good choice for these gifts
 
 3: Ignoring that gift completely. This should be a last resort, as the item will then be lost forever.
