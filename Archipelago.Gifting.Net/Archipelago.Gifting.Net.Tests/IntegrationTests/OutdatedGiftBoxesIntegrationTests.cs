@@ -29,10 +29,12 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var canGiftDamageAndEgg = _serviceSender.CanGiftToPlayer(_testSessions.ReceiverSlot, new[] { GiftFlag.Damage, GiftFlag.Egg });
 
             // Assert
-            canGiftAnything.Should().BeFalse();
-            canGiftFood.Should().BeTrue();
-            canGiftFoodAndDamage.Should().BeTrue();
-            canGiftDamageAndEgg.Should().BeFalse();
+            canGiftAnything.CanGift.Should().BeFalse();
+            canGiftDamageAndEgg.Message.Should().Contain("[Food,Drink]");
+            canGiftFood.CanGift.Should().BeTrue();
+            canGiftFoodAndDamage.CanGift.Should().BeTrue();
+            canGiftDamageAndEgg.CanGift.Should().BeFalse();
+            canGiftDamageAndEgg.Message.Should().Contain("[Food,Drink]");
         }
     }
 }

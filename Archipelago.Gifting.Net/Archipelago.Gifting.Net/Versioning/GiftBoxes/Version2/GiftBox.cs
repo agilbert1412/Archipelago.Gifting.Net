@@ -1,6 +1,6 @@
 ﻿namespace Archipelago.Gifting.Net.Versioning.GiftBoxes.Version2
 {
-    public class GiftBox
+    internal class GiftBox
     {
         public bool IsOpen { get; set; }
 

@@ -21,14 +21,14 @@ namespace Archipelago.Gifting.Net.Service
         /// <returns>Your own giftBox information</returns>
         GiftBox GetCurrentGiftBoxState();
 
-        bool CanGiftToPlayer(string playerName);
-        bool CanGiftToPlayer(string playerName, int playerTeam);
-        bool CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits);
-        bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits);
-        bool CanGiftToPlayer(int playerSlot);
-        bool CanGiftToPlayer(int playerSlot, int playerTeam);
-        bool CanGiftToPlayer(int playerSlot, IEnumerable<string> giftTraits);
-        bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits);
+        CanGiftResult CanGiftToPlayer(string playerName);
+        CanGiftResult CanGiftToPlayer(string playerName, int playerTeam);
+        CanGiftResult CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits);
+        CanGiftResult CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits);
+        CanGiftResult CanGiftToPlayer(int playerSlot);
+        CanGiftResult CanGiftToPlayer(int playerSlot, int playerTeam);
+        CanGiftResult CanGiftToPlayer(int playerSlot, IEnumerable<string> giftTraits);
+        CanGiftResult CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits);
 
         /// <summary>
         /// Provided a list of traits that you can send, get the full information, for every player in the multiworld, about which of these traits they can get

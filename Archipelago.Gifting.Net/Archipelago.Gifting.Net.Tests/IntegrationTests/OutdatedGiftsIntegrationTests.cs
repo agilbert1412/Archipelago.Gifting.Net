@@ -149,7 +149,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Assume
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeTrue();
+            canGift.CanGift.Should().BeTrue();
 
             // Act
             var result = _serviceSender.SendGift(giftItem, ReceiverName);
@@ -185,7 +185,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Assume
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeFalse();
+            canGift.CanGift.Should().BeFalse();
+            canGift.Message.Should().Contain("Version 4");
 
             // Act
             var result = _serviceSender.SendGift(giftItem, ReceiverName);

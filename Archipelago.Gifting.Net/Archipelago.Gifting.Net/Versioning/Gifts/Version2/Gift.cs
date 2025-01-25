@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Archipelago.Gifting.Net.Versioning.Gifts.Version2
 {
-    public class Gift
+    internal class Gift
     {
         public string ID { get; set; }
         public string ItemName { get; set; }

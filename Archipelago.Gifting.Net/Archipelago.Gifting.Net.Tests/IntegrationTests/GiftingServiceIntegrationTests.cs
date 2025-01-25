@@ -24,7 +24,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
 
             // Assert
-            canGift.Should().BeFalse();
+            canGift.CanGift.Should().BeFalse();
+            canGift.Message.Should().Contain("closed");
         }
 
         [Test]
@@ -34,7 +35,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Assume
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeFalse();
+            canGift.CanGift.Should().BeFalse();
+            canGift.Message.Should().Contain("closed");
 
             // Act
             _serviceReceiver.OpenGiftBox();
@@ -42,7 +44,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Assert
             canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeTrue();
+            canGift.CanGift.Should().BeTrue();
         }
 
         [Test]
@@ -58,7 +60,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var canGift = _serviceSender.CanGiftToPlayer("Fake Player");
 
             // Assert
-            canGift.Should().BeFalse();
+            canGift.CanGift.Should().BeFalse();
+            canGift.Message.Should().Contain("Could not find a player named Fake Player");
         }
 
         [Test]
@@ -75,7 +78,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var canGift = _serviceSender.CanGiftToPlayer("receiver2");
 
             // Assert
-            canGift.Should().BeTrue();
+            canGift.CanGift.Should().BeTrue();
         }
 
         [Test]
@@ -93,7 +96,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var canGift = _serviceSender.CanGiftToPlayer("receiver2");
 
             // Assert
-            canGift.Should().BeFalse();
+            canGift.CanGift.Should().BeFalse();
+            canGift.Message.Should().Contain("find a player named receiver2");
         }
 
         [Test]
@@ -111,7 +115,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
 
             // Assert
-            canGift.Should().BeTrue();
+            canGift.CanGift.Should().BeTrue();
         }
 
         [Test]
@@ -140,7 +144,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Assume
             var canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeTrue();
+            canGift.CanGift.Should().BeTrue();
 
             // Act
             _serviceReceiver.CloseGiftBox();
@@ -148,7 +152,8 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
 
             // Assert
             canGift = _serviceSender.CanGiftToPlayer(ReceiverName);
-            canGift.Should().BeFalse();
+            canGift.CanGift.Should().BeFalse();
+            canGift.Message.Should().Contain("closed");
         }
 
         [Test]

@@ -186,16 +186,16 @@ namespace Archipelago.Gifting.Net.Service
             return SendGift(item, traits, playerName, playerTeam, canGift);
         }
 
-        private GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, bool canGift)
+        private GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam, CanGiftResult canGift)
         {
-            if (!canGift)
+            if (!canGift.CanGift)
             {
-                return new FailedGifting();
+                return new FailedGifting(canGift.Message);
             }
 
             if (!_playerProvider.TryGetPlayer(playerName, playerTeam, out var receivingPlayer))
             {
-                return new FailedGifting();
+                return new FailedGifting($"Could not find a player named {playerName} on team {playerTeam}");
             }
 
             var senderSlot = _playerProvider.CurrentPlayerSlot;
@@ -210,7 +210,7 @@ namespace Archipelago.Gifting.Net.Service
         {
             if (gift.IsRefund)
             {
-                return new FailedGifting();
+                return new FailedGifting("Cannot refund a gift that is already a refund");
             }
 
             gift.IsRefund = true;
@@ -240,9 +240,9 @@ namespace Archipelago.Gifting.Net.Service
                 _session.DataStorage[Scope.Global, giftBoxKey] += Operation.Update(newGiftEntry);
                 return new SuccessfulGifting(gift.ID);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new FailedGifting(gift.ID);
+                return new FailedGifting(gift.ID, ex.Message);
             }
         }
 
@@ -309,59 +309,128 @@ namespace Archipelago.Gifting.Net.Service
             return _currentGiftConverter.ReadFromDataStorage(gifts);
         }
 
-        public bool CanGiftToPlayer(string playerName)
+        public CanGiftResult CanGiftToPlayer(string playerName)
         {
             return CanGiftToPlayer(playerName, _playerProvider.CurrentPlayerTeam);
         }
 
-        public bool CanGiftToPlayer(string playerName, int playerTeam)
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(string playerName)
+        {
+            return await CanGiftToPlayerAsync(playerName, _playerProvider.CurrentPlayerTeam);
+        }
+
+        public CanGiftResult CanGiftToPlayer(string playerName, int playerTeam)
         {
             return CanGiftToPlayer(playerName, playerTeam, Enumerable.Empty<string>());
         }
 
-        public bool CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits)
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(string playerName, int playerTeam)
+        {
+            return await CanGiftToPlayerAsync(playerName, playerTeam, Enumerable.Empty<string>());
+        }
+
+        public CanGiftResult CanGiftToPlayer(string playerName, IEnumerable<string> giftTraits)
         {
             return CanGiftToPlayer(playerName, _playerProvider.CurrentPlayerTeam, giftTraits);
         }
 
-        public bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits)
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(string playerName, IEnumerable<string> giftTraits)
+        {
+            return await CanGiftToPlayerAsync(playerName, _playerProvider.CurrentPlayerTeam, giftTraits);
+        }
+
+        public CanGiftResult CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits)
         {
             if (!_playerProvider.TryGetPlayer(playerName, out var player))
             {
-                return false;
+                return new CanGiftResult($"Could not find a player named {playerName}");
             }
+
             return CanGiftToPlayer(player.Slot, playerTeam, giftTraits);
         }
 
-        public async Task<bool> CanGiftToPlayerAsync(string playerName, int playerTeam, IEnumerable<string> giftTraits)
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(string playerName, int playerTeam, IEnumerable<string> giftTraits)
         {
             if (!_playerProvider.TryGetPlayer(playerName, out var player))
             {
-                return false;
+                return new CanGiftResult($"Could not find a player named {playerName}");
             }
 
             return await CanGiftToPlayerAsync(player.Slot, playerTeam, giftTraits);
         }
 
-        public bool CanGiftToPlayer(int playerSlot)
+        public CanGiftResult CanGiftToPlayer(int playerSlot)
         {
             return CanGiftToPlayer(playerSlot, _playerProvider.CurrentPlayerTeam);
         }
 
-        public bool CanGiftToPlayer(int playerSlot, int playerTeam)
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(int playerSlot)
+        {
+            return await CanGiftToPlayerAsync(playerSlot, _playerProvider.CurrentPlayerTeam);
+        }
+
+        public CanGiftResult CanGiftToPlayer(int playerSlot, int playerTeam)
         {
             return CanGiftToPlayer(playerSlot, playerTeam, Enumerable.Empty<string>());
         }
 
-        public bool CanGiftToPlayer(int playerSlot, IEnumerable<string> giftTraits)
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(int playerSlot, int playerTeam)
+        {
+            return await CanGiftToPlayerAsync(playerSlot, playerTeam, Enumerable.Empty<string>());
+        }
+
+        public CanGiftResult CanGiftToPlayer(int playerSlot, IEnumerable<string> giftTraits)
         {
             return CanGiftToPlayer(playerSlot, _playerProvider.CurrentPlayerTeam, giftTraits);
         }
 
-        public bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(int playerSlot, IEnumerable<string> giftTraits)
+        {
+            return await CanGiftToPlayerAsync(playerSlot, _playerProvider.CurrentPlayerTeam, giftTraits);
+        }
+
+        public CanGiftResult CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)
         {
             var motherBox = GetMotherbox(playerTeam);
             return CanGiftToPlayer(playerSlot, playerTeam, giftTraits, motherBox);
+        }
+
+        public async Task<CanGiftResult> CanGiftToPlayerAsync(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)
+        {
+            var motherBox = await GetMotherboxAsync(playerTeam);
+            return CanGiftToPlayer(playerSlot, playerTeam, giftTraits, motherBox);
+        }
+
+        private CanGiftResult CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits, Dictionary<int, GiftBox> motherBox)
+        {
+            if (!motherBox.ContainsKey(playerSlot))
+            {
+                return new CanGiftResult("Player does not exist or does not have a giftbox");
+            }
+
+            var giftBox = motherBox[playerSlot];
+            if (!giftBox.IsOpen)
+            {
+                return new CanGiftResult("This giftbox is currently closed");
+            }
+
+            if (giftBox.MinimumGiftDataVersion > DataVersion.Current)
+            {
+                return new CanGiftResult($"This player can only receive gifts from a more recent data version. Your client should update to gifting Data Version {giftBox.MinimumGiftDataVersion}. If you are not the developer, you should contact them to tell them about this.");
+            }
+
+            var owner = _playerProvider.GetPlayer(playerSlot, playerTeam);
+            if (giftBox.AcceptsAnyGift)
+            {
+                return new CanGiftResult();
+            }
+
+            if (!giftBox.DesiredTraits.Any(trait => giftTraits.Contains(trait, StringComparer.OrdinalIgnoreCase)))
+            {
+                return new CanGiftResult($"This player cannot accept this gift. They can only accept the following traits: [{string.Join(",", giftBox.DesiredTraits)}]");
+            }
+
+            return new CanGiftResult();
         }
 
         private Dictionary<int, GiftBox> GetMotherbox(int playerTeam)
@@ -371,34 +440,12 @@ namespace Archipelago.Gifting.Net.Service
             return motherBox;
         }
 
-        public async Task<bool> CanGiftToPlayerAsync(int playerSlot, int playerTeam, IEnumerable<string> giftTraits)
+        private async Task<Dictionary<int, GiftBox>> GetMotherboxAsync(int playerTeam)
         {
             var motherboxKey = _keyProvider.GetMotherBoxDataStorageKey(playerTeam);
             var motherBoxToken = await _session.DataStorage[Scope.Global, motherboxKey].GetAsync();
-            var motherBox = motherBoxToken.ToObject<Dictionary<int, GiftBox>>();
-            return CanGiftToPlayer(playerSlot, playerTeam, giftTraits, motherBox);
-        }
-
-        private bool CanGiftToPlayer(int playerSlot, int playerTeam, IEnumerable<string> giftTraits, Dictionary<int, GiftBox> motherBox)
-        {
-            if (!motherBox.ContainsKey(playerSlot))
-            {
-                return false;
-            }
-
-            var giftBox = motherBox[playerSlot];
-            if (!giftBox.IsOpen || giftBox.MinimumGiftDataVersion > DataVersion.Current)
-            {
-                return false;
-            }
-
-            var owner = _playerProvider.GetPlayer(playerSlot, playerTeam);
-            if (giftBox.AcceptsAnyGift)
-            {
-                return true;
-            }
-
-            return giftBox.DesiredTraits.Any(trait => giftTraits.Contains(trait, StringComparer.OrdinalIgnoreCase));
+            var motherBox = _currentGiftBoxConverter.ReadFromDataStorage(motherBoxToken);
+            return motherBox;
         }
 
         private void CreateMotherboxIfNeeded(string motherboxKey)

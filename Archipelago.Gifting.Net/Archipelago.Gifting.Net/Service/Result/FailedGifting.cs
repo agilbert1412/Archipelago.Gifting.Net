@@ -5,13 +5,16 @@
         public override bool Success => false;
         public override string GiftId { get; }
 
-        public FailedGifting() : this(string.Empty)
+        public string ErrorMessage { get; }
+
+        public FailedGifting(string errorMessage) : this(string.Empty, errorMessage)
         {
         }
 
-        public FailedGifting(string giftId)
+        public FailedGifting(string giftId, string errorMessage)
         {
             GiftId = giftId;
+            ErrorMessage = errorMessage;
         }
     }
 }

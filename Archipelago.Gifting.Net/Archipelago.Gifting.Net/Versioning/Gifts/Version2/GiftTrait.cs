@@ -1,6 +1,6 @@
 ﻿namespace Archipelago.Gifting.Net.Versioning.Gifts.Version2
 {
-    public class GiftTrait
+    internal class GiftTrait
     {
         public string Trait { get; set; }
         public double Quality { get; set; }
