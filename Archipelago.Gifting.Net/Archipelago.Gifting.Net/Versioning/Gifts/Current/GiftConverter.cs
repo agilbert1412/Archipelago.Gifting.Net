@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Archipelago.Gifting.Net.Utilities;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
@@ -95,18 +96,18 @@ namespace Archipelago.Gifting.Net.Versioning.Gifts.Current
             }
 
             var jsonObject = JObject.FromObject(gift);
+            RemoveDefaultValueProperties(jsonObject, new[] { "item_value" }, BigInteger.Zero);
+            
             foreach (var property in jsonObject.Properties())
             {
-                if (property.Name != "traits")
-                {
-                    continue;
-                }
-
+                if (property.Name != "traits") continue;
                 var traits = property.Value;
                 foreach (var trait in traits)
                 {
                     RemoveDefaultValueProperties(trait, new[] { "quality", "duration" }, 1.0);
                 }
+
+                continue;
             }
 
             var newGiftEntry = new Dictionary<string, JObject>
@@ -121,10 +122,22 @@ namespace Archipelago.Gifting.Net.Versioning.Gifts.Current
         {
             foreach (var propertyName in propertiesToCheck)
             {
-                var quality = trait[propertyName];
-                if (quality != null && IsDefaultValue(quality, valueToOmit))
+                var property = trait[propertyName];
+                if (property != null && IsDefaultValue(property, valueToOmit))
                 {
-                    quality.Parent.Remove();
+                    property.Parent.Remove();
+                }
+            }
+        }
+
+        private static void RemoveDefaultValueProperties(JToken trait, string[] propertiesToCheck, BigInteger valueToOmit)
+        {
+            foreach (var propertyName in propertiesToCheck)
+            {
+                var property = trait[propertyName];
+                if (property != null && IsDefaultValue(property, valueToOmit))
+                {
+                    property.Parent.Remove();
                 }
             }
         }
@@ -133,6 +146,11 @@ namespace Archipelago.Gifting.Net.Versioning.Gifts.Current
         {
             const double epsilon = 0.001;
             return Math.Abs(quality.Value<double>() - defaultValue) < epsilon;
+        }
+
+        private static bool IsDefaultValue(JToken quality, BigInteger defaultValue)
+        {
+            return quality.Value<BigInteger>() == defaultValue;
         }
 
         public Gift ConvertToCurrentVersion(Version2.Gift olderGift)

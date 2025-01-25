@@ -751,6 +751,7 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             // Arrange
             _serviceReceiver.OpenGiftBox();
             var gift = NewGiftItem();
+            gift.Value = 0;
             var traits = new GiftTrait[] { new("Food"), new("Drink", 2.0), new("Heal", 1.0, 0.0), new("Damage", 1.1, -1.0) };
             WaitShort();
 
@@ -772,6 +773,9 @@ namespace Archipelago.Gifting.Net.Tests.IntegrationTests
             content.Should().Contain("{\"trait\":\"Drink\",\"quality\":2.0}");
             content.Should().Contain("{\"trait\":\"Heal\",\"duration\":0.0}");
             content.Should().Contain("{\"trait\":\"Damage\",\"quality\":1.1,\"duration\":-1.0}");
+            content.Should().NotContain("item_value");
+            content.Should().NotContain("itemValue");
+            content.Should().NotContain("ItemValue");
 
             gifts = _serviceReceiver.CheckGiftBox();
             gifts.Should().NotBeNull().And.HaveCount(1);
