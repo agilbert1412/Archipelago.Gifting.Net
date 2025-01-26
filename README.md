@@ -194,9 +194,11 @@ Before attempting to send a gift, you can check if your desired receiver has an 
 
 ```cs
 // All parameters except the player are optional, but without providing traits, you will only know if the player can accept any gift from you, not a specific gift
-public bool CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits); // Definition.
+public CanGiftResult CanGiftToPlayer(string playerName, int playerTeam, IEnumerable<string> giftTraits); // Definition.
 
-var canGift = _service.CanGiftToPlayer("playerSlotName"); // Usage
+var canGiftResult = _service.CanGiftToPlayer("playerSlotName"); // Usage
+bool canGift = canGiftResult.CanGift;
+bool canGiftMessage = canGiftResult.Message; // Error message only if CanGift is false
 ```
 
 Checking the state of the giftBox before proceeding is optional, but recommended, to avoid pointless operations.
@@ -207,7 +209,7 @@ There are multiple methods to send a gift, but they are all variations of the fo
 public GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName, int playerTeam); // Definition
 var result = _servicer.SendGift(gift, giftTraits, targetSlotName); // Usage
 var success = result.Success;
-var id = resultGiftId;
+var id = result.GiftId;
 ```
 
 Sending the gift generates a unique ID for it. The response will tell you if the operation was successful, and if so, what the ID of the gift is, for if you intend to tracking them.
