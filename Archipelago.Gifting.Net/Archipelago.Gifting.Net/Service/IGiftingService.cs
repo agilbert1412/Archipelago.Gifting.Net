@@ -5,5 +5,6 @@ namespace Archipelago.Gifting.Net.Service
 {
     public interface IGiftingService : IGiftingServiceSync, IGiftingServiceAsync
     {
+        event GiftingService.GiftReceivedHandler OnNewGift;
     }
 }
