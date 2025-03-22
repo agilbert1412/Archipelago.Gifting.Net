@@ -26,7 +26,7 @@ Both the Motherbox and individual giftboxes are dictionaries. The motherbox cont
 
 ## Object Specifications
 
-These specifications are **Data Version 3**. Previous versions are available in the git history of this file, and the changes introduced are documented in [the changelog document](Documentation/Changelog.md), but clients should try to stay up to date, as cross-version gifting takes a lot of extra work that most clients will not do.
+These specifications are **Data Version 3**. Previous versions are available in the git history of this file, and the changes introduced are documented in [the changelog document](Changelog.md), but clients should try to stay up to date, as cross-version gifting takes a lot of extra work that most clients will not do.
 The C# library available in this repo is fully forward and backward compatible. It can send and receive outdated gifts to and from outdated clients, and is itself forward compatible and will understand content from future versions of itself.
 
 ### Giftbox Metadata Specification
