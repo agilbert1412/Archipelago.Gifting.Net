@@ -4,9 +4,9 @@
 	<TargetFrameworks>net452;netstandard2.0;net5.0;net6.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>KaitoKid</Authors>
-	<AssemblyVersion>0.4.2</AssemblyVersion>
-	<FileVersion>0.4.2</FileVersion>
-	<Version>0.4.2</Version>
+	<AssemblyVersion>0.4.3</AssemblyVersion>
+	<FileVersion>0.4.3</FileVersion>
+	<Version>0.4.3</Version>
     <Description>.NET library for Archipelago Gifting</Description>
     <PackageProjectUrl>https://github.com/agilbert1412/Archipelago.Gifting.Net/blob/main/README.md</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.5.0" />
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.0" />
   </ItemGroup>
 
 </Project>
