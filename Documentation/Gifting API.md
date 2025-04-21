@@ -19,7 +19,7 @@ For example, a coffee item could have the trait "Speed". The concept of a speed 
 
 A GiftBox is a DataStorage entry registered to a specific player. It signals the desire and ability to receive gifts for that slot.
 
-The key for a GiftBox is formatted as `GiftBox;[teamNumber];[slotName]`. So for player 3 on team 1, their GiftBox key would be "GiftBox;1;3". A giftbox also has metadata that is registered in the "Motherbox" for the team, describing the state of the giftbox, what kind of gifts it can accept, who owns it, etc.
+The key for a GiftBox is formatted as `GiftBox;[teamNumber];[slotNumber]`. So for player 3 on team 1, their GiftBox key would be "GiftBox;1;3". A giftbox also has metadata that is registered in the "Motherbox" for the team, describing the state of the giftbox, what kind of gifts it can accept, who owns it, etc.
 The Motherbox can be accessed in Data storage at the key "GiftBoxes;[teamNumber]"
 
 Both the Motherbox and individual giftboxes are dictionaries. The motherbox contains player slot numbers as keys, and giftbox metadata as values. A giftbox has the gift's Ids as keys, and gifts as values.
