@@ -249,7 +249,7 @@ List<string> matches = closeTraitParser.FindClosestAvailableGift(gift.Traits);
 ```
 This list might be empty if no item was found that shared any trait.
 
-If you aren't pleased by the the closeness algorithm, you may provide your own as an argument to BKTreeCloseTraitParser, having the following signature
+If you aren't pleased by the closeness algorithm, you may provide your own as an argument to BKTreeCloseTraitParser, having the following signature
 ```cs
 double Distance(GiftTrait[] giftTraits, Dictionary<string, Tuple<double, double>> traits, out bool isCompatible);
 ```
