@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Archipelago.Gifting.Net.Traits;
 using Archipelago.Gifting.Net.Versioning.Gifts.Current;
 
 namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser

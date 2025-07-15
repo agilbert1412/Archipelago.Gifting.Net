@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Archipelago.Gifting.Net.Traits;
 using Archipelago.Gifting.Net.Versioning.Gifts.Current;
 
 namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
@@ -136,6 +135,58 @@ namespace Archipelago.Gifting.Net.Utilities.CloseTraitParser
             double bestDistance = double.MaxValue;
             FindClosestAvailableGift(giftTraits, ref bestDistance, ref closestItems);
             return closestItems;
+        }
+
+        public void CheckConsistency()
+        {
+            List<Tuple<BKTreeCloseTraitParser<T>, GiftTrait[]>> allBKTrees =
+                new List<Tuple<BKTreeCloseTraitParser<T>, GiftTrait[]>>();
+            List<BKTreeCloseTraitParser<T>> toTreatBKTrees = new List<BKTreeCloseTraitParser<T>> { this };
+            for (int i = 0; i < toTreatBKTrees.Count; i++)
+            {
+                List<GiftTrait> traits = new List<GiftTrait>();
+                foreach (KeyValuePair<string, Tuple<double, double>> keyValuePair in toTreatBKTrees[i]._traits)
+                {
+                    traits.Add(new GiftTrait(keyValuePair.Key, keyValuePair.Value.Item1, keyValuePair.Value.Item2));
+                }
+
+                allBKTrees.Add(new Tuple<BKTreeCloseTraitParser<T>, GiftTrait[]>(toTreatBKTrees[i], traits.ToArray()));
+                toTreatBKTrees.AddRange(toTreatBKTrees[i]._children.Values);
+            }
+
+            foreach (Tuple<BKTreeCloseTraitParser<T>, GiftTrait[]> BKTree1 in allBKTrees)
+            {
+                GiftTrait[] traits1 = BKTree1.Item2;
+                foreach (Tuple<BKTreeCloseTraitParser<T>, GiftTrait[]> BKTree2 in allBKTrees)
+                {
+                    BKTreeCloseTraitParser<T> tree2 = BKTree2.Item1;
+                    GiftTrait[] traits2 = BKTree2.Item2;
+                    
+                    foreach (Tuple<BKTreeCloseTraitParser<T>, GiftTrait[]> BKTree3 in allBKTrees)
+                    {
+                        BKTreeCloseTraitParser<T> tree3 = BKTree3.Item1;
+                        double d1 = _distance(traits1, tree2._traits, out bool _);
+                        double d2 = _distance(traits2, tree3._traits, out bool _);
+                        double d3 = _distance(traits1, tree3._traits, out bool _);
+
+                        if (d1 + d2 - d3 < -0.00001) 
+                            // Triangular inequality was violated, margin is smaller than in FindClosestAvailableGift
+                        {
+                            GiftTrait[] traits3 = BKTree3.Item2;
+                            Exception exception = new Exception("Triangular inequalities were violated, " +
+                                                                "d(traits1, traits2) + d(traits2, traits3) > d(traits1, traits3).\n" +
+                                                                "Check this exception's data for more details.");
+                            exception.Data.Add("traits1", traits1);
+                            exception.Data.Add("traits2", traits2);
+                            exception.Data.Add("traits3", traits3);
+                            exception.Data.Add("d(traits1, traits2)", d1);
+                            exception.Data.Add("d(traits2, traits3)", d2);
+                            exception.Data.Add("d(traits1, traits3)", d3);
+                            throw exception;
+                        }
+                    }
+                }
+            }
         }
     }
 }
