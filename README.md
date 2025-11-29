@@ -253,7 +253,9 @@ If you aren't pleased by the closeness algorithm, you may provide your own as an
 ```cs
 double Distance(GiftTrait[] giftTraits, Dictionary<string, Tuple<double, double>> traits, out bool isCompatible);
 ```
-For this method, all the traits of the registered gift with the same name have been added together for performance reasons
+For this method, all the traits of the registered gift with the same name have been added together for performance reasons.
+Keep in mind that this function should follow the triangle inequality. 
+You can run CheckConsistency to test the consistency of your distance function (but do not test it each time you initialize your parser)
 
 ## Rejecting a Gift
 
