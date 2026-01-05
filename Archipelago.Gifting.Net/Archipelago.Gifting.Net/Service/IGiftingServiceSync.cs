@@ -45,6 +45,38 @@ namespace Archipelago.Gifting.Net.Service
         /// <returns>The accepted traits, by player</returns>
         AcceptedTraitsByPlayer GetAcceptedTraitsByPlayer(int team, IEnumerable<string> giftTraits);
 
+        /// <summary>
+        /// Provided a list of traits that you can send, get the traits that a given player on your team can accept
+        /// </summary>
+        /// <param name="player">The target player slot</param>
+        /// <param name="giftTraits">The list of traits you can send</param>
+        /// <returns>The accepted traits of the target player</returns>
+        AcceptedTraits GetAcceptedTraits(int player, IEnumerable<string> giftTraits);
+
+        /// <summary>
+        /// Provided a list of traits that you can send, get the traits that a given player on a given team can accept
+        /// </summary>
+        /// <param name="team">The team of the target player</param>
+        /// <param name="player">The target player slot</param>
+        /// <param name="giftTraits">The list of traits you can send</param>
+        /// <returns>The accepted traits of the target player</returns>
+        AcceptedTraits GetAcceptedTraits(int team, int player, IEnumerable<string> giftTraits);
+
+        /// <summary>
+        /// Get the traits that a given player on your team has marked as "Desired". This is not necessarily the only traits they can accept, but it is the ones they specifically asked for.
+        /// </summary>
+        /// <param name="player">The target player slot</param>
+        /// <returns>The desired traits of the target player</returns>
+        AcceptedTraits GetDesiredTraits(int player);
+
+        /// <summary>
+        /// Get the traits that a given player on a given team has marked as "Desired". This is not necessarily the only traits they can accept, but it is the ones they specifically asked for.
+        /// </summary>
+        /// <param name="team">The team of the target player</param>
+        /// <param name="player">The target player slot</param>
+        /// <returns>The desired traits of the target player</returns>
+        AcceptedTraits GetDesiredTraits(int team, int player);
+
         GiftingResult SendGift(GiftItem item, string playerName);
         GiftingResult SendGift(GiftItem item, string playerName, int playerTeam);
         GiftingResult SendGift(GiftItem item, GiftTrait[] traits, string playerName);

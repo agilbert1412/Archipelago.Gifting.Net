@@ -132,6 +132,23 @@ namespace Archipelago.Gifting.Net.Service
             return acceptedTraitsByPlayer;
         }
 
+        public AcceptedTraits GetAcceptedTraits(int player, IEnumerable<string> giftTraits)
+        {
+            return GetAcceptedTraits(_session.ConnectionInfo.Team, player, giftTraits);
+        }
+
+        public AcceptedTraits GetAcceptedTraits(int team, int player, IEnumerable<string> giftTraits)
+        {
+            var teamMotherbox = GetMotherbox(team);
+            if (teamMotherbox == null || !teamMotherbox.Any())
+            {
+                return new AcceptedTraits(team, player);
+            }
+
+            var giftBox = teamMotherbox[player];
+            return GetAcceptedTraits(team, player, giftBox, giftTraits);
+        }
+
         private static AcceptedTraits GetAcceptedTraits(int team, int player, GiftBox giftBox, IEnumerable<string> giftTraits)
         {
             if (giftBox == null || !giftBox.IsOpen)
@@ -141,6 +158,34 @@ namespace Archipelago.Gifting.Net.Service
 
             var traits = giftTraits.Where(x => giftBox.AcceptsAnyGift || giftBox.DesiredTraits.Contains(x));
             var acceptedTraits = new AcceptedTraits(team, player, traits.ToArray());
+            return acceptedTraits;
+        }
+
+        public AcceptedTraits GetDesiredTraits(int player)
+        {
+            return GetDesiredTraits(_session.ConnectionInfo.Team, player);
+        }
+
+        public AcceptedTraits GetDesiredTraits(int team, int player)
+        {
+            var teamMotherbox = GetMotherbox(team);
+            if (teamMotherbox == null || !teamMotherbox.Any())
+            {
+                return new AcceptedTraits(team, player);
+            }
+
+            var giftBox = teamMotherbox[player];
+            return GetDesiredTraits(team, player, giftBox);
+        }
+
+        private static AcceptedTraits GetDesiredTraits(int team, int player, GiftBox giftBox)
+        {
+            if (giftBox == null || !giftBox.IsOpen)
+            {
+                return new AcceptedTraits(team, player);
+            }
+
+            var acceptedTraits = new AcceptedTraits(team, player, giftBox.DesiredTraits.ToArray());
             return acceptedTraits;
         }
 
